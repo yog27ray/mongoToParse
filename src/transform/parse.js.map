@@ -1,0 +1,1 @@
+{"version":3,"file":"parse.js","sourceRoot":"","sources":["../../../src/transform/parse.ts"],"names":[],"mappings":";;AAAA,uCAAuC;AACvC,mCAAmC;AACnC,qDAAqD;AACrD,IAAI,KAAK,GAAG,KAAK,CAAC;AAMT,sBAAK;AAJd,IAAI,OAAO,OAAO,KAAK,WAAW,EAAE;IAClC,gBAAA,KAAK,GAAG,OAAO,CAAC,OAAO,CAAC,CAAC;CAC1B"}
