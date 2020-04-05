@@ -1,4 +1,5 @@
 /// <reference types="parse" />
+import 'reflect-metadata';
 declare interface CountDataType {
     where: any;
     limit?: number;

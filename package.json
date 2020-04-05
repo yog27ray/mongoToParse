@@ -1,6 +1,6 @@
 {
   "name": "mongo-to-parse",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -46,6 +46,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "parse": "^2.12.0"
+    "inversify": "^5.0.1",
+    "parse": "^2.12.0",
+    "reflect-metadata": "^0.1.13"
   }
 }
