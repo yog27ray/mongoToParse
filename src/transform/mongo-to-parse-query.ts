@@ -1,3 +1,6 @@
+import { injectable } from 'inversify';
+// tslint:disable-next-line:no-import-side-effect
+import 'reflect-metadata';
 import { CureSkinError } from '../error/cure-skin-error';
 import { parse as Parse } from './parse';
 
@@ -33,6 +36,7 @@ declare interface UpdateQueryDataType {
   include?: Array<string>;
 }
 
+@injectable()
 class MongoToParseQuery {
   parseTable(tableName: string): new () => Parse.Object {
     return Parse.Object.extend(tableName);

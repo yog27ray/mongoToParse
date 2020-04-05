@@ -46,6 +46,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "parse": "^2.12.0"
+    "inversify": "^5.0.1",
+    "parse": "^2.12.0",
+    "reflect-metadata": "^0.1.13"
   }
 }
