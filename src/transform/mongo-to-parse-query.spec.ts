@@ -38,7 +38,7 @@ async function createDummyRows(TestTable: new () => Parse.Object, mongoToParseQu
   const TestTable2 = mongoToParseQuery.parseTable('TestTable2');
   const item = new TestTable2();
   item.set('name', 'xyz');
-  const result = await mongoToParseQuery.findFirst(TestTable, { where: { rank: 10 }, ascending: 'rank' });
+  const result = await mongoToParseQuery.findOne(TestTable, { where: { rank: 10 }, ascending: 'rank' });
   await result.save({ item });
 }
 
@@ -51,7 +51,7 @@ describe('MongoToParseQuery', () => {
       });
     });
 
-    context('findFirst', () => {
+    context('findOne', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
 
@@ -60,7 +60,7 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should fetch first result with total 4', async () => {
-        const result = await mongoToParseQuery.findFirst(TestTable, { where: { total: 4 }, descending: 'rank' });
+        const result = await mongoToParseQuery.findOne(TestTable, { where: { total: 4 }, descending: 'rank' });
         const [resultJSON] = parseObjectJSON([result]);
         expect(resultJSON).to.deep.equal({
           time: { __type: 'Date', iso: '1970-01-01T00:00:00.090Z' },
@@ -72,7 +72,7 @@ describe('MongoToParseQuery', () => {
       });
     });
 
-    context('findAll', () => {
+    context('find', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
 
@@ -81,7 +81,7 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should fetch all results', async () => {
-        const results = await mongoToParseQuery.findAll(TestTable, { where: {} });
+        const results = await mongoToParseQuery.find(TestTable, { where: {} });
         expect(results.length).to.equal(10);
       });
     });
@@ -148,7 +148,7 @@ describe('MongoToParseQuery', () => {
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
-        parseObject = await mongoToParseQuery.findFirst(TestTable, { where: { rank: 1 } });
+        parseObject = await mongoToParseQuery.findOne(TestTable, { where: { rank: 1 } });
       });
 
       it('should do nothing when object is not present', async () => {
@@ -180,7 +180,7 @@ describe('MongoToParseQuery', () => {
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
-        rows = await mongoToParseQuery.findAll(TestTable, { where: {} });
+        rows = await mongoToParseQuery.find(TestTable, { where: {} });
       });
 
       it('should do nothing when there is not pointer object', async () => {
@@ -212,7 +212,7 @@ describe('MongoToParseQuery', () => {
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
-        rows = await mongoToParseQuery.findAll(TestTable, { where: {} });
+        rows = await mongoToParseQuery.find(TestTable, { where: {} });
       });
 
       it('should do nothing when there is not pointer object', async () => {
@@ -312,7 +312,7 @@ describe('MongoToParseQuery', () => {
 
     it('should give error when invalid syntax is provided', async () => {
       try {
-        await mongoToParseQuery.findAll(TestTable, { where: { total: { $in: [1], of: 2 } } });
+        await mongoToParseQuery.find(TestTable, { where: { total: { $in: [1], of: 2 } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
         expect(error.toJSON()).to.deep.equal({
@@ -325,7 +325,7 @@ describe('MongoToParseQuery', () => {
 
     it('should give error when unhandled condition is provided', async () => {
       try {
-        await mongoToParseQuery.findAll(TestTable, { where: { total: { $int: [1] } } });
+        await mongoToParseQuery.find(TestTable, { where: { total: { $int: [1] } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
         expect(error.toJSON()).to.deep.equal({
@@ -337,7 +337,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where message endsWith "endsWith"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { message: { $endsWith: 'endsWith' } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { message: { $endsWith: 'endsWith' } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.020Z' },
@@ -360,7 +360,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where message startsWith "startsWith"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { message: { $startsWith: 'startsWith' } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { message: { $startsWith: 'startsWith' } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
@@ -383,7 +383,7 @@ describe('MongoToParseQuery', () => {
 
     it('should return row where message regex "regex"', async () => {
       const results = await mongoToParseQuery
-        .findAll(TestTable, { where: { message: { $regex: 'regex', $options: 'i' } }, ascending: 'rank' });
+        .find(TestTable, { where: { message: { $regex: 'regex', $options: 'i' } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
@@ -405,7 +405,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank greater than "7"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: { $gt: 7 } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $gt: 7 } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.070Z' },
@@ -428,7 +428,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank greater than equal to "7"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: { $gte: 7 } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $gte: 7 } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.060Z' },
@@ -456,7 +456,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank less than "3"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: { $lt: 3 } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $lt: 3 } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.000Z' },
@@ -473,7 +473,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank less than equal to "3"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: { $lte: 3 } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $lte: 3 } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.000Z' },
@@ -495,7 +495,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where field exists "true"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { field: { $exists: true } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { field: { $exists: true } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.000Z' },
@@ -519,7 +519,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where field exists "false"', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { field: { $exists: false } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { field: { $exists: false } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
@@ -561,7 +561,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank not in [1]', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: { $nin: [1] } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $nin: [1] } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
@@ -615,7 +615,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank is not 1', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: { $ne: 1 } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $ne: 1 } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
@@ -669,7 +669,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank is not in [1, 2, 3]', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: { $nin: [1, 2, 3] } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $nin: [1, 2, 3] } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.030Z' },
@@ -713,7 +713,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank in [1]', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: [1] }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: [1] }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.000Z' },
@@ -725,7 +725,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank is 1', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: 1 }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: 1 }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.000Z' },
@@ -737,7 +737,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank is in [1, 2, 3]', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.000Z' },
@@ -759,7 +759,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank is in [1, 2, 3] by skip 1 and limit 1', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1 });
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1 });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
@@ -771,13 +771,13 @@ describe('MongoToParseQuery', () => {
 
     it('should return row where rank is in [1, 2, 3] by skip 1 and limit 1 and select message', async () => {
       const results = await mongoToParseQuery
-        .findAll(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1, select: ['message'] });
+        .find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1, select: ['message'] });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{ message: 'startsWith this regex is message 2' }]);
     });
 
     it('should return row where rank is 3 or total is 2', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { $or: [{ rank: 3 }, { total: 2 }] }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { $or: [{ rank: 3 }, { total: 2 }] }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
@@ -793,7 +793,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where rank is 3 and total is 2', async () => {
-      const results = await mongoToParseQuery.findAll(TestTable, { where: { $and: [{ rank: 3 }, { total: 2 }] }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, { where: { $and: [{ rank: 3 }, { total: 2 }] }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.020Z' },
@@ -804,7 +804,7 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should include row with inner pointer', async () => {
-      const result = await mongoToParseQuery.findFirst(TestTable, { where: { rank: 10 }, ascending: 'rank', include: ['item'] });
+      const result = await mongoToParseQuery.findOne(TestTable, { where: { rank: 10 }, ascending: 'rank', include: ['item'] });
       const [resultJSON] = parseObjectJSON([result]);
       expect(resultJSON).to.deep.equal({
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.090Z' },
