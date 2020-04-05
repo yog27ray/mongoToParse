@@ -7,6 +7,7 @@ cd ..
 node_modules/eslint/bin/eslint.js  --ext .ts src
 tsc -p ./
 VERSION=$(npm version patch)
+git push
 npm i
 cp package.json ./dist/package.json
 cp package-lock.json ./dist/package-lock.json

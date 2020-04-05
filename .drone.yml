@@ -9,8 +9,8 @@ steps:
         path: /cache
     commands:
       - git rev-parse --short HEAD
-      - mkdir -p /cache/exponential-backoff-retry/node_modules
-      - cp -Rf /cache/exponential-backoff-retry/node_modules/ node_modules/
+      - mkdir -p /cache/mongo-to-parse/node_modules
+      - cp -Rf /cache/mongo-to-parse/node_modules/ node_modules/
     depends_on: [ clone ]
 
   - name: npm-update
@@ -47,7 +47,7 @@ steps:
       - name: cache
         path: /cache
     commands:
-      - cp -Rf node_modules/ /cache/exponential-backoff-retry/
+      - cp -Rf node_modules/ /cache/mongo-to-parse/
     depends_on: [ test-server ]
 
 volumes:

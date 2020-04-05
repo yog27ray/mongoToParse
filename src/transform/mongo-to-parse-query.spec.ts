@@ -255,7 +255,7 @@ describe('MongoToParseQuery', () => {
       });
     });
 
-    context('aggregateQuery', () => {
+    context('aggregate', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
 
@@ -263,8 +263,8 @@ describe('MongoToParseQuery', () => {
         await createDummyRows(TestTable, mongoToParseQuery);
       });
 
-      it('should fetch result of aggregateQuery', async () => {
-        const results = await mongoToParseQuery.aggregateQuery(TestTable, {
+      it('should fetch result of aggregate', async () => {
+        const results = await mongoToParseQuery.aggregate(TestTable, {
           pipeline: [{ match: { total: 4 } }, { project: { total: 1, rank: 1, objectId: 0 } }, { sort: { rank: -1 } }],
         });
         expect(results).to.deep.equal([

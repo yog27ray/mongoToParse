@@ -42,7 +42,7 @@ class MongoToParseQuery {
     return Parse.Object.extend(tableName);
   }
 
-  find(table: any, {
+  find(table: new () => Parse.Object, {
     select, where, option, descending, ascending, skip, include, limit,
   }: QueryDataType): Promise<Array<Parse.Object>> {
     const query = this.generateWhereQuery(table, where);
@@ -50,19 +50,19 @@ class MongoToParseQuery {
     return query.find(option);
   }
 
-  findOne(table: any, { select, where, option, descending, ascending, skip, include, limit }:
+  findOne(table: new () => Parse.Object, { select, where, option, descending, ascending, skip, include, limit }:
     QueryDataType): Promise<Parse.Object> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.first(option);
   }
 
-  aggregateQuery(table: any, { pipeline }: AggregateDataType): Promise<any> {
+  aggregate(table: new () => Parse.Object, { pipeline }: AggregateDataType): Promise<any> {
     const query = new Parse.Query(table);
     return query.aggregate(pipeline);
   }
 
-  count(table: any, { where, option, skip, limit }: CountDataType): Promise<any> {
+  count(table: new () => Parse.Object, { where, option, skip, limit }: CountDataType): Promise<any> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
     return query.count(option);
@@ -263,7 +263,7 @@ class MongoToParseQuery {
     return query;
   }
 
-  private generateKeyValueQuery(table: any, key: string, value: any, query: any = new Parse.Query(table)): any {
+  private generateKeyValueQuery(table: new () => Parse.Object, key: string, value: any, query: any = new Parse.Query(table)): any {
     switch (key) {
       case '$and': {
         const queries = value.map((condition: object) => this.generateWhereQuery(table, condition));
@@ -279,7 +279,7 @@ class MongoToParseQuery {
     }
   }
 
-  private generateWhereQuery(table: any, where: object): Parse.Query {
+  private generateWhereQuery(table: new () => Parse.Object, where: object): Parse.Query {
     const keys: Array<string> = Object.keys(where);
     const query = new Parse.Query(table);
     const isCompoundQuery = ['$and', '$or'].some((key: string) => keys.includes(key));
