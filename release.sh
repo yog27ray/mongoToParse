@@ -4,7 +4,7 @@ git reset --hard
 git checkout dist
 rm -r *
 cd ..
-node_modules/eslint/bin/eslint.js  --ext .ts ms-queue
+node_modules/eslint/bin/eslint.js  --ext .ts src
 tsc -p ./
 VERSION=$(npm version patch)
 npm i
