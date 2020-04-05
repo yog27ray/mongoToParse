@@ -37,7 +37,7 @@ steps:
     image: node:12.13.0
     privileged: true
     commands:
-      - node_modules/.bin/nyc node_modules/.bin/mocha ./**/*.spec.ts --exit
+      - node_modules/.bin/nyc node_modules/.bin/mocha ./src/setup.ts ./src/setup.spec.ts ./**/*.spec.ts --exit
       - node_modules/.bin/nyc report --reporter=text-lcov > coverage.lcov;
     depends_on: [ eslint-server, tslint ]
 
