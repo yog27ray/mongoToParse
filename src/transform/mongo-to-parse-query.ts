@@ -169,6 +169,13 @@ class MongoToParseQuery {
   }
 
   private updateQueryWithConditions(query: Parse.Query, field: string, value: any): Parse.Query {
+    if (field.startsWith('$')) {
+      throw new CureSkinError({
+        code: 400,
+        message: `field "${field}" is invalid syntax`,
+        type: 'INVALID_QUERY',
+      });
+    }
     if (typeof value !== 'object') {
       return this.updateQueryWithConditions(query, field, { $eq: value });
     }

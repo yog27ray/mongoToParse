@@ -323,6 +323,19 @@ describe('MongoToParseQuery', () => {
       }
     });
 
+    it('should give error when invalid field is provided', async () => {
+      try {
+        await mongoToParseQuery.find(TestTable, { where: { $total: { $in: [1] } } });
+        await Promise.reject({ code: 99, message: 'Should not reach here.' });
+      } catch (error) {
+        expect(error.toJSON()).to.deep.equal({
+          code: 400,
+          type: 'INVALID_QUERY',
+          message: 'field "$total" is invalid syntax',
+        });
+      }
+    });
+
     it('should give error when unhandled condition is provided', async () => {
       try {
         await mongoToParseQuery.find(TestTable, { where: { total: { $int: [1] } } });
