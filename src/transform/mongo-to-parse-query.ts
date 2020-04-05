@@ -38,7 +38,7 @@ class MongoToParseQuery {
     return Parse.Object.extend(tableName);
   }
 
-  findAll(table: any, {
+  find(table: any, {
     select, where, option, descending, ascending, skip, include, limit,
   }: QueryDataType): Promise<Array<Parse.Object>> {
     const query = this.generateWhereQuery(table, where);
@@ -46,14 +46,14 @@ class MongoToParseQuery {
     return query.find(option);
   }
 
-  findFirst(table: any, { select, where, option, descending, ascending, skip, include, limit }:
+  findOne(table: any, { select, where, option, descending, ascending, skip, include, limit }:
     QueryDataType): Promise<Parse.Object> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.first(option);
   }
 
-  async aggregateQuery(table: any, { pipeline }: AggregateDataType): Promise<any> {
+  aggregateQuery(table: any, { pipeline }: AggregateDataType): Promise<any> {
     const query = new Parse.Query(table);
     return query.aggregate(pipeline);
   }
@@ -106,7 +106,7 @@ class MongoToParseQuery {
       return items;
     }
     const Table = this.parseTable(items[0].className);
-    const objects = await this.findAll(Table, { where: { objectId: pointers.map((pointer: any) => pointer.id) }, option });
+    const objects = await this.find(Table, { where: { objectId: pointers.map((pointer: any) => pointer.id) }, option });
     return items.map((item: any) => {
       if (item.get(fieldCheck)) {
         return item;
