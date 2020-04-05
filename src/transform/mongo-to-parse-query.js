@@ -25,7 +25,7 @@ let MongoToParseQuery = class MongoToParseQuery {
         this.updateQuery(query, { select, descending, ascending, skip, include, limit });
         return query.first(option);
     }
-    aggregateQuery(table, { pipeline }) {
+    aggregate(table, { pipeline }) {
         const query = new parse_1.parse.Query(table);
         return query.aggregate(pipeline);
     }
@@ -126,6 +126,13 @@ let MongoToParseQuery = class MongoToParseQuery {
         }
     }
     updateQueryWithConditions(query, field, value) {
+        if (field.startsWith('$')) {
+            throw new cure_skin_error_1.CureSkinError({
+                code: 400,
+                message: `field "${field}" is invalid syntax`,
+                type: 'INVALID_QUERY',
+            });
+        }
         if (typeof value !== 'object') {
             return this.updateQueryWithConditions(query, field, { $eq: value });
         }

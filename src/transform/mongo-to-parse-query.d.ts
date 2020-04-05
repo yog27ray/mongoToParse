@@ -25,10 +25,10 @@ declare interface AggregateDataType {
 }
 declare class MongoToParseQuery {
     parseTable(tableName: string): new () => Parse.Object;
-    find(table: any, { select, where, option, descending, ascending, skip, include, limit, }: QueryDataType): Promise<Array<Parse.Object>>;
-    findOne(table: any, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType): Promise<Parse.Object>;
-    aggregateQuery(table: any, { pipeline }: AggregateDataType): Promise<any>;
-    count(table: any, { where, option, skip, limit }: CountDataType): Promise<any>;
+    find(table: new () => Parse.Object, { select, where, option, descending, ascending, skip, include, limit, }: QueryDataType): Promise<Array<Parse.Object>>;
+    findOne(table: new () => Parse.Object, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType): Promise<Parse.Object>;
+    aggregate(table: new () => Parse.Object, { pipeline }: AggregateDataType): Promise<any>;
+    count(table: new () => Parse.Object, { where, option, skip, limit }: CountDataType): Promise<any>;
     addParseObjectInfoToJsonObject(jO: any, className: string): any;
     removeParesObjectDetails(object: any): void;
     saveAll(items: any, option: Parse.FullOptions): Promise<any>;

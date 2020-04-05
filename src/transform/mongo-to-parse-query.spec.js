@@ -224,14 +224,14 @@ describe('MongoToParseQuery', () => {
                 }
             });
         });
-        context('aggregateQuery', () => {
+        context('aggregate', () => {
             const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
             });
-            it('should fetch result of aggregateQuery', async () => {
-                const results = await mongoToParseQuery.aggregateQuery(TestTable, {
+            it('should fetch result of aggregate', async () => {
+                const results = await mongoToParseQuery.aggregate(TestTable, {
                     pipeline: [{ match: { total: 4 } }, { project: { total: 1, rank: 1, objectId: 0 } }, { sort: { rank: -1 } }],
                 });
                 chai_1.expect(results).to.deep.equal([
@@ -280,6 +280,19 @@ describe('MongoToParseQuery', () => {
                     code: 400,
                     type: 'INVALID_QUERY',
                     message: '{"$in":[1],"of":2} invalid query syntax',
+                });
+            }
+        });
+        it('should give error when invalid field is provided', async () => {
+            try {
+                await mongoToParseQuery.find(TestTable, { where: { $total: { $in: [1] } } });
+                await Promise.reject({ code: 99, message: 'Should not reach here.' });
+            }
+            catch (error) {
+                chai_1.expect(error.toJSON()).to.deep.equal({
+                    code: 400,
+                    type: 'INVALID_QUERY',
+                    message: 'field "$total" is invalid syntax',
                 });
             }
         });
