@@ -1,3 +1,2 @@
-/// <reference types="parse" />
-declare let parse: typeof Parse;
+declare const parse: any;
 export { parse };

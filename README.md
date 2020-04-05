@@ -37,7 +37,7 @@ MongoToParse transform mongo find query to parse-server find query.
    ```
     The above parse query is equivalent to mongo query given below
    ```
-    await mongoToParseQuery.findFirst(TestTable, { where: { total: 4 } });
+    await mongoToParseQuery.find(TestTable, { where: { total: 4 } });
    ```
    
 2.
@@ -49,7 +49,7 @@ MongoToParse transform mongo find query to parse-server find query.
     ```
      The above parse query is equivalent to mongo query given below
     ```
-      await mongoToParseQuery.findFirst(TestTable, { where: { total: { $gt: 4, $lt: 40 } } });
+      await mongoToParseQuery.find(TestTable, { where: { total: { $gt: 4, $lt: 40 } } });
     ```
     
 3.
@@ -64,5 +64,5 @@ MongoToParse transform mongo find query to parse-server find query.
    ```
     The above parse query is equivalent to mongo query given below
     ```
-    await mongoToParseQuery.findAll(TestTable, { where: { $and: [{ rank: 3 }, { total: 2 }] }, ascending: 'rank' });
+    await mongoToParseQuery.find(TestTable, { where: { $and: [{ rank: 3 }, { total: 2 }] }, ascending: 'rank' });
     ``` 

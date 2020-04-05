@@ -2,10 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 /* tslint:disable:no-require-imports */
 /* eslint-disable global-require */
-// eslint-disable-next-line import/no-mutable-exports
-let parse = Parse;
-exports.parse = parse;
-if (typeof process === 'undefined') {
-    exports.parse = parse = require('parse');
+if (typeof Parse === 'undefined' && typeof process === 'object') {
+    require('parse-server');
 }
+const parse = typeof Parse === 'undefined' ? require('parse') : Parse;
+exports.parse = parse;
 //# sourceMappingURL=parse.js.map

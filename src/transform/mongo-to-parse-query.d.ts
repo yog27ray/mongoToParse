@@ -24,8 +24,8 @@ declare interface AggregateDataType {
 }
 declare class MongoToParseQuery {
     parseTable(tableName: string): new () => Parse.Object;
-    findAll(table: any, { select, where, option, descending, ascending, skip, include, limit, }: QueryDataType): Promise<Array<Parse.Object>>;
-    findFirst(table: any, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType): Promise<Parse.Object>;
+    find(table: any, { select, where, option, descending, ascending, skip, include, limit, }: QueryDataType): Promise<Array<Parse.Object>>;
+    findOne(table: any, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType): Promise<Parse.Object>;
     aggregateQuery(table: any, { pipeline }: AggregateDataType): Promise<any>;
     count(table: any, { where, option, skip, limit }: CountDataType): Promise<any>;
     addParseObjectInfoToJsonObject(jO: any, className: string): any;
