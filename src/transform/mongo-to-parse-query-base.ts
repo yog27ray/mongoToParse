@@ -37,7 +37,7 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
   include?: Array<ParseAttributeKey<T>>;
 }
 
-interface ParseObjectConstructor<T extends Parse.Attributes> extends Parse.ObjectStatic {
+interface ParseObjectConstructor<T extends Parse.Attributes> extends Parse.ObjectConstructor {
   new (className?: string, attributes?: T, options?: any): Parse.Object<T>;
 }
 

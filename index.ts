@@ -3,7 +3,7 @@
 // @ts-ignore
 import { Parse } from 'parse';
 import { CureSkinError } from './src/error/cure-skin-error';
-import { MongoToParseQueryBase } from './src/transform/mongo-to-parse-query-base';
+import { MongoToParseQueryBase, ParseClass } from './src/transform/mongo-to-parse-query-base';
 
 class MongoToParseQuery extends MongoToParseQueryBase {
   constructor(applicationId: string, serverURL: string, config: { masterKey?: string } = {}) {
@@ -13,4 +13,4 @@ class MongoToParseQuery extends MongoToParseQueryBase {
   }
 }
 
-export { MongoToParseQuery, CureSkinError };
+export { MongoToParseQuery, CureSkinError, ParseClass };
