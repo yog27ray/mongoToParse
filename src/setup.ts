@@ -51,6 +51,7 @@ async function startMongoDB(): Promise<any> {
 
   // Serve the Parse API on the /parse URL prefix
   app.use('/api/parse', api);
+  Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
   log('Parse Server', '>>>>>>', serverURL);
 }
 

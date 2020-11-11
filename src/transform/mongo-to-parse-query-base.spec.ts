@@ -31,10 +31,10 @@ async function createDummyRows(TestTable: ParseClass, mongoToParseQuery: MongoTo
     { time: new Date(70), rank: 8, message: 'this is message 8', total: 4 },
     { time: new Date(80), rank: 9, message: 'startsWith this is message 9', total: 4 },
     { time: new Date(90), rank: 10, message: 'this is message 10 endsWith', total: 4 },
-  ].map((each: { [key: string]: unknown }): ParseClass => {
+  ].map((each: { [key: string]: unknown }): Parse.Object => {
     const tempObject = new TestTable();
     Object.keys(each).forEach((key: string) => tempObject.set(key, each[key]));
-    return tempObject as ParseClass;
+    return tempObject;
   }), {});
   const TestTable2 = mongoToParseQuery.parseTable('TestTable2');
   const item = new TestTable2();
@@ -185,7 +185,7 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should do nothing when there is not pointer object', async () => {
-        const results = await mongoToParseQuery.getObjectsFromPointers(rows as Array<ParseClass>, 'total', {});
+        const results = await mongoToParseQuery.getObjectsFromPointers(rows, 'total', {});
         expect(results.map((each: Parse.Object) => each.toJSON())).to.deep.equal(rows.map((each: Parse.Object) => each.toJSON()));
       });
 
@@ -218,7 +218,7 @@ describe('MongoToParseQuery', () => {
 
       it('should do nothing when there is not pointer object', async () => {
         const pointers = rows.map((each: Parse.Object) => each);
-        await mongoToParseQuery.updatePointersWithObject(rows as Array<ParseClass>, 'total', {});
+        await mongoToParseQuery.updatePointersWithObject(rows, 'total', {});
         expect(pointers.map((each: Parse.Object) => each.toJSON())).to.deep.equal(rows.map((each: Parse.Object) => each.toJSON()));
       });
 
@@ -285,7 +285,7 @@ describe('MongoToParseQuery', () => {
         const item = new TestTable();
         item.id = 'pointerId';
         item.set('item', '12');
-        const pointer = mongoToParseQuery.getPointer(item as ParseClass);
+        const pointer = mongoToParseQuery.getPointer(item);
         expect(JSON.parse(JSON.stringify(pointer))).to.deep
           .equal({ objectId: 'pointerId' });
       });
@@ -306,11 +306,22 @@ describe('MongoToParseQuery', () => {
           });
         }
       });
+
+      it('should successfully call cloud function validFunctionName.', async () => {
+        const response = await mongoToParseQuery.Cloud.run('validFunctionName');
+        expect(response).to.deep.equal({});
+      });
     });
 
-    context('', () => {
+    context('getPointerFromId', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
+
+      it('should generate pointer from object.', async () => {
+        const pointer = mongoToParseQuery.getPointerFromId('testId', TestTable);
+        expect(pointer.id).to.equal('testId');
+        expect(pointer.get('name')).to.not.exist;
+      });
     });
   });
 
