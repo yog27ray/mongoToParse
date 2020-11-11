@@ -291,15 +291,26 @@ describe('MongoToParseQuery', () => {
       });
     });
 
-    context('getPointerFromId', () => {
+    context('Cloud.run', () => {
+      const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
+
+      it('should get error when function name is not present.', async () => {
+        try {
+          await mongoToParseQuery.Cloud.run('testCloudRun');
+          await Promise.reject({ code: 99, message: 'Should not reach here' });
+        } catch (error) {
+          const { code, message } = error;
+          expect({ code, message }).to.deep.equal({
+            code: 141,
+            message: 'Invalid function: "testCloudRun"',
+          });
+        }
+      });
+    });
+
+    context('', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
-
-      it('should get pointer', async () => {
-        const pointer = mongoToParseQuery.getPointerFromId('pointerId', TestTable);
-        expect(JSON.parse(JSON.stringify(pointer))).to.deep
-          .equal({ objectId: 'pointerId' });
-      });
     });
   });
 

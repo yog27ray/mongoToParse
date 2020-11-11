@@ -47,6 +47,13 @@ class MongoToParseQueryBase {
     return this.parse.Object.extend(tableName) as T;
   }
 
+  get Cloud(): { run(name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<unknown> } {
+    return {
+      run: (name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<unknown> => this.parse.Cloud
+        .run(name, parameters, options) as Promise<unknown>,
+    };
+  }
+
   find<T extends ParseClass>(table: T, {
     select, where, option, descending, ascending, skip, include, limit,
   }: QueryDataType): Promise<Array<T>> {
