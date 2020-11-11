@@ -13,7 +13,7 @@ exports.MongoToParseQueryBase = void 0;
 const inversify_1 = require("inversify");
 // tslint:disable-next-line:no-import-side-effect
 require("reflect-metadata");
-const cure_skin_error_1 = require("../error/cure-skin-error");
+const mongo_to_parse_error_1 = require("../error/mongo-to-parse-error");
 let MongoToParseQueryBase = class MongoToParseQueryBase {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     constructor(parse) {
@@ -143,7 +143,7 @@ let MongoToParseQueryBase = class MongoToParseQueryBase {
     }
     updateQueryWithConditions(query, field, value) {
         if (field.startsWith('$')) {
-            throw new cure_skin_error_1.CureSkinError({
+            throw new mongo_to_parse_error_1.MongoToParseError({
                 code: 400,
                 message: `field "${field}" is invalid syntax`,
                 type: 'INVALID_QUERY',
@@ -158,7 +158,7 @@ let MongoToParseQueryBase = class MongoToParseQueryBase {
             return this.updateQueryWithConditions(query, field, { $eq: value });
         }
         if (queryConditionKeys.length !== valueKeys.length) {
-            throw new cure_skin_error_1.CureSkinError({
+            throw new mongo_to_parse_error_1.MongoToParseError({
                 code: 400,
                 message: `${JSON.stringify(value)} invalid query syntax`,
                 type: 'INVALID_QUERY',
@@ -234,7 +234,7 @@ let MongoToParseQueryBase = class MongoToParseQueryBase {
                     return;
                 }
                 default: {
-                    throw new cure_skin_error_1.CureSkinError({
+                    throw new mongo_to_parse_error_1.MongoToParseError({
                         code: 400,
                         message: `${queryConditionKey} unhandled query syntax`,
                         type: 'INVALID_QUERY',

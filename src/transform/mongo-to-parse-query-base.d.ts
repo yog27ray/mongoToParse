@@ -30,7 +30,7 @@ declare interface AggregateDataType {
         [key: string]: unknown;
     }>;
 }
-interface ParseObjectConstructor<T extends Parse.Attributes> extends Parse.ObjectStatic {
+interface ParseObjectConstructor<T extends Parse.Attributes> extends Parse.ObjectConstructor {
     new (className?: string, attributes?: T, options?: any): Parse.Object<T>;
 }
 declare type ParseClass<T extends Parse.Attributes = Parse.Attributes> = ParseObjectConstructor<T>;

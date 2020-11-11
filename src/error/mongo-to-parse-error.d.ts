@@ -1,4 +1,4 @@
-declare interface CureSkinErrorType {
+declare interface MongoToParseErrorType {
     message: string;
     code: number;
     type: string;
@@ -8,15 +8,15 @@ declare interface CureSkinErrorType {
         [key: string]: any;
     };
 }
-declare class CureSkinError extends Error {
+declare class MongoToParseError extends Error {
     readonly skipSentry: boolean;
     readonly code: number;
     private readonly type;
     private readonly logMessage;
     private readonly params;
-    constructor(error: CureSkinErrorType);
+    constructor(error: MongoToParseErrorType);
     toJSON(): {
         [key: string]: unknown;
     };
 }
-export { CureSkinError };
+export { MongoToParseError };

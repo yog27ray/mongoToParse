@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CureSkinError = void 0;
-class CureSkinError extends Error {
+exports.MongoToParseError = void 0;
+class MongoToParseError extends Error {
     constructor(error) {
         super(error.message);
-        Object.setPrototypeOf(this, CureSkinError.prototype);
+        Object.setPrototypeOf(this, MongoToParseError.prototype);
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, CureSkinError);
+            Error.captureStackTrace(this, MongoToParseError);
         }
         this.name = error.type;
         this.code = error.code;
@@ -26,5 +26,5 @@ class CureSkinError extends Error {
         return jsonObj;
     }
 }
-exports.CureSkinError = CureSkinError;
-//# sourceMappingURL=cure-skin-error.js.map
+exports.MongoToParseError = MongoToParseError;
+//# sourceMappingURL=mongo-to-parse-error.js.map
