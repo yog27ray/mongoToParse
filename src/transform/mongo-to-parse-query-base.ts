@@ -37,14 +37,16 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
   include?: Array<ParseAttributeKey<T>>;
 }
 
+declare type ClassObject<T extends Parse.Attributes> = Parse.Object<T> & (new () => Parse.Object<T>);
+
 @injectable()
 class MongoToParseQueryBase {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   constructor(private parse: any) {
   }
 
-  parseTable<T extends Parse.Attributes>(tableName: string): Parse.Object<T> & (new () => Parse.Object<T>) {
-    return this.parse.Object.extend(tableName) as Parse.Object<T> & (new () => Parse.Object<T>);
+  parseTable<T extends Parse.Attributes>(tableName: string): ClassObject<T> {
+    return this.parse.Object.extend(tableName) as ClassObject<T>;
   }
 
   get Cloud(): { run(name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<unknown> } {
@@ -55,17 +57,17 @@ class MongoToParseQueryBase {
   }
 
   find<T extends Parse.Attributes>(
-    table: Parse.Object<T>,
+    table: ClassObject<T>,
     { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Parse.Object<T>>)
-    : Promise<Array<Parse.Object<T>>> {
+    : Promise<Array<ClassObject<T>>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.find(option);
   }
 
   findOne<T extends Parse.Attributes>(
-    table: Parse.Object<T>,
-    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Parse.Object<T>>): Promise<Parse.Object<T>> {
+    table: ClassObject<T>,
+    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Parse.Object<T>>): Promise<ClassObject<T>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.first(option);
@@ -76,7 +78,7 @@ class MongoToParseQueryBase {
     return query.aggregate(pipeline);
   }
 
-  count<T extends Parse.Attributes>(table: Parse.Object<T>, { where, option, skip, limit }: CountDataType): Promise<number> {
+  count<T extends Parse.Attributes>(table: ClassObject<T>, { where, option, skip, limit }: CountDataType): Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
     return query.count(option);
@@ -299,7 +301,7 @@ class MongoToParseQueryBase {
   }
 
   private generateKeyValueQuery<T extends Parse.Attributes>(
-    table: Parse.Object<T>,
+    table: ClassObject<T>,
     key: string,
     value: unknown,
     query: Parse.Query<Parse.Object<T>> = new this.parse.Query(table)): Parse.Query<Parse.Object<T>> {
@@ -320,17 +322,17 @@ class MongoToParseQueryBase {
     }
   }
 
-  private generateWhereQuery<T extends Parse.Attributes>(table: Parse.Object<T>, where: { [key: string]: unknown })
-    : Parse.Query<Parse.Object<T>> {
+  private generateWhereQuery<T extends Parse.Attributes>(table: ClassObject<T>, where: { [key: string]: unknown })
+    : Parse.Query<ClassObject<T>> {
     const keys: Array<string> = Object.keys(where);
-    const query = new this.parse.Query(table) as Parse.Query<Parse.Object<T>>;
+    const query = new this.parse.Query(table) as Parse.Query<ClassObject<T>>;
     const isCompoundQuery = ['$and', '$or'].some((key: string) => keys.includes(key));
     if (!isCompoundQuery) {
       keys.forEach((key: string) => this.generateKeyValueQuery(table, key, where[key], query));
       return query;
     }
     const queries = keys.map((key: string) => this.generateKeyValueQuery(table, key, where[key]));
-    return this.parse.Query.and(...queries) as Parse.Query<Parse.Object<T>>;
+    return this.parse.Query.and(...queries) as Parse.Query<ClassObject<T>>;
   }
 }
 
