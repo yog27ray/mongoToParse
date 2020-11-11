@@ -1,6 +1,7 @@
 import { expect } from 'chai';
+import { MongoToParseQuery } from '../../server';
 import { dropDB } from '../setup';
-import { MongoToParseQuery } from './mongo-to-parse-query';
+import { ParseClass } from './mongo-to-parse-query-base';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
@@ -17,7 +18,7 @@ function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   });
 }
 
-async function createDummyRows(TestTable: new () => Parse.Object, mongoToParseQuery: MongoToParseQuery): Promise<any> {
+async function createDummyRows(TestTable: ParseClass, mongoToParseQuery: MongoToParseQuery): Promise<any> {
   await dropDB();
   await mongoToParseQuery.saveAll([
     { time: new Date(0), rank: 1, message: 'this is message 1', total: 1, field: 1 },
@@ -30,10 +31,10 @@ async function createDummyRows(TestTable: new () => Parse.Object, mongoToParseQu
     { time: new Date(70), rank: 8, message: 'this is message 8', total: 4 },
     { time: new Date(80), rank: 9, message: 'startsWith this is message 9', total: 4 },
     { time: new Date(90), rank: 10, message: 'this is message 10 endsWith', total: 4 },
-  ].map((each: any) => {
+  ].map((each: { [key: string]: unknown }): ParseClass => {
     const tempObject = new TestTable();
     Object.keys(each).forEach((key: string) => tempObject.set(key, each[key]));
-    return tempObject;
+    return tempObject as ParseClass;
   }), {});
   const TestTable2 = mongoToParseQuery.parseTable('TestTable2');
   const item = new TestTable2();
@@ -53,7 +54,7 @@ describe('MongoToParseQuery', () => {
 
     context('findOne', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -74,7 +75,7 @@ describe('MongoToParseQuery', () => {
 
     context('find', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -88,7 +89,7 @@ describe('MongoToParseQuery', () => {
 
     context('count', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -104,22 +105,22 @@ describe('MongoToParseQuery', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
 
       it('should return undefined', async () => {
-        const results = await mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
+        const results = mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
         expect(results).to.not.exist;
       });
 
       it('should return same object when objectId is missing', async () => {
-        const result = await mongoToParseQuery.addParseObjectInfoToJsonObject({ data: 'dummy' }, 'TestTable');
+        const result = mongoToParseQuery.addParseObjectInfoToJsonObject({ data: 'dummy' }, 'TestTable');
         expect(result).to.deep.equal({ data: 'dummy' });
       });
 
       it('should return parse pointer', async () => {
-        const result = await mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456' }, 'TestTable');
+        const result = mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456' }, 'TestTable');
         expect(result).to.deep.equal({ __type: 'Pointer', className: 'TestTable', objectId: '123456' });
       });
 
       it('should return parse object', async () => {
-        const result = await mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456', data: 'dummy' }, 'TestTable');
+        const result = mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456', data: 'dummy' }, 'TestTable');
         expect(result).to.deep.equal({ __type: 'Object', className: 'TestTable', objectId: '123456', data: 'dummy' });
       });
     });
@@ -144,7 +145,7 @@ describe('MongoToParseQuery', () => {
     context('fetchObject', () => {
       let parseObject: Parse.Object;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -176,7 +177,7 @@ describe('MongoToParseQuery', () => {
     context('getObjectsFromPointers', () => {
       let rows: Array<Parse.Object>;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -184,7 +185,7 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should do nothing when there is not pointer object', async () => {
-        const results = await mongoToParseQuery.getObjectsFromPointers(rows, 'total', {});
+        const results = await mongoToParseQuery.getObjectsFromPointers(rows as Array<ParseClass>, 'total', {});
         expect(results.map((each: Parse.Object) => each.toJSON())).to.deep.equal(rows.map((each: Parse.Object) => each.toJSON()));
       });
 
@@ -208,7 +209,7 @@ describe('MongoToParseQuery', () => {
     context('updatePointersWithObject', () => {
       let rows: Array<Parse.Object>;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -217,7 +218,7 @@ describe('MongoToParseQuery', () => {
 
       it('should do nothing when there is not pointer object', async () => {
         const pointers = rows.map((each: Parse.Object) => each);
-        await mongoToParseQuery.updatePointersWithObject(rows, 'total', {});
+        await mongoToParseQuery.updatePointersWithObject(rows as Array<ParseClass>, 'total', {});
         expect(pointers.map((each: Parse.Object) => each.toJSON())).to.deep.equal(rows.map((each: Parse.Object) => each.toJSON()));
       });
 
@@ -257,7 +258,7 @@ describe('MongoToParseQuery', () => {
 
     context('aggregate', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -278,13 +279,13 @@ describe('MongoToParseQuery', () => {
 
     context('getPointer', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       it('should get pointer', async () => {
         const item = new TestTable();
         item.id = 'pointerId';
         item.set('item', '12');
-        const pointer = mongoToParseQuery.getPointer(item);
+        const pointer = mongoToParseQuery.getPointer(item as ParseClass);
         expect(JSON.parse(JSON.stringify(pointer))).to.deep
           .equal({ objectId: 'pointerId' });
       });
@@ -292,7 +293,7 @@ describe('MongoToParseQuery', () => {
 
     context('getPointerFromId', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
       it('should get pointer', async () => {
         const pointer = mongoToParseQuery.getPointerFromId('pointerId', TestTable);
@@ -304,7 +305,7 @@ describe('MongoToParseQuery', () => {
 
   describe('query conditions', () => {
     const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-    const TestTable: new () => Parse.Object = mongoToParseQuery.parseTable('TestTable');
+    const TestTable: ParseClass = mongoToParseQuery.parseTable('TestTable');
 
     before(async () => {
       await createDummyRows(TestTable, mongoToParseQuery);

@@ -2,10 +2,9 @@ import { injectable } from 'inversify';
 // tslint:disable-next-line:no-import-side-effect
 import 'reflect-metadata';
 import { CureSkinError } from '../error/cure-skin-error';
-import { parse as Parse } from './parse';
 
 declare interface CountDataType {
-  where: any;
+  where: { [key: string]: unknown };
   limit?: number;
   option?: Parse.FullOptions;
   skip?: number;
@@ -13,62 +12,68 @@ declare interface CountDataType {
 
 declare interface QueryDataType {
   select?: Array<string>;
-  where: any;
+  where: { [key: string]: unknown };
   limit?: number;
   option?: Parse.FullOptions;
-  descending?: any;
-  ascending?: any;
+  descending?: string;
+  ascending?: string;
   skip?: number;
   include?: Array<string>;
 }
 
 declare interface AggregateDataType {
   option?: { useMasterKey?: boolean; sessionToken?: string };
-  pipeline: Array<any>;
+  pipeline: Array<{ [key: string]: unknown }>;
 }
 
 declare interface UpdateQueryDataType {
   select?: Array<string>;
   limit: number;
-  descending?: any;
-  ascending?: any;
+  descending?: string;
+  ascending?: string;
   skip: number;
   include?: Array<string>;
 }
 
+declare type ParseClass = (new () => Parse.Object) & Parse.Object;
+
 @injectable()
-class MongoToParseQuery {
-  parseTable(tableName: string): new () => Parse.Object {
-    return Parse.Object.extend(tableName);
+class MongoToParseQueryBase {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  constructor(private parse: any) {
   }
 
-  find(table: new () => Parse.Object, {
+  parseTable<T extends ParseClass>(tableName: string): T {
+    return this.parse.Object.extend(tableName) as T;
+  }
+
+  find<T extends ParseClass>(table: T, {
     select, where, option, descending, ascending, skip, include, limit,
-  }: QueryDataType): Promise<Array<Parse.Object>> {
+  }: QueryDataType): Promise<Array<T>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.find(option);
   }
 
-  findOne(table: new () => Parse.Object, { select, where, option, descending, ascending, skip, include, limit }:
+  findOne<T extends ParseClass>(table: T, { select, where, option, descending, ascending, skip, include, limit }:
     QueryDataType): Promise<Parse.Object> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.first(option);
   }
 
-  aggregate(table: new () => Parse.Object, { pipeline }: AggregateDataType): Promise<any> {
-    const query = new Parse.Query(table);
+  aggregate<T extends ParseClass>(table: T, { pipeline }: AggregateDataType): Promise<Array<unknown>> {
+    const query = new this.parse.Query(table) as Parse.Query<T>;
     return query.aggregate(pipeline);
   }
 
-  count(table: new () => Parse.Object, { where, option, skip, limit }: CountDataType): Promise<any> {
+  count<T extends ParseClass>(table: T, { where, option, skip, limit }: CountDataType): Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
     return query.count(option);
   }
 
-  addParseObjectInfoToJsonObject(jO: any, className: string): any {
+  addParseObjectInfoToJsonObject(jO: { [key: string]: unknown }, className: string): { [key: string]: unknown } {
     if (!jO || !jO.objectId) {
       return jO;
     }
@@ -81,7 +86,7 @@ class MongoToParseQuery {
     return jO;
   }
 
-  removeParesObjectDetails(object: any): void {
+  removeParesObjectDetails(object: { [key: string]: unknown }): void {
     if (!object) {
       return;
     }
@@ -90,11 +95,11 @@ class MongoToParseQuery {
     delete parseObject.__type;
   }
 
-  async saveAll(items: any, option: Parse.FullOptions): Promise<any> {
-    await Parse.Object.saveAll(items, option);
+  async saveAll<T extends ParseClass>(items: Array<T>, option: Parse.FullOptions): Promise<void> {
+    await this.parse.Object.saveAll(items, option);
   }
 
-  async fetchObject(item: Parse.Object, fieldCheck: string, option: Parse.FullOptions): Promise<Parse.Object> {
+  async fetchObject<T extends Parse.Object>(item: T, fieldCheck: string, option: Parse.FullOptions): Promise<T> {
     if (!item) {
       return item;
     }
@@ -104,28 +109,28 @@ class MongoToParseQuery {
     return item;
   }
 
-  async getObjectsFromPointers(items: Array<Parse.Object>, fieldCheck: string, option: Parse.FullOptions): Promise<Array<Parse.Object>> {
-    const pointers = items.filter((item: any) => !item.has(fieldCheck));
+  async getObjectsFromPointers<T extends ParseClass>(items: Array<T>, fieldCheck: string, option: Parse.FullOptions): Promise<Array<T>> {
+    const pointers = items.filter((item: T) => !item.has(fieldCheck));
     if (!pointers.length) {
       return items;
     }
-    const Table = this.parseTable(items[0].className);
-    const objects = await this.find(Table, { where: { objectId: pointers.map((pointer: any) => pointer.id) }, option });
-    return items.map((item: any) => {
-      if (item.get(fieldCheck)) {
+    const Table = this.parseTable<T>(items[0].className);
+    const objects = await this.find(Table, { where: { objectId: pointers.map((pointer: T) => pointer.id) }, option });
+    return items.map((item: T) => {
+      if (item.has(fieldCheck)) {
         return item;
       }
-      return objects.find((object: any) => ((object.id === item.id) && !!object.get(fieldCheck)));
+      return objects.find((object: Parse.Object) => (object.id === item.id));
     })
-      .filter((item: any) => !!item);
+      .filter((item: Parse.Object) => !!item);
   }
 
-  async updatePointersWithObject(items: Array<Parse.Object>, fieldCheck: string, option: Parse.FullOptions): Promise<void> {
-    const pointers = items.filter((item: any) => !item.has(fieldCheck));
+  async updatePointersWithObject<T extends ParseClass>(items: Array<T>, fieldCheck: string, option: Parse.FullOptions): Promise<void> {
+    const pointers = items.filter((item: T) => !item.has(fieldCheck));
     if (!pointers.length) {
       return;
     }
-    await Promise.all(pointers.map((pointer: Parse.Object) => pointer.fetch(option)
+    await Promise.all(pointers.map((pointer: T) => pointer.fetch(option)
       .catch((error: any) => {
         if (error.code === 101 && error.message === 'Object not found.') {
           return Promise.resolve();
@@ -134,17 +139,17 @@ class MongoToParseQuery {
       })));
   }
 
-  getPointer(object: Parse.Object): Parse.Object {
+  getPointer<T extends ParseClass>(object: T): T {
     const Table = this.parseTable(object.className);
     const pointer = new Table();
     pointer.id = object.id;
-    return pointer;
+    return pointer as T;
   }
 
-  getPointerFromId(objectId: string, ParseTable: new () => Parse.Object): Parse.Object {
+  getPointerFromId<T extends ParseClass>(objectId: string, ParseTable: T): T {
     const pointer = new ParseTable();
     pointer.id = objectId;
-    return pointer;
+    return pointer as T;
   }
 
   private updateQuery(query: Parse.Query, { select, descending, ascending, skip, include, limit }: UpdateQueryDataType): void {
@@ -168,7 +173,7 @@ class MongoToParseQuery {
     }
   }
 
-  private updateQueryWithConditions(query: Parse.Query, field: string, value: any): Parse.Query {
+  private updateQueryWithConditions<T extends ParseClass>(query: Parse.Query<T>, field: string, value: unknown): Parse.Query<T> {
     if (field.startsWith('$')) {
       throw new CureSkinError({
         code: 400,
@@ -221,7 +226,8 @@ class MongoToParseQuery {
           return;
         }
         case '$regex': {
-          query.matches(field, value[queryConditionKey], value.$options);
+          const regexValue = value as { $options: string };
+          query.matches(field, regexValue[queryConditionKey], regexValue.$options);
           return;
         }
         case '$exists': {
@@ -270,15 +276,18 @@ class MongoToParseQuery {
     return query;
   }
 
-  private generateKeyValueQuery(table: new () => Parse.Object, key: string, value: any, query: any = new Parse.Query(table)): any {
+  private generateKeyValueQuery<T extends ParseClass>(table: T, key: string, value: unknown,
+    query: Parse.Query<T> = new this.parse.Query(table)): Parse.Query<T> {
     switch (key) {
       case '$and': {
-        const queries = value.map((condition: object) => this.generateWhereQuery(table, condition));
-        return Parse.Query.and(...queries);
+        const valueArray = value as Array<{ [key: string]: unknown }>;
+        const queries = valueArray.map((condition: { [key: string]: unknown }) => this.generateWhereQuery(table, condition));
+        return this.parse.Query.and(...queries) as Parse.Query<T>;
       }
       case '$or': {
-        const queries = value.map((condition: object) => this.generateWhereQuery(table, condition));
-        return Parse.Query.or(...queries);
+        const valueArray = value as Array<{ [key: string]: unknown }>;
+        const queries = valueArray.map((condition: { [key: string]: unknown }) => this.generateWhereQuery(table, condition));
+        return this.parse.Query.or(...queries) as Parse.Query<T>;
       }
       default: {
         return this.updateQueryWithConditions(query, key, value);
@@ -286,17 +295,17 @@ class MongoToParseQuery {
     }
   }
 
-  private generateWhereQuery(table: new () => Parse.Object, where: object): Parse.Query {
+  private generateWhereQuery<T extends ParseClass>(table: T, where: { [key: string]: unknown }): Parse.Query<T> {
     const keys: Array<string> = Object.keys(where);
-    const query = new Parse.Query(table);
+    const query = new this.parse.Query(table) as Parse.Query<T>;
     const isCompoundQuery = ['$and', '$or'].some((key: string) => keys.includes(key));
     if (!isCompoundQuery) {
       keys.forEach((key: string) => this.generateKeyValueQuery(table, key, where[key], query));
       return query;
     }
     const queries = keys.map((key: string) => this.generateKeyValueQuery(table, key, where[key]));
-    return Parse.Query.and(...queries);
+    return this.parse.Query.and(...queries) as Parse.Query<T>;
   }
 }
 
-export { MongoToParseQuery };
+export { MongoToParseQueryBase, ParseClass };
