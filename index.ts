@@ -3,7 +3,7 @@
 // @ts-ignore
 import { Parse } from 'parse';
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
-import { MongoToParseQueryBase, ParseClass } from './src/transform/mongo-to-parse-query-base';
+import { MongoToParseQueryBase } from './src/transform/mongo-to-parse-query-base';
 
 class MongoToParseQuery extends MongoToParseQueryBase {
   constructor(applicationId: string, serverURL: string, config: { masterKey?: string } = {}) {
@@ -13,4 +13,4 @@ class MongoToParseQuery extends MongoToParseQueryBase {
   }
 }
 
-export { MongoToParseQuery, MongoToParseError, ParseClass };
+export { MongoToParseQuery, MongoToParseError };
