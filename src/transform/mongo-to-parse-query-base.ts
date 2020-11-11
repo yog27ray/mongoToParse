@@ -15,8 +15,8 @@ declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] |
 declare interface QueryDataType<T extends Parse.Object> {
   select?: Array<ParseAttributeKey<T>>;
   limit?: number;
-  descending?: ParseAttributeKey<T>;
-  ascending?: ParseAttributeKey<T>;
+  descending?: Array<ParseAttributeKey<T>>;
+  ascending?: Array<ParseAttributeKey<T>>;
   skip?: number;
   include?: Array<ParseAttributeKey<T>>;
   where: { [key in ParseAttributeKey<T>]?: unknown };
@@ -31,8 +31,8 @@ declare interface AggregateDataType {
 declare interface UpdateQueryDataType<T extends Parse.Object> {
   select?: Array<ParseAttributeKey<T>>;
   limit?: number;
-  descending?: ParseAttributeKey<T>;
-  ascending?: ParseAttributeKey<T>;
+  descending?: Array<ParseAttributeKey<T>>;
+  ascending?: Array<ParseAttributeKey<T>>;
   skip?: number;
   include?: Array<ParseAttributeKey<T>>;
 }
