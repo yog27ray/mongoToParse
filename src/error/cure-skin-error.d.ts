@@ -15,6 +15,8 @@ declare class CureSkinError extends Error {
     private readonly logMessage;
     private readonly params;
     constructor(error: CureSkinErrorType);
-    toJSON(): object;
+    toJSON(): {
+        [key: string]: unknown;
+    };
 }
 export { CureSkinError };

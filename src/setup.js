@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dropDB = exports.app = void 0;
 const body_parser_1 = __importDefault(require("body-parser"));
 const debug_1 = __importDefault(require("debug"));
 const express_1 = __importDefault(require("express"));
@@ -42,10 +43,11 @@ async function startMongoDB() {
     mongoDBURI = await mongod.getUri();
     log('MongoDB', mongoDBURI);
     const serverURL = `http://localhost:${test_env_1.Env.PORT}/api/parse`;
+    test_env_1.Env.serverURL = serverURL;
     const api = new parse_server_1.ParseServer({
         databaseURI: mongoDBURI,
-        appId: 'myAppId',
-        masterKey: 'myMasterKey',
+        appId: test_env_1.Env.appId,
+        masterKey: test_env_1.Env.masterKey,
         serverURL,
     });
     // Serve the Parse API on the /parse URL prefix
@@ -53,7 +55,9 @@ async function startMongoDB() {
     log('Parse Server', '>>>>>>', serverURL);
 }
 startMongoDB()
-    .catch((error) => log('>>>>>>>>>>Enable to start MongoDB', error));
+    .catch((error) => {
+    log('>>>>>>>>>>Enable to start MongoDB', error);
+});
 server.listen(test_env_1.Env.PORT, '0.0.0.0', () => {
     log('Express server listening on %d, in test mode', test_env_1.Env.PORT);
 });

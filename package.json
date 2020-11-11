@@ -1,10 +1,10 @@
 {
   "name": "mongo-to-parse",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "find src -name '*.spec.ts' | xargs mocha src/setup.ts src/setup.spec.ts --exit"
+    "test": "mocha src/setup.ts src/setup.spec.ts \"src/**/*.spec.ts\" --exit"
   },
   "repository": {
     "type": "git",
@@ -17,37 +17,49 @@
   },
   "homepage": "https://github.com/yog27ray/mongoToParse#readme",
   "devDependencies": {
-    "@types/chai": "^4.2.11",
-    "@types/express": "^4.17.3",
-    "@types/mocha": "^7.0.2",
-    "@types/parse": "^2.10.18",
-    "@typescript-eslint/eslint-plugin": "^2.24.0",
-    "@typescript-eslint/parser": "^2.24.0",
+    "@types/chai": "^4.2.14",
+    "@types/express": "^4.17.9",
+    "@types/mocha": "^8.0.4",
+    "@types/parse": "^2.12.7",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
     "body-parser": "^1.19.0",
     "chai": "^4.2.0",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb": "^18.1.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.1",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-typescript": "^0.14.0",
     "express": "^4.17.1",
     "minimist": "^1.2.5",
-    "mocha": "^7.1.1",
-    "mongodb": "^3.5.5",
-    "mongodb-memory-server": "^6.5.1",
+    "mocha": "^8.2.1",
+    "mongodb": "^3.6.3",
+    "mongodb-memory-server": "^6.9.2",
     "node-tslint-rules": "^1.20.3",
-    "nyc": "^15.0.0",
-    "parse-server": "^4.2.0",
-    "request-promise": "^4.2.5",
-    "ts-node": "^8.8.1",
-    "tslint": "^6.1.0",
-    "typescript": "^3.8.3"
+    "nyc": "^15.1.0",
+    "parse-server": "^4.4.0",
+    "request-promise": "^4.2.6",
+    "ts-node": "^9.0.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.0.5"
   },
   "dependencies": {
-    "debug": "^4.1.1",
+    "@types/debug": "^4.1.5",
+    "debug": "^4.2.0",
     "inversify": "^5.0.1",
-    "parse": "^2.12.0",
+    "parse": "^2.18.0",
     "reflect-metadata": "^0.1.13"
+  },
+  "mocha": {
+    "color": true,
+    "ui": "bdd",
+    "recursive": true,
+    "timeout": 20000,
+    "require": [
+      "ts-node/register/transpile-only"
+    ],
+    "reporter": "dot",
+    "exit": true
   }
 }

@@ -5,15 +5,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MongoToParseQueryBase = void 0;
 const inversify_1 = require("inversify");
 // tslint:disable-next-line:no-import-side-effect
 require("reflect-metadata");
 const cure_skin_error_1 = require("../error/cure-skin-error");
-const parse_1 = require("./parse");
-let MongoToParseQuery = class MongoToParseQuery {
+let MongoToParseQueryBase = class MongoToParseQueryBase {
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    constructor(parse) {
+        this.parse = parse;
+    }
     parseTable(tableName) {
-        return parse_1.parse.Object.extend(tableName);
+        return this.parse.Object.extend(tableName);
+    }
+    get Cloud() {
+        return {
+            run: (name, parameters, options) => this.parse.Cloud
+                .run(name, parameters, options),
+        };
     }
     find(table, { select, where, option, descending, ascending, skip, include, limit, }) {
         const query = this.generateWhereQuery(table, where);
@@ -26,7 +39,7 @@ let MongoToParseQuery = class MongoToParseQuery {
         return query.first(option);
     }
     aggregate(table, { pipeline }) {
-        const query = new parse_1.parse.Query(table);
+        const query = new this.parse.Query(table);
         return query.aggregate(pipeline);
     }
     count(table, { where, option, skip, limit }) {
@@ -55,7 +68,7 @@ let MongoToParseQuery = class MongoToParseQuery {
         delete parseObject.__type;
     }
     async saveAll(items, option) {
-        await parse_1.parse.Object.saveAll(items, option);
+        await this.parse.Object.saveAll(items, option);
     }
     async fetchObject(item, fieldCheck, option) {
         if (!item) {
@@ -74,10 +87,10 @@ let MongoToParseQuery = class MongoToParseQuery {
         const Table = this.parseTable(items[0].className);
         const objects = await this.find(Table, { where: { objectId: pointers.map((pointer) => pointer.id) }, option });
         return items.map((item) => {
-            if (item.get(fieldCheck)) {
+            if (item.has(fieldCheck)) {
                 return item;
             }
-            return objects.find((object) => ((object.id === item.id) && !!object.get(fieldCheck)));
+            return objects.find((object) => (object.id === item.id));
         })
             .filter((item) => !!item);
     }
@@ -178,7 +191,8 @@ let MongoToParseQuery = class MongoToParseQuery {
                     return;
                 }
                 case '$regex': {
-                    query.matches(field, value[queryConditionKey], value.$options);
+                    const regexValue = value;
+                    query.matches(field, regexValue[queryConditionKey], regexValue.$options);
                     return;
                 }
                 case '$exists': {
@@ -227,15 +241,17 @@ let MongoToParseQuery = class MongoToParseQuery {
         });
         return query;
     }
-    generateKeyValueQuery(table, key, value, query = new parse_1.parse.Query(table)) {
+    generateKeyValueQuery(table, key, value, query = new this.parse.Query(table)) {
         switch (key) {
             case '$and': {
-                const queries = value.map((condition) => this.generateWhereQuery(table, condition));
-                return parse_1.parse.Query.and(...queries);
+                const valueArray = value;
+                const queries = valueArray.map((condition) => this.generateWhereQuery(table, condition));
+                return this.parse.Query.and(...queries);
             }
             case '$or': {
-                const queries = value.map((condition) => this.generateWhereQuery(table, condition));
-                return parse_1.parse.Query.or(...queries);
+                const valueArray = value;
+                const queries = valueArray.map((condition) => this.generateWhereQuery(table, condition));
+                return this.parse.Query.or(...queries);
             }
             default: {
                 return this.updateQueryWithConditions(query, key, value);
@@ -244,18 +260,19 @@ let MongoToParseQuery = class MongoToParseQuery {
     }
     generateWhereQuery(table, where) {
         const keys = Object.keys(where);
-        const query = new parse_1.parse.Query(table);
+        const query = new this.parse.Query(table);
         const isCompoundQuery = ['$and', '$or'].some((key) => keys.includes(key));
         if (!isCompoundQuery) {
             keys.forEach((key) => this.generateKeyValueQuery(table, key, where[key], query));
             return query;
         }
         const queries = keys.map((key) => this.generateKeyValueQuery(table, key, where[key]));
-        return parse_1.parse.Query.and(...queries);
+        return this.parse.Query.and(...queries);
     }
 };
-MongoToParseQuery = __decorate([
-    inversify_1.injectable()
-], MongoToParseQuery);
-exports.MongoToParseQuery = MongoToParseQuery;
-//# sourceMappingURL=mongo-to-parse-query.js.map
+MongoToParseQueryBase = __decorate([
+    inversify_1.injectable(),
+    __metadata("design:paramtypes", [Object])
+], MongoToParseQueryBase);
+exports.MongoToParseQueryBase = MongoToParseQueryBase;
+//# sourceMappingURL=mongo-to-parse-query-base.js.map

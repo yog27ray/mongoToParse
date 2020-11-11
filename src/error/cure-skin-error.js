@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CureSkinError = void 0;
 class CureSkinError extends Error {
     constructor(error) {
         super(error.message);

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
+const server_1 = require("../../server");
 const setup_1 = require("../setup");
-const mongo_to_parse_query_1 = require("./mongo-to-parse-query");
 function parseObjectJSON(results) {
     return results.map((each) => {
         const resultJSON = each.toJSON();
@@ -45,12 +45,12 @@ describe('MongoToParseQuery', () => {
     describe('function calls', () => {
         context('parseTable', () => {
             it('should return parse table', async () => {
-                const Table = new mongo_to_parse_query_1.MongoToParseQuery().parseTable('TableName');
+                const Table = new server_1.MongoToParseQuery().parseTable('TableName');
                 chai_1.expect(new Table() instanceof Parse.Object).to.be.true;
             });
         });
         context('findOne', () => {
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -68,7 +68,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('find', () => {
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -79,7 +79,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('count', () => {
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -90,27 +90,27 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('addParseObjectInfoToJsonObject', () => {
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             it('should return undefined', async () => {
-                const results = await mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
+                const results = mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
                 chai_1.expect(results).to.not.exist;
             });
             it('should return same object when objectId is missing', async () => {
-                const result = await mongoToParseQuery.addParseObjectInfoToJsonObject({ data: 'dummy' }, 'TestTable');
+                const result = mongoToParseQuery.addParseObjectInfoToJsonObject({ data: 'dummy' }, 'TestTable');
                 chai_1.expect(result).to.deep.equal({ data: 'dummy' });
             });
             it('should return parse pointer', async () => {
-                const result = await mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456' }, 'TestTable');
+                const result = mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456' }, 'TestTable');
                 chai_1.expect(result).to.deep.equal({ __type: 'Pointer', className: 'TestTable', objectId: '123456' });
             });
             it('should return parse object', async () => {
-                const result = await mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456', data: 'dummy' }, 'TestTable');
+                const result = mongoToParseQuery.addParseObjectInfoToJsonObject({ objectId: '123456', data: 'dummy' }, 'TestTable');
                 chai_1.expect(result).to.deep.equal({ __type: 'Object', className: 'TestTable', objectId: '123456', data: 'dummy' });
             });
         });
         context('removeParesObjectDetails', () => {
             let jsonParseObject;
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             it('should do nothing when object is not present', async () => {
                 jsonParseObject = undefined;
                 mongoToParseQuery.removeParesObjectDetails(jsonParseObject);
@@ -124,7 +124,7 @@ describe('MongoToParseQuery', () => {
         });
         context('fetchObject', () => {
             let parseObject;
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -151,7 +151,7 @@ describe('MongoToParseQuery', () => {
         });
         context('getObjectsFromPointers', () => {
             let rows;
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -179,7 +179,7 @@ describe('MongoToParseQuery', () => {
         });
         context('updatePointersWithObject', () => {
             let rows;
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -225,7 +225,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('aggregate', () => {
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -243,7 +243,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('getPointer', () => {
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should get pointer', async () => {
                 const item = new TestTable();
@@ -254,18 +254,29 @@ describe('MongoToParseQuery', () => {
                     .equal({ objectId: 'pointerId' });
             });
         });
-        context('getPointerFromId', () => {
-            const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
-            const TestTable = mongoToParseQuery.parseTable('TestTable');
-            it('should get pointer', async () => {
-                const pointer = mongoToParseQuery.getPointerFromId('pointerId', TestTable);
-                chai_1.expect(JSON.parse(JSON.stringify(pointer))).to.deep
-                    .equal({ objectId: 'pointerId' });
+        context('Cloud.run', () => {
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
+            it('should get error when function name is not present.', async () => {
+                try {
+                    await mongoToParseQuery.Cloud.run('testCloudRun');
+                    await Promise.reject({ code: 99, message: 'Should not reach here' });
+                }
+                catch (error) {
+                    const { code, message } = error;
+                    chai_1.expect({ code, message }).to.deep.equal({
+                        code: 141,
+                        message: 'Invalid function: "testCloudRun"',
+                    });
+                }
             });
+        });
+        context('', () => {
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
+            const TestTable = mongoToParseQuery.parseTable('TestTable');
         });
     });
     describe('query conditions', () => {
-        const mongoToParseQuery = new mongo_to_parse_query_1.MongoToParseQuery();
+        const mongoToParseQuery = new server_1.MongoToParseQuery();
         const TestTable = mongoToParseQuery.parseTable('TestTable');
         before(async () => {
             await createDummyRows(TestTable, mongoToParseQuery);
@@ -769,4 +780,4 @@ describe('MongoToParseQuery', () => {
         });
     });
 });
-//# sourceMappingURL=mongo-to-parse-query.spec.js.map
+//# sourceMappingURL=mongo-to-parse-query-base.spec.js.map
