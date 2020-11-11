@@ -2,7 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Parse } from 'parse';
-import { MongoToParseError } from './src/error/cure-skin-error';
+import { MongoToParseError } from './src/error/mongo-to-parse-error';
 import { MongoToParseQueryBase, ParseClass } from './src/transform/mongo-to-parse-query-base';
 
 class MongoToParseQuery extends MongoToParseQueryBase {
