@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser';
 import debug from 'debug';
-import express from 'express';
+import express, { Express } from 'express';
 import http from 'http';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -9,7 +9,7 @@ import { Env } from './test-env';
 
 const log = debug('mongoToParse:Server');
 
-const app: any = express();
+const app: Express = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ type: 'text/plain' }));
 app.use(bodyParser.json());
@@ -23,7 +23,7 @@ async function dropDB(): Promise<any> {
     client = new MongoClient(mongoDBURI);
     client = await client.connect();
   }
-  return new Promise((resolve: Function, reject: Function) => {
+  return new Promise((resolve: (result: unknown) => void, reject: (error: unknown) => void) => {
     client.db('dev-test-inmemory').dropDatabase((error, result) => {
       if (error) {
         reject(error);
@@ -41,10 +41,11 @@ async function startMongoDB(): Promise<any> {
 
   log('MongoDB', mongoDBURI);
   const serverURL = `http://localhost:${Env.PORT}/api/parse`;
+  Env.serverURL = serverURL;
   const api = new ParseServer({
     databaseURI: mongoDBURI, // Connection string for your MongoDB database
-    appId: 'myAppId',
-    masterKey: 'myMasterKey', // Keep this key secret!
+    appId: Env.appId,
+    masterKey: Env.masterKey, // Keep this key secret!
     serverURL, // Don't forget to change to https if needed
   });
 
@@ -54,7 +55,9 @@ async function startMongoDB(): Promise<any> {
 }
 
 startMongoDB()
-  .catch((error: any) => log('>>>>>>>>>>Enable to start MongoDB', error));
+  .catch((error: any) => {
+    log('>>>>>>>>>>Enable to start MongoDB', error);
+  });
 
 server.listen(Env.PORT, '0.0.0.0', () => {
   log('Express server listening on %d, in test mode', Env.PORT);

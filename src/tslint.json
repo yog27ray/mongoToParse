@@ -1,6 +1,7 @@
 {
   "extends": ["node-tslint-rules"],
   "rules": {
+    "ban-ts-ignore": false,
     "restrict-plus-operands": false,
     "class-name": true,
     "prefer-for-of": false,
