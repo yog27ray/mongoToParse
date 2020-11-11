@@ -12,8 +12,8 @@ declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] |
 declare interface QueryDataType<T extends Parse.Object> {
     select?: Array<ParseAttributeKey<T>>;
     limit?: number;
-    descending?: Array<ParseAttributeKey<T>>;
-    ascending?: Array<ParseAttributeKey<T>>;
+    descending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
+    ascending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
     skip?: number;
     include?: Array<ParseAttributeKey<T>>;
     where: {
