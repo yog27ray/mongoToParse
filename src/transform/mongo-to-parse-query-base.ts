@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 // tslint:disable-next-line:no-import-side-effect
 import 'reflect-metadata';
-import { CureSkinError } from '../error/cure-skin-error';
+import { MongoToParseError } from '../error/mongo-to-parse-error';
 
 declare interface CountDataType {
   where: { [key: string]: unknown };
@@ -202,7 +202,7 @@ class MongoToParseQueryBase {
     field: ParseAttributeKey<Z>,
     value: unknown): Parse.Query<Parse.Object<T>> {
     if ((field as string).startsWith('$')) {
-      throw new CureSkinError({
+      throw new MongoToParseError({
         code: 400,
         message: `field "${field as string}" is invalid syntax`,
         type: 'INVALID_QUERY',
@@ -217,7 +217,7 @@ class MongoToParseQueryBase {
       return this.updateQueryWithConditions(query, field, { $eq: value });
     }
     if (queryConditionKeys.length !== valueKeys.length) {
-      throw new CureSkinError({
+      throw new MongoToParseError({
         code: 400,
         message: `${JSON.stringify(value)} invalid query syntax`,
         type: 'INVALID_QUERY',
@@ -292,7 +292,7 @@ class MongoToParseQueryBase {
           return;
         }
         default: {
-          throw new CureSkinError({
+          throw new MongoToParseError({
             code: 400,
             message: `${queryConditionKey} unhandled query syntax`,
             type: 'INVALID_QUERY',

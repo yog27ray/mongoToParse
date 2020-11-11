@@ -1,4 +1,4 @@
-declare interface CureSkinErrorType {
+declare interface MongoToParseErrorType {
   message: string;
   code: number;
   type: string;
@@ -7,7 +7,7 @@ declare interface CureSkinErrorType {
   params?: { [key: string]: any };
 }
 
-class CureSkinError extends Error {
+class MongoToParseError extends Error {
   readonly skipSentry: boolean;
 
   readonly code: number;
@@ -18,11 +18,11 @@ class CureSkinError extends Error {
 
   private readonly params: { [key: string]: any };
 
-  constructor(error: CureSkinErrorType) {
+  constructor(error: MongoToParseErrorType) {
     super(error.message);
-    Object.setPrototypeOf(this, CureSkinError.prototype);
+    Object.setPrototypeOf(this, MongoToParseError.prototype);
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, CureSkinError);
+      Error.captureStackTrace(this, MongoToParseError);
     }
     this.name = error.type;
     this.code = error.code;
@@ -44,4 +44,4 @@ class CureSkinError extends Error {
   }
 }
 
-export { CureSkinError };
+export { MongoToParseError };
