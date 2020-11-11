@@ -33,16 +33,16 @@ declare interface AggregateDataType {
 declare class MongoToParseQueryBase {
     private parse;
     constructor(parse: any);
-    parseTable<T extends Parse.Attributes>(tableName: string): (new () => Parse.Object<T>);
+    parseTable<T extends Parse.Attributes>(tableName: string): Parse.Object<T> & (new () => Parse.Object<T>);
     get Cloud(): {
         run(name: string, parameters?: {
             [key: string]: unknown;
         }, options?: Parse.FullOptions): Promise<unknown>;
     };
-    find<T extends Parse.Attributes, Z extends Parse.Object<T>>(table: new () => Parse.Object<T>, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Array<Parse.Object<T>>>;
-    findOne<T extends Parse.Attributes, Z extends Parse.Object<T>>(table: new () => Parse.Object<T>, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Parse.Object<T>>;
+    find<T extends Parse.Attributes>(table: Parse.Object<T>, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Parse.Object<T>>): Promise<Array<Parse.Object<T>>>;
+    findOne<T extends Parse.Attributes>(table: Parse.Object<T>, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Parse.Object<T>>): Promise<Parse.Object<T>>;
     aggregate<T extends Parse.Attributes>(table: new () => Parse.Object<T>, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
-    count<T extends Parse.Attributes>(table: new () => Parse.Object<T>, { where, option, skip, limit }: CountDataType): Promise<number>;
+    count<T extends Parse.Attributes>(table: Parse.Object<T>, { where, option, skip, limit }: CountDataType): Promise<number>;
     addParseObjectInfoToJsonObject(jO: {
         [key: string]: unknown;
     }, className: string): {
