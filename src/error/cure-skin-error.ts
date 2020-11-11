@@ -32,8 +32,8 @@ class CureSkinError extends Error {
     this.skipSentry = error.skipSentry;
   }
 
-  toJSON(): object {
-    const jsonObj: any = { code: this.code, type: this.type, message: this.message };
+  toJSON(): { [key: string]: unknown } {
+    const jsonObj: { [key: string]: unknown } = { code: this.code, type: this.type, message: this.message };
     ['logMessage', 'skipSentry', 'params'].forEach((key: string) => {
       if (!this[key]) {
         return;
