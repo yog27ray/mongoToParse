@@ -269,10 +269,19 @@ describe('MongoToParseQuery', () => {
                     });
                 }
             });
+            it('should successfully call cloud function validFunctionName.', async () => {
+                const response = await mongoToParseQuery.Cloud.run('validFunctionName');
+                chai_1.expect(response).to.deep.equal({});
+            });
         });
-        context('', () => {
+        context('getPointerFromId', () => {
             const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
+            it('should generate pointer from object.', async () => {
+                const pointer = mongoToParseQuery.getPointerFromId('testId', TestTable);
+                chai_1.expect(pointer.id).to.equal('testId');
+                chai_1.expect(pointer.get('name')).to.not.exist;
+            });
         });
     });
     describe('query conditions', () => {

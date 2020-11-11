@@ -28,7 +28,7 @@ let MongoToParseQueryBase = class MongoToParseQueryBase {
                 .run(name, parameters, options),
         };
     }
-    find(table, { select, where, option, descending, ascending, skip, include, limit, }) {
+    find(table, { select, where, option, descending, ascending, skip, include, limit }) {
         const query = this.generateWhereQuery(table, where);
         this.updateQuery(query, { select, descending, ascending, skip, include, limit });
         return query.find(option);
@@ -85,7 +85,10 @@ let MongoToParseQueryBase = class MongoToParseQueryBase {
             return items;
         }
         const Table = this.parseTable(items[0].className);
-        const objects = await this.find(Table, { where: { objectId: pointers.map((pointer) => pointer.id) }, option });
+        const objects = await this.find(Table, {
+            where: { objectId: pointers.map((pointer) => pointer.id) },
+            option,
+        });
         return items.map((item) => {
             if (item.has(fieldCheck)) {
                 return item;
