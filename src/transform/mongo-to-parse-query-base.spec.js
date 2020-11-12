@@ -248,7 +248,7 @@ describe('MongoToParseQuery', () => {
             it('should get pointer', async () => {
                 const item = new TestTable();
                 item.id = 'pointerId';
-                item.set('item', '12');
+                item.set('message', '12');
                 const pointer = mongoToParseQuery.getPointer(item);
                 chai_1.expect(JSON.parse(JSON.stringify(pointer))).to.deep
                     .equal({ objectId: 'pointerId' });
@@ -280,7 +280,7 @@ describe('MongoToParseQuery', () => {
             it('should generate pointer from object.', async () => {
                 const pointer = mongoToParseQuery.getPointerFromId('testId', TestTable);
                 chai_1.expect(pointer.id).to.equal('testId');
-                chai_1.expect(pointer.get('name')).to.not.exist;
+                chai_1.expect(pointer.get('message')).to.not.exist;
             });
         });
     });
@@ -305,6 +305,8 @@ describe('MongoToParseQuery', () => {
         });
         it('should give error when invalid field is provided', async () => {
             try {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 await mongoToParseQuery.find(TestTable, { where: { $total: { $in: [1] } } });
                 await Promise.reject({ code: 99, message: 'Should not reach here.' });
             }
