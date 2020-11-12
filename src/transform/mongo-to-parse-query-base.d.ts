@@ -38,7 +38,7 @@ declare interface AggregateDataType {
         [key: string]: unknown;
     }>;
 }
-declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T> & (new () => Parse.Object<T>));
+declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes> & (new () => Parse.Object<T & Parse.BaseAttributes>));
 declare class MongoToParseQueryBase {
     private parse;
     constructor(parse: any);
