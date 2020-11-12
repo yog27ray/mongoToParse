@@ -38,10 +38,11 @@ declare interface AggregateDataType {
         [key: string]: unknown;
     }>;
 }
+declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T> & (new () => Parse.Object<T>));
 declare class MongoToParseQueryBase {
     private parse;
     constructor(parse: any);
-    parseTable<T extends Parse.Attributes>(tableName: string): (new () => Parse.Object<T>);
+    parseTable<T extends Parse.Attributes>(tableName: string): ParseClassExtender<T>;
     get Cloud(): {
         run(name: string, parameters?: {
             [key: string]: unknown;
@@ -70,4 +71,4 @@ declare class MongoToParseQueryBase {
     private generateKeyValueQuery;
     private generateWhereQuery;
 }
-export { MongoToParseQueryBase };
+export { MongoToParseQueryBase, ParseClassExtender };
