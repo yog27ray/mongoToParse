@@ -61,7 +61,7 @@ declare class MongoToParseQueryBase {
         [key: string]: unknown;
     }): void;
     saveAll<T extends Parse.Attributes>(items: Array<Parse.Object<T>>, option: Parse.FullOptions): Promise<void>;
-    fetchObject<T extends Parse.Attributes>(item: Parse.Object<T>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Parse.Object<T>>;
+    fetchObject<T extends Parse.Attributes>(item: Parse.Object<T & Parse.BaseAttributes>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Parse.Object<T & Parse.BaseAttributes>>;
     getObjectsFromPointers<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(items: Array<Z>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Array<Z>>;
     updatePointersWithObject<T extends Parse.Attributes>(items: Array<Parse.Object<T>>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<void>;
     getPointer<T extends Parse.Attributes>(object: Parse.Object<T>): Parse.Object<T>;
