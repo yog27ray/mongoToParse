@@ -3,14 +3,10 @@ import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { MongoToParseError } from '../error/mongo-to-parse-error';
 
-declare interface CountDataType {
-  where: { [key: string]: unknown };
-  limit?: number;
-  option?: Parse.FullOptions;
-  skip?: number;
-}
+declare type ParseAttributeKey<T extends Parse.Object> = keyof (T['attributes'] & Parse.BaseAttributes);
 
-declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
+declare type WhereAttributes<T extends Parse.Object> = keyof (T['attributes'] & Parse.BaseAttributes
+  & { $or: Array<{ [key in WhereAttributes<T>]: unknown }>, $and: Array<{ [key in WhereAttributes<T>]: unknown }> });
 
 declare interface QueryDataType<T extends Parse.Object> {
   select?: Array<ParseAttributeKey<T>>;
@@ -19,8 +15,15 @@ declare interface QueryDataType<T extends Parse.Object> {
   ascending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
   skip?: number;
   include?: Array<ParseAttributeKey<T>>;
-  where: { [key in ParseAttributeKey<T>]?: unknown };
+  where: { [key in WhereAttributes<T>]?: unknown; };
   option?: Parse.FullOptions;
+}
+
+declare interface CountDataType<T extends Parse.Object> {
+  where: { [key in WhereAttributes<T>]?: unknown; };
+  limit?: number;
+  option?: Parse.FullOptions;
+  skip?: number;
 }
 
 declare interface AggregateDataType {
@@ -56,18 +59,18 @@ class MongoToParseQueryBase {
     };
   }
 
-  find<T extends Parse.Attributes>(
-    table: ClassObject<T>,
-    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Parse.Object<T>>)
-    : Promise<Array<ClassObject<T>>> {
+  find<T extends Parse.Attributes, Z extends ClassObject<T>>(
+    table: Z,
+    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>)
+    : Promise<Array<Z>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.find(option);
   }
 
-  findOne<T extends Parse.Attributes>(
-    table: ClassObject<T>,
-    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Parse.Object<T>>): Promise<ClassObject<T>> {
+  findOne<T extends Parse.Attributes, Z extends ClassObject<T>>(
+    table: Z,
+    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
     return query.first(option);
@@ -78,7 +81,8 @@ class MongoToParseQueryBase {
     return query.aggregate(pipeline);
   }
 
-  count<T extends Parse.Attributes>(table: ClassObject<T>, { where, option, skip, limit }: CountDataType): Promise<number> {
+  count<T extends Parse.Attributes, Z extends ClassObject<T>>(table: ClassObject<T>, { where, option, skip, limit }: CountDataType<Z>)
+    : Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
     return query.count(option);
@@ -322,17 +326,18 @@ class MongoToParseQueryBase {
     }
   }
 
-  private generateWhereQuery<T extends Parse.Attributes>(table: ClassObject<T>, where: { [key: string]: unknown })
-    : Parse.Query<ClassObject<T>> {
+  private generateWhereQuery<T extends Parse.Attributes, Z extends ClassObject<T>>(
+    table: Z,
+    where: { [key: string]: unknown }): Parse.Query<Z> {
     const keys: Array<string> = Object.keys(where);
-    const query = new this.parse.Query(table) as Parse.Query<ClassObject<T>>;
+    const query = new this.parse.Query(table) as Parse.Query<Z>;
     const isCompoundQuery = ['$and', '$or'].some((key: string) => keys.includes(key));
     if (!isCompoundQuery) {
       keys.forEach((key: string) => this.generateKeyValueQuery(table, key, where[key], query));
       return query;
     }
     const queries = keys.map((key: string) => this.generateKeyValueQuery(table, key, where[key]));
-    return this.parse.Query.and(...queries) as Parse.Query<ClassObject<T>>;
+    return this.parse.Query.and(...queries) as Parse.Query<Z>;
   }
 }
 
