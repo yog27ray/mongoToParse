@@ -40,14 +40,16 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
   include?: Array<ParseAttributeKey<T>>;
 }
 
+declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T> & (new () => Parse.Object<T>));
+
 @injectable()
 class MongoToParseQueryBase {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   constructor(private parse: any) {
   }
 
-  parseTable<T extends Parse.Attributes>(tableName: string): (new () => Parse.Object<T>) {
-    return this.parse.Object.extend(tableName) as (new () => Parse.Object<T>);
+  parseTable<T extends Parse.Attributes>(tableName: string): ParseClassExtender<T> {
+    return this.parse.Object.extend(tableName) as ParseClassExtender<T>;
   }
 
   get Cloud(): { run(name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<unknown> } {
@@ -339,4 +341,4 @@ class MongoToParseQueryBase {
   }
 }
 
-export { MongoToParseQueryBase };
+export { MongoToParseQueryBase, ParseClassExtender };
