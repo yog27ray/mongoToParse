@@ -40,8 +40,7 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
   include?: Array<ParseAttributeKey<T>>;
 }
 
-declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes>
-  & (new () => Parse.Object<T & Parse.BaseAttributes>));
+declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes> & (new () => ParseClassExtender<T>));
 
 @injectable()
 class MongoToParseQueryBase {
