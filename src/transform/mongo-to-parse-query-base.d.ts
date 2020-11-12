@@ -48,10 +48,10 @@ declare class MongoToParseQueryBase {
             [key: string]: unknown;
         }, options?: Parse.FullOptions): Promise<unknown>;
     };
-    find<T extends Parse.Attributes, Z extends Parse.Object<T>>(table: new () => Z, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Array<Z>>;
-    findOne<T extends Parse.Attributes, Z extends Parse.Object<T>>(table: new () => Z, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z>;
+    find<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Array<Z>>;
+    findOne<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z>;
     aggregate<T extends Parse.Attributes>(table: new () => Parse.Object<T>, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
-    count<T extends Parse.Attributes, Z extends Parse.Object<T>>(table: new () => Z, { where, option, skip, limit }: CountDataType<Z>): Promise<number>;
+    count<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { where, option, skip, limit }: CountDataType<Z>): Promise<number>;
     addParseObjectInfoToJsonObject(jO: {
         [key: string]: unknown;
     }, className: string): {
@@ -62,7 +62,7 @@ declare class MongoToParseQueryBase {
     }): void;
     saveAll<T extends Parse.Attributes>(items: Array<Parse.Object<T>>, option: Parse.FullOptions): Promise<void>;
     fetchObject<T extends Parse.Attributes>(item: Parse.Object<T>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Parse.Object<T>>;
-    getObjectsFromPointers<T extends Parse.Attributes>(items: Array<Parse.Object<T>>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Array<Parse.Object<T>>>;
+    getObjectsFromPointers<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(items: Array<Z>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Array<Z>>;
     updatePointersWithObject<T extends Parse.Attributes>(items: Array<Parse.Object<T>>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<void>;
     getPointer<T extends Parse.Attributes>(object: Parse.Object<T>): Parse.Object<T>;
     getPointerFromId<T extends Parse.Attributes>(objectId: string, ParseTable: new () => Parse.Object<T>): Parse.Object<T>;
