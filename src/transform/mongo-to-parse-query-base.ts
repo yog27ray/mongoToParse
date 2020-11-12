@@ -40,7 +40,8 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
   include?: Array<ParseAttributeKey<T>>;
 }
 
-declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T> & (new () => Parse.Object<T>));
+declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes>
+  & (new () => Parse.Object<T & Parse.BaseAttributes>));
 
 @injectable()
 class MongoToParseQueryBase {
@@ -176,7 +177,7 @@ class MongoToParseQueryBase {
   }
 
   private updateQuery<T extends Parse.Attributes>(
-    query: Parse.Query<Parse.Object<T>>,
+    query: Parse.Query<Parse.Object<T & Parse.BaseAttributes>>,
     { select, descending, ascending, skip, include, limit }: UpdateQueryDataType<Parse.Object<T>>): void {
     if (descending) {
       query.descending(descending);
