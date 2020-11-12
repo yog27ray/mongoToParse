@@ -184,7 +184,7 @@ describe('MongoToParseQuery', () => {
     });
 
     context('getObjectsFromPointers', () => {
-      let rows: Array<Parse.Object>;
+      let rows: Array<ParseClassExtender<{ total: number }>>;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 

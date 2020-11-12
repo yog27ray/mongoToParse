@@ -59,8 +59,8 @@ class MongoToParseQueryBase {
     };
   }
 
-  find<T extends Parse.Attributes, Z extends Parse.Object<T>>(
-    table: new () => Z,
+  find<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
+    table: Z,
     { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>)
     : Promise<Array<Z>> {
     const query = this.generateWhereQuery(table, where);
@@ -68,8 +68,8 @@ class MongoToParseQueryBase {
     return query.find(option);
   }
 
-  findOne<T extends Parse.Attributes, Z extends Parse.Object<T>>(
-    table: new () => Z,
+  findOne<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
+    table: Z,
     { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { select, descending, ascending, skip, include, limit });
@@ -81,7 +81,7 @@ class MongoToParseQueryBase {
     return query.aggregate(pipeline);
   }
 
-  count<T extends Parse.Attributes, Z extends Parse.Object<T>>(table: new () => Z, { where, option, skip, limit }: CountDataType<Z>)
+  count<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { where, option, skip, limit }: CountDataType<Z>)
     : Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
@@ -125,26 +125,26 @@ class MongoToParseQueryBase {
     return item;
   }
 
-  async getObjectsFromPointers<T extends Parse.Attributes>(
-    items: Array<Parse.Object<T>>,
+  async getObjectsFromPointers<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
+    items: Array<Z>,
     fieldCheck: Extract<keyof T, string>,
-    option: Parse.FullOptions): Promise<Array<Parse.Object<T>>> {
-    const pointers = items.filter((item: Parse.Object<T>) => !item.has(fieldCheck));
+    option: Parse.FullOptions): Promise<Array<Z>> {
+    const pointers = items.filter((item: Z) => !item.has(fieldCheck));
     if (!pointers.length) {
       return items;
     }
-    const Table = this.parseTable<T>(items[0].className);
+    const Table = this.parseTable<T>(items[0].className) as Z;
     const objects = await this.find(Table, {
       where: { objectId: pointers.map((pointer: Parse.Object<T>) => pointer.id) },
       option,
     });
-    return items.map((item: Parse.Object<T>) => {
+    return items.map((item: Z) => {
       if (item.has(fieldCheck)) {
         return item;
       }
-      return objects.find((object: Parse.Object<T>) => (object.id === item.id));
+      return objects.find((object: Z) => (object.id === item.id));
     })
-      .filter((item: Parse.Object) => !!item);
+      .filter((item: Z) => !!item);
   }
 
   async updatePointersWithObject<T extends Parse.Attributes>(items: Array<Parse.Object<T>>, fieldCheck: Extract<keyof T, string>,
@@ -304,8 +304,8 @@ class MongoToParseQueryBase {
     return query;
   }
 
-  private generateKeyValueQuery<T extends Parse.Attributes, Z extends Parse.Object<T>>(
-    table: new () => Z,
+  private generateKeyValueQuery<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
+    table: Z,
     key: string,
     value: unknown,
     query: Parse.Query<Parse.Object<T>> = new this.parse.Query(table)): Parse.Query<Parse.Object<T>> {
@@ -326,8 +326,8 @@ class MongoToParseQueryBase {
     }
   }
 
-  private generateWhereQuery<T extends Parse.Attributes, Z extends Parse.Object<T>>(
-    table: new () => Z,
+  private generateWhereQuery<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
+    table: Z,
     where: { [key: string]: unknown }): Parse.Query<Z> {
     const keys: Array<string> = Object.keys(where);
     const query = new this.parse.Query(table) as Parse.Query<Z>;
