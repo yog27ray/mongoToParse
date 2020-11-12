@@ -115,10 +115,10 @@ class MongoToParseQueryBase {
     await this.parse.Object.saveAll(items, option);
   }
 
-  async fetchObject<T extends Parse.Attributes>(
-    item: Parse.Object<T & Parse.BaseAttributes>,
+  async fetchObject<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
+    item: Z,
     fieldCheck: Extract<keyof T, string>,
-    option: Parse.FullOptions): Promise<Parse.Object<T & Parse.BaseAttributes>> {
+    option: Parse.FullOptions): Promise<Z> {
     if (!item) {
       return item;
     }
