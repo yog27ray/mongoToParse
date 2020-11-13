@@ -6,7 +6,8 @@ Object.defineProperty(exports, "MongoToParseError", { enumerable: true, get: fun
 const mongo_to_parse_query_base_1 = require("./src/transform/mongo-to-parse-query-base");
 class MongoToParseQuery extends mongo_to_parse_query_base_1.MongoToParseQueryBase {
     constructor() {
-        super(Parse);
+        super();
+        this.setParse(Parse);
     }
 }
 exports.MongoToParseQuery = MongoToParseQuery;

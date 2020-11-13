@@ -1,5 +1,4 @@
 /// <reference types="parse" />
-import 'reflect-metadata';
 declare type ParseAttributeKey<T extends Parse.Object> = keyof (T['attributes'] & Parse.BaseAttributes);
 declare type WhereAttributes<T extends Parse.Object> = keyof (T['attributes'] & Parse.BaseAttributes & {
     $or: Array<{
@@ -40,8 +39,8 @@ declare interface AggregateDataType {
 }
 declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes> & (new () => ParseClassExtender<T>));
 declare class MongoToParseQueryBase {
-    private parse;
-    constructor(parse: any);
+    protected parse: any;
+    protected setParse(parse: unknown): void;
     parseTable<T extends Parse.Attributes>(tableName: string): ParseClassExtender<T>;
     get Cloud(): {
         run(name: string, parameters?: {
