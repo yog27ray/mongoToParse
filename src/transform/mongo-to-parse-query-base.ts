@@ -1,6 +1,3 @@
-// import { injectable } from 'inversify';
-// tslint:disable-next-line:no-import-side-effect
-// import 'reflect-metadata';
 import { MongoToParseError } from '../error/mongo-to-parse-error';
 
 declare type ParseAttributeKey<T extends Parse.Object> = keyof (T['attributes'] & Parse.BaseAttributes);

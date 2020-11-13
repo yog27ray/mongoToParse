@@ -8,4 +8,4 @@ class MongoToParseQuery extends MongoToParseQueryBase {
   }
 }
 
-export { MongoToParseQuery, MongoToParseError, ParseClassExtender };
+export { MongoToParseQuery, MongoToParseError, ParseClassExtender, MongoToParseQueryBase };

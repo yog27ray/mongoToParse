@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Parse } from 'parse';
@@ -14,4 +13,4 @@ class MongoToParseQuery extends MongoToParseQueryBase {
   }
 }
 
-export { MongoToParseQuery, MongoToParseError };
+export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase };
