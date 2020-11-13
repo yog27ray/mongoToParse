@@ -1,6 +1,6 @@
-import { injectable } from 'inversify';
+// import { injectable } from 'inversify';
 // tslint:disable-next-line:no-import-side-effect
-import 'reflect-metadata';
+// import 'reflect-metadata';
 import { MongoToParseError } from '../error/mongo-to-parse-error';
 
 declare type ParseAttributeKey<T extends Parse.Object> = keyof (T['attributes'] & Parse.BaseAttributes);
@@ -42,10 +42,11 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
 
 declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes> & (new () => ParseClassExtender<T>));
 
-@injectable()
 class MongoToParseQueryBase {
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  constructor(private parse: any) {
+  protected parse: any;
+
+  protected setParse(parse: unknown): void {
+    this.parse = parse;
   }
 
   parseTable<T extends Parse.Attributes>(tableName: string): ParseClassExtender<T> {

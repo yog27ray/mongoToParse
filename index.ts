@@ -9,7 +9,8 @@ class MongoToParseQuery extends MongoToParseQueryBase {
   constructor(applicationId: string, serverURL: string, config: { masterKey?: string } = {}) {
     Parse.initialize(applicationId, undefined, config.masterKey);
     Parse.serverURL = serverURL;
-    super(Parse);
+    super();
+    this.setParse(Parse);
   }
 }
 
