@@ -3,4 +3,4 @@ import { MongoToParseQueryBase, ParseClassExtender } from './src/transform/mongo
 declare class MongoToParseQuery extends MongoToParseQueryBase {
     constructor();
 }
-export { MongoToParseQuery, MongoToParseError, ParseClassExtender };
+export { MongoToParseQuery, MongoToParseError, ParseClassExtender, MongoToParseQueryBase };

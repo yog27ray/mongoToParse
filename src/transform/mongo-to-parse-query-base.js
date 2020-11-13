@@ -1,9 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoToParseQueryBase = void 0;
-// import { injectable } from 'inversify';
-// tslint:disable-next-line:no-import-side-effect
-// import 'reflect-metadata';
 const mongo_to_parse_error_1 = require("../error/mongo-to-parse-error");
 class MongoToParseQueryBase {
     setParse(parse) {

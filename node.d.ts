@@ -5,4 +5,4 @@ declare class MongoToParseQuery extends MongoToParseQueryBase {
         masterKey?: string;
     });
 }
-export { MongoToParseQuery, MongoToParseError };
+export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase };
