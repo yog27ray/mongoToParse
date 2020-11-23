@@ -9,7 +9,7 @@ declare type WhereAttributes<T extends Parse.Object> = keyof (T['attributes'] & 
     }>;
 });
 declare interface QueryDataType<T extends Parse.Object> {
-    select?: Array<ParseAttributeKey<T>>;
+    project?: Array<ParseAttributeKey<T>>;
     limit?: number;
     descending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
     ascending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
@@ -47,8 +47,8 @@ declare class MongoToParseQueryBase {
             [key: string]: unknown;
         }, options?: Parse.FullOptions): Promise<unknown>;
     };
-    find<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Array<Z>>;
-    findOne<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z>;
+    find<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { project, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Array<Z>>;
+    findOne<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { project, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z>;
     aggregate<T extends Parse.Attributes>(table: new () => Parse.Object<T>, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
     count<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: Z, { where, option, skip, limit }: CountDataType<Z>): Promise<number>;
     addParseObjectInfoToJsonObject(jO: {

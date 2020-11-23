@@ -15,14 +15,14 @@ class MongoToParseQueryBase {
                 .run(name, parameters, options),
         };
     }
-    find(table, { select, where, option, descending, ascending, skip, include, limit }) {
+    find(table, { project, where, option, descending, ascending, skip, include, limit }) {
         const query = this.generateWhereQuery(table, where);
-        this.updateQuery(query, { select, descending, ascending, skip, include, limit });
+        this.updateQuery(query, { project, descending, ascending, skip, include, limit });
         return query.find(option);
     }
-    findOne(table, { select, where, option, descending, ascending, skip, include, limit }) {
+    findOne(table, { project, where, option, descending, ascending, skip, include, limit }) {
         const query = this.generateWhereQuery(table, where);
-        this.updateQuery(query, { select, descending, ascending, skip, include, limit });
+        this.updateQuery(query, { project, descending, ascending, skip, include, limit });
         return query.first(option);
     }
     aggregate(table, { pipeline }) {
@@ -108,12 +108,12 @@ class MongoToParseQueryBase {
         pointer.id = objectId;
         return pointer;
     }
-    updateQuery(query, { select, descending, ascending, skip, include, limit }) {
+    updateQuery(query, { project, descending, ascending, skip, include, limit }) {
         if (descending) {
             query.descending(descending);
         }
-        if (select && select.length) {
-            query.select(...select);
+        if (project && project.length) {
+            query.select(...project);
         }
         if (ascending) {
             query.ascending(ascending);

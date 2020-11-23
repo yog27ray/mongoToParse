@@ -749,7 +749,7 @@ describe('MongoToParseQuery', () => {
         });
         it('should return row where rank is in [1, 2, 3] by skip 1 and limit 1 and select message', async () => {
             const results = await mongoToParseQuery
-                .find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1, select: ['message'] });
+                .find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1, project: ['message'] });
             const resultsJSON = parseObjectJSON(results);
             chai_1.expect(resultsJSON).to.deep.equal([{ message: 'startsWith this regex is message 2' }]);
         });
