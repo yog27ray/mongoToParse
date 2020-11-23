@@ -147,13 +147,13 @@ class MongoToParseQueryBase {
       .filter((item: Z) => !!item);
   }
 
-  async updatePointersWithObject<T extends Parse.Attributes>(items: Array<Parse.Object<T>>, fieldCheck: Extract<keyof T, string>,
-    option: Parse.FullOptions): Promise<void> {
-    const pointers = items.filter((item: Parse.Object<T>) => !item.has(fieldCheck));
+  async updatePointersWithObject<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(items: Array<Z>,
+    fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<void> {
+    const pointers = items.filter((item: Z) => !item.has(fieldCheck));
     if (!pointers.length) {
       return;
     }
-    await Promise.all(pointers.map((pointer: Parse.Object<T>) => pointer.fetch(option)
+    await Promise.all(pointers.map((pointer: Z) => pointer.fetch(option)
       .catch((error: any) => {
         if (error.code === 101 && error.message === 'Object not found.') {
           return Promise.resolve();
@@ -162,15 +162,15 @@ class MongoToParseQueryBase {
       })));
   }
 
-  getPointer<T extends Parse.Attributes>(object: Parse.Object<T>): Parse.Object<T> {
+  getPointer<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(object: Z): Z {
     const Table = this.parseTable<T>(object.className);
-    const pointer = new Table();
+    const pointer = new Table() as Z;
     pointer.id = object.id;
     return pointer;
   }
 
-  getPointerFromId<T extends Parse.Attributes>(objectId: string, ParseTable: new () => Parse.Object<T>): Parse.Object<T> {
-    const pointer = new ParseTable();
+  getPointerFromId<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(objectId: string, ParseTable: Z): Z {
+    const pointer = new ParseTable() as Z;
     pointer.id = objectId;
     return pointer;
   }
