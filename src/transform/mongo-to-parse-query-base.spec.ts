@@ -40,7 +40,7 @@ async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: Mong
     { time: new Date(70), rank: 8, message: 'this is message 8', total: 4 },
     { time: new Date(80), rank: 9, message: 'startsWith this is message 9', total: 4 },
     { time: new Date(90), rank: 10, message: 'this is message 10 endsWith', total: 4 },
-  ].map((each: { time: Date, rank: number, message: string, total: number, field: number }): Parse.Object => {
+  ].map((each: { time: Date, rank: number, message: string, total: number, field: number }): DummyRowClass => {
     const tempObject = new TestTable();
     Object.keys(each).forEach((key: keyof DummyRowClass['attributes']) => tempObject.set(key, each[key]));
     return tempObject;
@@ -152,7 +152,7 @@ describe('MongoToParseQuery', () => {
     });
 
     context('fetchObject', () => {
-      let parseObject: Parse.Object;
+      let parseObject: DummyRowClass;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
@@ -195,7 +195,7 @@ describe('MongoToParseQuery', () => {
 
       it('should do nothing when there is not pointer object', async () => {
         const results = await mongoToParseQuery.getObjectsFromPointers(rows, 'total', {});
-        expect(results.map((each: Parse.Object) => each.toJSON())).to.deep.equal(rows.map((each: Parse.Object) => each.toJSON()));
+        expect(results.map((each: DummyRowClass) => each.toJSON())).to.deep.equal(rows.map((each: DummyRowClass) => each.toJSON()));
       });
 
       it('should fetch pointers when there are pointer object', async () => {
@@ -203,20 +203,20 @@ describe('MongoToParseQuery', () => {
         invalidPointer.id = 'invalidPointer';
         const pointers = [].concat(rows[0], rows[1])
           .concat(invalidPointer)
-          .concat(...[rows[2], rows[3]].map((each: Parse.Object) => {
+          .concat(...[rows[2], rows[3]].map((each: DummyRowClass) => {
             const pointer = new TestTable();
             pointer.id = each.id;
             return pointer;
           }));
         const results = await mongoToParseQuery.getObjectsFromPointers(pointers, 'total', {});
         expect(results.length).to.equal(4);
-        expect(results.map((each: Parse.Object) => each.toJSON())).to.deep
-          .equal([rows[0], rows[1], rows[2], rows[3]].map((each: Parse.Object) => each.toJSON()));
+        expect(results.map((each: DummyRowClass) => each.toJSON())).to.deep
+          .equal([rows[0], rows[1], rows[2], rows[3]].map((each: DummyRowClass) => each.toJSON()));
       });
     });
 
     context('updatePointersWithObject', () => {
-      let rows: Array<Parse.Object>;
+      let rows: Array<DummyRowClass>;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
@@ -226,9 +226,9 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should do nothing when there is not pointer object', async () => {
-        const pointers = rows.map((each: Parse.Object) => each);
+        const pointers = rows.map((each: DummyRowClass) => each);
         await mongoToParseQuery.updatePointersWithObject(rows, 'total', {});
-        expect(pointers.map((each: Parse.Object) => each.toJSON())).to.deep.equal(rows.map((each: Parse.Object) => each.toJSON()));
+        expect(pointers.map((each: DummyRowClass) => each.toJSON())).to.deep.equal(rows.map((each: DummyRowClass) => each.toJSON()));
       });
 
       it('should fetch pointers when there are pointer object', async () => {
@@ -236,22 +236,22 @@ describe('MongoToParseQuery', () => {
         invalidPointer.id = 'invalidPointer';
         const pointers = [].concat(rows[0], rows[1])
           .concat(invalidPointer)
-          .concat(...[rows[2], rows[3]].map((each: Parse.Object) => {
+          .concat(...[rows[2], rows[3]].map((each: DummyRowClass) => {
             const pointer = new TestTable();
             pointer.id = each.id;
             return pointer;
           }));
         await mongoToParseQuery.updatePointersWithObject(pointers, 'total', {});
         expect(pointers.length).to.equal(5);
-        expect(pointers.map((each: Parse.Object) => each.toJSON())).to.deep
-          .equal([rows[0], rows[1], invalidPointer, rows[2], rows[3]].map((each: Parse.Object) => each.toJSON()));
+        expect(pointers.map((each: DummyRowClass) => each.toJSON())).to.deep
+          .equal([rows[0], rows[1], invalidPointer, rows[2], rows[3]].map((each: DummyRowClass) => each.toJSON()));
       });
       it('should 1 fetch pointers when there are pointer object', async () => {
         try {
           const invalidPointer = new TestTable();
           const pointers = [].concat(rows[0], rows[1])
             .concat(invalidPointer)
-            .concat(...[rows[2], rows[3]].map((each: Parse.Object) => {
+            .concat(...[rows[2], rows[3]].map((each: DummyRowClass) => {
               const pointer = new TestTable();
               pointer.id = each.id;
               return pointer;
@@ -818,7 +818,7 @@ describe('MongoToParseQuery', () => {
 
     it('should return row where rank is in [1, 2, 3] by skip 1 and limit 1 and select message', async () => {
       const results = await mongoToParseQuery
-        .find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1, select: ['message'] });
+        .find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1, project: ['message'] });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{ message: 'startsWith this regex is message 2' }]);
     });

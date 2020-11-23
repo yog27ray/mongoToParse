@@ -6,7 +6,7 @@ declare type WhereAttributes<T extends Parse.Object> = keyof (T['attributes'] & 
   & { $or: Array<{ [key in WhereAttributes<T>]: unknown }>, $and: Array<{ [key in WhereAttributes<T>]: unknown }> });
 
 declare interface QueryDataType<T extends Parse.Object> {
-  select?: Array<ParseAttributeKey<T>>;
+  project?: Array<ParseAttributeKey<T>>;
   limit?: number;
   descending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
   ascending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
@@ -29,7 +29,7 @@ declare interface AggregateDataType {
 }
 
 declare interface UpdateQueryDataType<T extends Parse.Object> {
-  select?: Array<ParseAttributeKey<T>>;
+  project?: Array<ParseAttributeKey<T>>;
   limit?: number;
   descending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
   ascending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
@@ -59,18 +59,18 @@ class MongoToParseQueryBase {
 
   find<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
     table: Z,
-    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>)
+    { project, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>)
     : Promise<Array<Z>> {
     const query = this.generateWhereQuery(table, where);
-    this.updateQuery(query, { select, descending, ascending, skip, include, limit });
+    this.updateQuery(query, { project, descending, ascending, skip, include, limit });
     return query.find(option);
   }
 
   findOne<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
     table: Z,
-    { select, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z> {
+    { project, where, option, descending, ascending, skip, include, limit }: QueryDataType<Z>): Promise<Z> {
     const query = this.generateWhereQuery(table, where);
-    this.updateQuery(query, { select, descending, ascending, skip, include, limit });
+    this.updateQuery(query, { project, descending, ascending, skip, include, limit });
     return query.first(option);
   }
 
@@ -177,12 +177,12 @@ class MongoToParseQueryBase {
 
   private updateQuery<T extends Parse.Attributes>(
     query: Parse.Query<Parse.Object<T & Parse.BaseAttributes>>,
-    { select, descending, ascending, skip, include, limit }: UpdateQueryDataType<Parse.Object<T>>): void {
+    { project, descending, ascending, skip, include, limit }: UpdateQueryDataType<Parse.Object<T>>): void {
     if (descending) {
       query.descending(descending);
     }
-    if (select && select.length) {
-      query.select(...select);
+    if (project && project.length) {
+      query.select(...project);
     }
     if (ascending) {
       query.ascending(ascending);
