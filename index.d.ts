@@ -3,6 +3,7 @@ import { MongoToParseQueryBase, RequestQueryPayload, RequestCountPayload } from 
 declare class MongoToParseQuery extends MongoToParseQueryBase {
     initialize(applicationId: string, serverURL: string, config?: {
         masterKey?: string;
+        disableSingleInstance?: boolean;
     }): void;
 }
 export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase, RequestQueryPayload, RequestCountPayload };

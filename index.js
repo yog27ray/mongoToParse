@@ -13,6 +13,9 @@ class MongoToParseQuery extends mongo_to_parse_query_base_1.MongoToParseQueryBas
         parse_1.Parse.initialize(applicationId, undefined, config.masterKey);
         parse_1.Parse.serverURL = serverURL;
         this.setParse(parse_1.Parse);
+        if (config.disableSingleInstance) {
+            parse_1.Parse.Object.disableSingleInstance();
+        }
     }
 }
 exports.MongoToParseQuery = MongoToParseQuery;
