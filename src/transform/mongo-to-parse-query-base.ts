@@ -40,6 +40,7 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
 export declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes>
   & (new () => ParseClassExtender<T>));
 
+const CompoundQueryKeys: Array<string> = ['$and', '$or'];
 export class MongoToParseQueryBase {
   protected parse: any;
 
@@ -309,20 +310,20 @@ export class MongoToParseQueryBase {
     table: Z,
     key: string,
     value: unknown,
-    query: Parse.Query<Parse.Object<T>> = new this.parse.Query(table)): Parse.Query<Parse.Object<T>> {
+    query: Parse.Query<Parse.Object<T>> = new this.parse.Query(table)): Parse.Query<Z> {
     switch (key) {
       case '$and': {
         const valueArray = value as Array<{ [key: string]: unknown }>;
         const queries = valueArray.map((condition: { [key: string]: unknown }) => this.generateWhereQuery(table, condition));
-        return this.parse.Query.and(...queries) as Parse.Query<Parse.Object<T>>;
+        return this.parse.Query.and(...queries) as Parse.Query<Z>;
       }
       case '$or': {
         const valueArray = value as Array<{ [key: string]: unknown }>;
         const queries = valueArray.map((condition: { [key: string]: unknown }) => this.generateWhereQuery(table, condition));
-        return this.parse.Query.or(...queries) as Parse.Query<Parse.Object<T>>;
+        return this.parse.Query.or(...queries) as Parse.Query<Z>;
       }
       default: {
-        return this.updateQueryWithConditions(query, key, value);
+        return this.updateQueryWithConditions(query, key, value) as Parse.Query<Z>;
       }
     }
   }
@@ -330,14 +331,15 @@ export class MongoToParseQueryBase {
   private generateWhereQuery<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
     table: Z,
     where: { [key: string]: unknown }): Parse.Query<Z> {
-    const keys: Array<string> = Object.keys(where);
-    const query = new this.parse.Query(table) as Parse.Query<Z>;
-    const isCompoundQuery = ['$and', '$or'].some((key: string) => keys.includes(key));
-    if (!isCompoundQuery) {
-      keys.forEach((key: string) => this.generateKeyValueQuery(table, key, where[key], query));
-      return query;
+    let keys: Array<string> = Object.keys(where);
+    let query = new this.parse.Query(table) as Parse.Query<Z>;
+    const compoundKeysInQuery = keys.filter((key: string) => CompoundQueryKeys.includes(key));
+    if (compoundKeysInQuery.length) {
+      const queries = compoundKeysInQuery.map((key: string) => this.generateKeyValueQuery(table, key, where[key]));
+      keys = keys.filter((key: string) => !compoundKeysInQuery.includes(key));
+      query = queries.length === 1 ? queries[0] : this.parse.Query.and(...queries);
     }
-    const queries = keys.map((key: string) => this.generateKeyValueQuery(table, key, where[key]));
-    return this.parse.Query.and(...queries) as Parse.Query<Z>;
+    keys.forEach((key: string) => this.generateKeyValueQuery(table, key, where[key], query));
+    return query;
   }
 }
