@@ -1,6 +1,6 @@
 import Parse from 'parse/node';
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
-import { MongoToParseQueryBase } from './src/transform/mongo-to-parse-query-base';
+import { MongoToParseQueryBase, RequestQueryPayload, RequestCountPayload } from './src/transform/mongo-to-parse-query-base';
 
 class MongoToParseQuery extends MongoToParseQueryBase {
   constructor(applicationId: string, serverURL: string, config: { masterKey?: string } = {}) {
@@ -11,4 +11,4 @@ class MongoToParseQuery extends MongoToParseQueryBase {
   }
 }
 
-export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase };
+export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase, RequestQueryPayload, RequestCountPayload };
