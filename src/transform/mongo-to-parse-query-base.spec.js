@@ -283,6 +283,28 @@ describe('MongoToParseQuery', () => {
                 chai_1.expect(pointer.get('message')).to.not.exist;
             });
         });
+        context('generateWhereQuery', () => {
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
+            const TestTable = mongoToParseQuery.parseTable('TestTable');
+            it('should generate query when not compound query exist.', async () => {
+                const query = mongoToParseQuery.generateWhereQuery(TestTable, { a: 1, b: '2', c: [3], d: [4, '5'] });
+                chai_1.expect(JSON.parse(JSON.stringify(query))).to.deep.equal({ where: { a: 1, b: '2', c: 3, d: { $in: [4, '5'] } } });
+            });
+            it('should generate query when one compound query exist.', async () => {
+                const query = mongoToParseQuery.generateWhereQuery(TestTable, { $and: [{ a: 1 }, { b: '2' }], c: [3], d: [4, '5'] });
+                chai_1.expect(JSON.parse(JSON.stringify(query))).to.deep.equal({ where: { $and: [{ a: 1 }, { b: '2' }], c: 3, d: { $in: [4, '5'] } } });
+            });
+            it('should generate query when two compound query exist.', async () => {
+                const query = mongoToParseQuery.generateWhereQuery(TestTable, { $and: [{ a: 1 }, { b: '2' }], $or: [{ c: [3] }], d: [4, '5'] });
+                chai_1.expect(JSON.parse(JSON.stringify(query))).to.deep
+                    .equal({ where: { $and: [{ $and: [{ a: 1 }, { b: '2' }] }, { $or: [{ c: 3 }] }], d: { $in: [4, '5'] } } });
+            });
+            it('should generate query when nested compound query exist.', async () => {
+                const query = mongoToParseQuery.generateWhereQuery(TestTable, { $and: [{ a: 1 }, { $or: [{ b: '2' }, { c: [3] }] }], d: [4, '5'] });
+                chai_1.expect(JSON.parse(JSON.stringify(query))).to.deep
+                    .equal({ where: { $and: [{ a: 1 }, { $or: [{ b: '2' }, { c: 3 }] }], d: { $in: [4, '5'] } } });
+            });
+        });
     });
     describe('query conditions', () => {
         const mongoToParseQuery = new server_1.MongoToParseQuery();

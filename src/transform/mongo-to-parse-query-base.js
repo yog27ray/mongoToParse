@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MongoToParseQueryBase = void 0;
 const mongo_to_parse_error_1 = require("../error/mongo-to-parse-error");
+const CompoundQueryKeys = ['$and', '$or'];
 class MongoToParseQueryBase {
     setParse(parse) {
         this.parse = parse;
@@ -249,15 +250,16 @@ class MongoToParseQueryBase {
         }
     }
     generateWhereQuery(table, where) {
-        const keys = Object.keys(where);
-        const query = new this.parse.Query(table);
-        const isCompoundQuery = ['$and', '$or'].some((key) => keys.includes(key));
-        if (!isCompoundQuery) {
-            keys.forEach((key) => this.generateKeyValueQuery(table, key, where[key], query));
-            return query;
+        let keys = Object.keys(where);
+        let query = new this.parse.Query(table);
+        const compoundKeysInQuery = keys.filter((key) => CompoundQueryKeys.includes(key));
+        if (compoundKeysInQuery.length) {
+            const queries = compoundKeysInQuery.map((key) => this.generateKeyValueQuery(table, key, where[key]));
+            keys = keys.filter((key) => !compoundKeysInQuery.includes(key));
+            query = queries.length === 1 ? queries[0] : this.parse.Query.and(...queries);
         }
-        const queries = keys.map((key) => this.generateKeyValueQuery(table, key, where[key]));
-        return this.parse.Query.and(...queries);
+        keys.forEach((key) => this.generateKeyValueQuery(table, key, where[key], query));
+        return query;
     }
 }
 exports.MongoToParseQueryBase = MongoToParseQueryBase;
