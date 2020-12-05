@@ -9,10 +9,9 @@ Object.defineProperty(exports, "MongoToParseError", { enumerable: true, get: fun
 const mongo_to_parse_query_base_1 = require("./src/transform/mongo-to-parse-query-base");
 Object.defineProperty(exports, "MongoToParseQueryBase", { enumerable: true, get: function () { return mongo_to_parse_query_base_1.MongoToParseQueryBase; } });
 class MongoToParseQuery extends mongo_to_parse_query_base_1.MongoToParseQueryBase {
-    constructor(applicationId, serverURL, config = {}) {
+    initialize(applicationId, serverURL, config = {}) {
         parse_1.Parse.initialize(applicationId, undefined, config.masterKey);
         parse_1.Parse.serverURL = serverURL;
-        super();
         this.setParse(parse_1.Parse);
     }
 }
