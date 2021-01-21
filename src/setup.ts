@@ -1,13 +1,10 @@
 import bodyParser from 'body-parser';
-import debug from 'debug';
 import express, { Express } from 'express';
 import http from 'http';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { ParseServer } from 'parse-server';
 import { Env } from './test-env';
-
-const log = debug('mongoToParse:Server');
 
 const app: Express = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -18,7 +15,6 @@ const server = http.createServer(app);
 let mongoDBURI: string;
 let client: MongoClient;
 async function dropDB(): Promise<any> {
-  log('>>>>>>>DropDB<<<<<<<<');
   if (!client) {
     client = new MongoClient(mongoDBURI);
     client = await client.connect();
@@ -39,7 +35,6 @@ async function startMongoDB(): Promise<any> {
 
   mongoDBURI = await mongod.getUri();
 
-  log('MongoDB', mongoDBURI);
   const serverURL = `http://localhost:${Env.PORT}/api/parse`;
   Env.serverURL = serverURL;
   const api = new ParseServer({
@@ -52,16 +47,17 @@ async function startMongoDB(): Promise<any> {
   // Serve the Parse API on the /parse URL prefix
   app.use('/api/parse', api);
   Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
-  log('Parse Server', '>>>>>>', serverURL);
 }
 
 startMongoDB()
   .catch((error: any) => {
-    log('>>>>>>>>>>Enable to start MongoDB', error);
+    // eslint-disable-next-line no-console
+    console.log('>>>>>>>>>>Enable to start MongoDB', error);
   });
 
 server.listen(Env.PORT, '0.0.0.0', () => {
-  log('Express server listening on %d, in test mode', Env.PORT);
+  // eslint-disable-next-line no-console
+  console.log('Express server listening on %d, in test mode', Env.PORT);
 });
 
 // Expose app
