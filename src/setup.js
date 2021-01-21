@@ -5,14 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dropDB = exports.app = void 0;
 const body_parser_1 = __importDefault(require("body-parser"));
-const debug_1 = __importDefault(require("debug"));
 const express_1 = __importDefault(require("express"));
 const http_1 = __importDefault(require("http"));
 const mongodb_1 = require("mongodb");
 const mongodb_memory_server_1 = require("mongodb-memory-server");
 const parse_server_1 = require("parse-server");
 const test_env_1 = require("./test-env");
-const log = debug_1.default('mongoToParse:Server');
 const app = express_1.default();
 exports.app = app;
 app.use(body_parser_1.default.urlencoded({ extended: false }));
@@ -22,7 +20,6 @@ const server = http_1.default.createServer(app);
 let mongoDBURI;
 let client;
 async function dropDB() {
-    log('>>>>>>>DropDB<<<<<<<<');
     if (!client) {
         client = new mongodb_1.MongoClient(mongoDBURI);
         client = await client.connect();
@@ -41,7 +38,6 @@ exports.dropDB = dropDB;
 async function startMongoDB() {
     const mongod = new mongodb_memory_server_1.MongoMemoryServer({ instance: { dbName: 'dev-test-inmemory', port: 27020 } });
     mongoDBURI = await mongod.getUri();
-    log('MongoDB', mongoDBURI);
     const serverURL = `http://localhost:${test_env_1.Env.PORT}/api/parse`;
     test_env_1.Env.serverURL = serverURL;
     const api = new parse_server_1.ParseServer({
@@ -53,13 +49,14 @@ async function startMongoDB() {
     // Serve the Parse API on the /parse URL prefix
     app.use('/api/parse', api);
     Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
-    log('Parse Server', '>>>>>>', serverURL);
 }
 startMongoDB()
     .catch((error) => {
-    log('>>>>>>>>>>Enable to start MongoDB', error);
+    // eslint-disable-next-line no-console
+    console.log('>>>>>>>>>>Enable to start MongoDB', error);
 });
 server.listen(test_env_1.Env.PORT, '0.0.0.0', () => {
-    log('Express server listening on %d, in test mode', test_env_1.Env.PORT);
+    // eslint-disable-next-line no-console
+    console.log('Express server listening on %d, in test mode', test_env_1.Env.PORT);
 });
 //# sourceMappingURL=setup.js.map

@@ -1,5 +1,5 @@
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
-import { MongoToParseQueryBase, ParseClassExtender, RequestQueryPayload, RequestCountPayload } from './src/transform/mongo-to-parse-query-base';
+import { MongoToParseQueryBase, ParseClassExtender, RequestCountPayload, RequestQueryPayload } from './src/transform/mongo-to-parse-query-base';
 declare class MongoToParseQuery extends MongoToParseQueryBase {
     constructor();
 }
