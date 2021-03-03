@@ -296,14 +296,10 @@ export class MongoToParseQueryBase {
         }
         case '$all': {
           if (value[queryConditionKey] instanceof Array) {
-            if (value[queryConditionKey].length === 1) {
-              query.equalTo(field, value[queryConditionKey][0]);
-              return;
-            }
             query.containsAll(field, value[queryConditionKey]);
             return;
           }
-          query.equalTo(field, value[queryConditionKey]);
+          query.containsAll(field, [value[queryConditionKey]]);
           return;
         }
         default: {
