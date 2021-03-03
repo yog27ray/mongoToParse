@@ -40,6 +40,8 @@ async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: Mong
     { time: new Date(70), rank: 8, message: 'this is message 8', total: 4 },
     { time: new Date(80), rank: 9, message: 'startsWith this is message 9', total: 4 },
     { time: new Date(90), rank: 10, message: 'this is message 10 endsWith', total: 4 },
+    { time: new Date(100), rank: 11, message: 'this is message 11', total: 5, tags: ['tag1'] },
+    { time: new Date(110), rank: 12, message: 'this is message 12', total: 5, tags: ['tag1', 'tag2'] },
   ].map((each: { time: Date, rank: number, message: string, total: number, field: number }): DummyRowClass => {
     const tempObject = new TestTable();
     Object.keys(each).forEach((key: keyof DummyRowClass['attributes']) => tempObject.set(key, each[key]));
@@ -92,7 +94,7 @@ describe('MongoToParseQuery', () => {
 
       it('should fetch all results', async () => {
         const results = await mongoToParseQuery.find(TestTable, { where: {} });
-        expect(results.length).to.equal(10);
+        expect(results.length).to.equal(12);
       });
     });
 
@@ -496,7 +498,19 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 10 endsWith',
         total: 4,
         item: { __type: 'Pointer', className: 'TestTable2' },
-      }],
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.100Z' },
+        rank: 11,
+        message: 'this is message 11',
+        total: 5,
+        tags: ['tag1'],
+        }, {
+          time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+          rank: 12,
+          message: 'this is message 12',
+          total: 5,
+          tags: ['tag1', 'tag2'],
+        }]
       );
     });
 
@@ -525,6 +539,18 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 10 endsWith',
         total: 4,
         item: { __type: 'Pointer', className: 'TestTable2' },
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.100Z' },
+        rank: 11,
+        message: 'this is message 11',
+        total: 5,
+        tags: ['tag1'],
+      }, {
+        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
       }]);
     });
 
@@ -630,6 +656,18 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 10 endsWith',
         total: 4,
         item: { __type: 'Pointer', className: 'TestTable2' },
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.100Z' },
+        rank: 11,
+        message: 'this is message 11',
+        total: 5,
+        tags: ['tag1'],
+      }, {
+        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
       }]);
     });
 
@@ -684,6 +722,18 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 10 endsWith',
         total: 4,
         item: { __type: 'Pointer', className: 'TestTable2' },
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.100Z' },
+        rank: 11,
+        message: 'this is message 11',
+        total: 5,
+        tags: ['tag1'],
+      }, {
+        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
       }]);
     });
 
@@ -738,6 +788,18 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 10 endsWith',
         total: 4,
         item: { __type: 'Pointer', className: 'TestTable2' },
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.100Z' },
+        rank: 11,
+        message: 'this is message 11',
+        total: 5,
+        tags: ['tag1'],
+      }, {
+        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
       }]);
     });
 
@@ -782,6 +844,18 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 10 endsWith',
         total: 4,
         item: { __type: 'Pointer', className: 'TestTable2' },
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.100Z' },
+        rank: 11,
+        message: 'this is message 11',
+        total: 5,
+        tags: ['tag1'],
+      }, {
+        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
       }]);
     });
 
@@ -828,6 +902,36 @@ describe('MongoToParseQuery', () => {
         rank: 3,
         message: 'this is message 3 endsWith',
         total: 2,
+      }]);
+    });
+
+    it('should return row where tags contain "tag1"', async () => {
+      const results = await mongoToParseQuery.find(TestTable, { where: { tags: { $all: 'tag1' } }, ascending: 'rank' });
+      const resultsJSON = parseObjectJSON(results);
+      expect(resultsJSON).to.deep.equal([{
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.100Z' },
+        rank: 11,
+        message: 'this is message 11',
+        total: 5,
+        tags: ['tag1'],
+      }, {
+        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
+      }]);
+    });
+
+    it('should return row where tags contains all fields in ["tag1","tag2"]', async () => {
+      const results = await mongoToParseQuery.find(TestTable, { where: { tags: { $all: ['tag1', 'tag2'] } }, ascending: 'rank' });
+      const resultsJSON = parseObjectJSON(results);
+      expect(resultsJSON).to.deep.equal([{
+        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
       }]);
     });
 
