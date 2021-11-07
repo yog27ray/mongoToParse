@@ -19,12 +19,13 @@ function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
 }
 
 declare type DummyRowClass = ParseClassExtender<{
-  time: Date,
-  rank: number,
-  message: string,
-  total: number,
-  field: number,
-  item: Parse.Object,
+  time: Date;
+  rank: number;
+  tags: Array<string>;
+  message: string;
+  total: number;
+  field: number;
+  item: Parse.Object;
 }>;
 
 async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<any> {
