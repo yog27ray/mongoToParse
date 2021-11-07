@@ -1,5 +1,5 @@
 import bodyParser from 'body-parser';
-import express, { Express } from 'express';
+import express, { Express, RequestHandler } from 'express';
 import http from 'http';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -37,7 +37,7 @@ async function startMongoDB(): Promise<any> {
   });
 
   // Serve the Parse API on the /parse URL prefix
-  app.use('/api/parse', api);
+  app.use('/api/parse', api as RequestHandler);
   Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
 }
 

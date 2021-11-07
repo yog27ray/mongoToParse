@@ -45,7 +45,8 @@ async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: Mong
     { time: new Date(110), rank: 12, message: 'this is message 12', total: 5, tags: ['tag1', 'tag2'] },
   ].map((each: { time: Date, rank: number, message: string, total: number, field: number }): DummyRowClass => {
     const tempObject = new TestTable();
-    Object.keys(each).forEach((key: keyof DummyRowClass['attributes']) => tempObject.set(key, each[key]));
+    Object.keys(each)
+      .forEach((key: keyof { time: Date, rank: number, message: string, total: number, field: number }) => tempObject.set(key, each[key]));
     return tempObject;
   }), {});
   const TestTable2 = mongoToParseQuery.parseTable('TestTable2');
@@ -139,7 +140,7 @@ describe('MongoToParseQuery', () => {
     });
 
     context('removeParesObjectDetails', () => {
-      let jsonParseObject: any;
+      let jsonParseObject: { [key: string]: unknown; };
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
 
       it('should do nothing when object is not present', async () => {
@@ -507,14 +508,13 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 11',
         total: 5,
         tags: ['tag1'],
-        }, {
-          time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
-          rank: 12,
-          message: 'this is message 12',
-          total: 5,
-          tags: ['tag1', 'tag2'],
-        }]
-      );
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
+      }]);
     });
 
     it('should return row where rank greater than equal to "7"', async () => {
@@ -549,7 +549,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -666,7 +666,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -732,7 +732,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -798,7 +798,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -854,7 +854,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -918,7 +918,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -930,7 +930,7 @@ describe('MongoToParseQuery', () => {
       const results = await mongoToParseQuery.find(TestTable, { where: { tags: { $all: ['tag1', 'tag2'] } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
