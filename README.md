@@ -21,8 +21,9 @@ MongoToParse transform mongo find query to parse-server find query.
 8. $exists
 9. $in
 10. $eq
-10. $nin
-10. $ne
+11. $nin
+12. $ne
+13. $all
 
 ## additional operands not present in mongo find query.
 1. $endsWith

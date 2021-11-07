@@ -221,6 +221,14 @@ class MongoToParseQueryBase {
                     query.equalTo(field, value[queryConditionKey]);
                     return;
                 }
+                case '$all': {
+                    if (value[queryConditionKey] instanceof Array) {
+                        query.containsAll(field, value[queryConditionKey]);
+                        return;
+                    }
+                    query.containsAll(field, [value[queryConditionKey]]);
+                    return;
+                }
                 default: {
                     throw new mongo_to_parse_error_1.MongoToParseError({
                         code: 400,
