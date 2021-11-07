@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { MongoToParseQuery } from '../../server';
+import { MongoToParseError, MongoToParseQuery } from '../../server';
 import { dropDB } from '../setup';
 import { ParseClassExtender } from './mongo-to-parse-query-base';
 
@@ -90,6 +90,7 @@ describe('MongoToParseQuery', () => {
       const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
+        await dropDB();
         await createDummyRows(TestTable, mongoToParseQuery);
       });
 
@@ -261,7 +262,8 @@ describe('MongoToParseQuery', () => {
             }));
           await mongoToParseQuery.updatePointersWithObject(pointers, 'total', {});
           await Promise.reject({ code: 99, message: 'should not reach here.' });
-        } catch (error) {
+        } catch (e) {
+          const error = e as { code: number, message: string; };
           expect({ code: error.code, message: error.message }).to.deep
             .equal({ code: 104, message: 'Object does not have an ID' });
         }
@@ -311,7 +313,7 @@ describe('MongoToParseQuery', () => {
           await mongoToParseQuery.Cloud.run('testCloudRun');
           await Promise.reject({ code: 99, message: 'Should not reach here' });
         } catch (error) {
-          const { code, message } = error;
+          const { code, message } = error as { code: number; message: string; };
           expect({ code, message }).to.deep.equal({
             code: 141,
             message: 'Invalid function: "testCloudRun"',
@@ -376,7 +378,7 @@ describe('MongoToParseQuery', () => {
         await mongoToParseQuery.find(TestTable, { where: { total: { $in: [1], of: 2 } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
-        expect(error.toJSON()).to.deep.equal({
+        expect((error as MongoToParseError).toJSON()).to.deep.equal({
           code: 400,
           type: 'INVALID_QUERY',
           message: '{"$in":[1],"of":2} invalid query syntax',
@@ -391,7 +393,7 @@ describe('MongoToParseQuery', () => {
         await mongoToParseQuery.find(TestTable, { where: { $total: { $in: [1] } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
-        expect(error.toJSON()).to.deep.equal({
+        expect((error as MongoToParseError).toJSON()).to.deep.equal({
           code: 400,
           type: 'INVALID_QUERY',
           message: 'field "$total" is invalid syntax',
@@ -404,7 +406,7 @@ describe('MongoToParseQuery', () => {
         await mongoToParseQuery.find(TestTable, { where: { total: { $int: [1] } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
-        expect(error.toJSON()).to.deep.equal({
+        expect((error as MongoToParseError).toJSON()).to.deep.equal({
           code: 400,
           type: 'INVALID_QUERY',
           message: '$int unhandled query syntax',

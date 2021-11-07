@@ -4,36 +4,28 @@ import http from 'http';
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { ParseServer } from 'parse-server';
+import rp from 'request-promise';
 import { Env } from './test-env';
 
 const app: Express = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ type: 'text/plain' }));
 app.use(bodyParser.json());
-const server = http.createServer(app);
 
 let mongoDBURI: string;
 let client: MongoClient;
-async function dropDB(): Promise<any> {
+async function dropDB(): Promise<void> {
   if (!client) {
     client = new MongoClient(mongoDBURI);
     client = await client.connect();
   }
-  return new Promise((resolve: (result: unknown) => void, reject: (error: unknown) => void) => {
-    client.db('dev-test-inmemory').dropDatabase((error, result) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      resolve(result);
-    });
-  });
+  await client.db('dev-test-inmemory').dropDatabase();
 }
 
 async function startMongoDB(): Promise<any> {
-  const mongod = new MongoMemoryServer({ instance: { dbName: 'dev-test-inmemory', port: 27020 } });
+  const mongod = await MongoMemoryServer.create({ instance: { dbName: 'dev-test-inmemory', port: 27020 } });
 
-  mongoDBURI = await mongod.getUri();
+  mongoDBURI = `${mongod.getUri()}dev-test-inmemory`;
 
   const serverURL = `http://localhost:${Env.PORT}/api/parse`;
   Env.serverURL = serverURL;
@@ -49,15 +41,24 @@ async function startMongoDB(): Promise<any> {
   Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
 }
 
-startMongoDB()
-  .catch((error: any) => {
-    // eslint-disable-next-line no-console
-    console.log('>>>>>>>>>>Enable to start MongoDB', error);
-  });
+async function waitForServerToBoot(): Promise<any> {
+  try {
+    await rp('http://localhost:1234/api/parse/health');
+  } catch (error) {
+    await waitForServerToBoot();
+  }
+}
 
-server.listen(Env.PORT, '0.0.0.0', () => {
-  // eslint-disable-next-line no-console
-  console.log('Express server listening on %d, in test mode', Env.PORT);
+// tslint:disable-next-line
+before(async function () {
+  this.timeout(50000);
+  await startMongoDB();
+  const server = http.createServer(app);
+  server.listen(Env.PORT, '0.0.0.0', () => {
+    // eslint-disable-next-line no-console
+    console.log('Express server listening on %d, in test mode', Env.PORT);
+  });
+  await waitForServerToBoot();
 });
 
 // Expose app
