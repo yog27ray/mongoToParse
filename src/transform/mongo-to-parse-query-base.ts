@@ -229,27 +229,27 @@ export class MongoToParseQueryBase {
     queryConditionKeys.forEach((queryConditionKey: string) => {
       switch (queryConditionKey) {
         case '$endsWith': {
-          query.endsWith(field, value[queryConditionKey]);
+          query.endsWith(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$startsWith': {
-          query.startsWith(field, value[queryConditionKey]);
+          query.startsWith(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$gt': {
-          query.greaterThan(field, value[queryConditionKey]);
+          query.greaterThan(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$lt': {
-          query.lessThan(field, value[queryConditionKey]);
+          query.lessThan(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$gte': {
-          query.greaterThanOrEqualTo(field, value[queryConditionKey]);
+          query.greaterThanOrEqualTo(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$lte': {
-          query.lessThanOrEqualTo(field, value[queryConditionKey]);
+          query.lessThanOrEqualTo(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$options': {
@@ -257,7 +257,7 @@ export class MongoToParseQueryBase {
         }
         case '$regex': {
           const regexValue = value as { $options: string };
-          query.matches(field, regexValue[queryConditionKey], regexValue.$options);
+          query.matches(field, regexValue[queryConditionKey] as RegExp, regexValue.$options);
           return;
         }
         case '$exists': {
@@ -272,31 +272,31 @@ export class MongoToParseQueryBase {
         case '$ne': {
           if (value[queryConditionKey] instanceof Array) {
             if (value[queryConditionKey].length === 1) {
-              query.notEqualTo(field, value[queryConditionKey][0]);
+              query.notEqualTo(field, value[queryConditionKey][0] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
               return;
             }
-            query.notContainedIn(field, value[queryConditionKey]);
+            query.notContainedIn(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
             return;
           }
-          query.notEqualTo(field, value[queryConditionKey]);
+          query.notEqualTo(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$in':
         case '$eq': {
           if (value[queryConditionKey] instanceof Array) {
             if (value[queryConditionKey].length === 1) {
-              query.equalTo(field, value[queryConditionKey][0]);
+              query.equalTo(field, value[queryConditionKey][0] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
               return;
             }
-            query.containedIn(field, value[queryConditionKey]);
+            query.containedIn(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
             return;
           }
-          query.equalTo(field, value[queryConditionKey]);
+          query.equalTo(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
           return;
         }
         case '$all': {
           if (value[queryConditionKey] instanceof Array) {
-            query.containsAll(field, value[queryConditionKey]);
+            query.containsAll(field, value[queryConditionKey] as T['attributes'][ParseAttributeKey<Parse.Object<T>>]);
             return;
           }
           query.containsAll(field, [value[queryConditionKey]]);

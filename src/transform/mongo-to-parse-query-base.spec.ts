@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { MongoToParseQuery } from '../../server';
+import { MongoToParseError, MongoToParseQuery } from '../../server';
 import { dropDB } from '../setup';
 import { ParseClassExtender } from './mongo-to-parse-query-base';
 
@@ -19,12 +19,13 @@ function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
 }
 
 declare type DummyRowClass = ParseClassExtender<{
-  time: Date,
-  rank: number,
-  message: string,
-  total: number,
-  field: number,
-  item: Parse.Object,
+  time: Date;
+  rank: number;
+  tags: Array<string>;
+  message: string;
+  total: number;
+  field: number;
+  item: Parse.Object;
 }>;
 
 async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<any> {
@@ -44,7 +45,8 @@ async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: Mong
     { time: new Date(110), rank: 12, message: 'this is message 12', total: 5, tags: ['tag1', 'tag2'] },
   ].map((each: { time: Date, rank: number, message: string, total: number, field: number }): DummyRowClass => {
     const tempObject = new TestTable();
-    Object.keys(each).forEach((key: keyof DummyRowClass['attributes']) => tempObject.set(key, each[key]));
+    Object.keys(each)
+      .forEach((key: keyof { time: Date, rank: number, message: string, total: number, field: number }) => tempObject.set(key, each[key]));
     return tempObject;
   }), {});
   const TestTable2 = mongoToParseQuery.parseTable('TestTable2');
@@ -89,6 +91,7 @@ describe('MongoToParseQuery', () => {
       const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
+        await dropDB();
         await createDummyRows(TestTable, mongoToParseQuery);
       });
 
@@ -137,7 +140,7 @@ describe('MongoToParseQuery', () => {
     });
 
     context('removeParesObjectDetails', () => {
-      let jsonParseObject: any;
+      let jsonParseObject: { [key: string]: unknown; };
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
 
       it('should do nothing when object is not present', async () => {
@@ -260,7 +263,8 @@ describe('MongoToParseQuery', () => {
             }));
           await mongoToParseQuery.updatePointersWithObject(pointers, 'total', {});
           await Promise.reject({ code: 99, message: 'should not reach here.' });
-        } catch (error) {
+        } catch (e) {
+          const error = e as { code: number, message: string; };
           expect({ code: error.code, message: error.message }).to.deep
             .equal({ code: 104, message: 'Object does not have an ID' });
         }
@@ -310,7 +314,7 @@ describe('MongoToParseQuery', () => {
           await mongoToParseQuery.Cloud.run('testCloudRun');
           await Promise.reject({ code: 99, message: 'Should not reach here' });
         } catch (error) {
-          const { code, message } = error;
+          const { code, message } = error as { code: number; message: string; };
           expect({ code, message }).to.deep.equal({
             code: 141,
             message: 'Invalid function: "testCloudRun"',
@@ -375,7 +379,7 @@ describe('MongoToParseQuery', () => {
         await mongoToParseQuery.find(TestTable, { where: { total: { $in: [1], of: 2 } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
-        expect(error.toJSON()).to.deep.equal({
+        expect((error as MongoToParseError).toJSON()).to.deep.equal({
           code: 400,
           type: 'INVALID_QUERY',
           message: '{"$in":[1],"of":2} invalid query syntax',
@@ -390,7 +394,7 @@ describe('MongoToParseQuery', () => {
         await mongoToParseQuery.find(TestTable, { where: { $total: { $in: [1] } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
-        expect(error.toJSON()).to.deep.equal({
+        expect((error as MongoToParseError).toJSON()).to.deep.equal({
           code: 400,
           type: 'INVALID_QUERY',
           message: 'field "$total" is invalid syntax',
@@ -403,7 +407,7 @@ describe('MongoToParseQuery', () => {
         await mongoToParseQuery.find(TestTable, { where: { total: { $int: [1] } } });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
-        expect(error.toJSON()).to.deep.equal({
+        expect((error as MongoToParseError).toJSON()).to.deep.equal({
           code: 400,
           type: 'INVALID_QUERY',
           message: '$int unhandled query syntax',
@@ -504,14 +508,13 @@ describe('MongoToParseQuery', () => {
         message: 'this is message 11',
         total: 5,
         tags: ['tag1'],
-        }, {
-          time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
-          rank: 12,
-          message: 'this is message 12',
-          total: 5,
-          tags: ['tag1', 'tag2'],
-        }]
-      );
+      }, {
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
+        rank: 12,
+        message: 'this is message 12',
+        total: 5,
+        tags: ['tag1', 'tag2'],
+      }]);
     });
 
     it('should return row where rank greater than equal to "7"', async () => {
@@ -546,7 +549,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -663,7 +666,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -729,7 +732,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -795,7 +798,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -851,7 +854,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -915,7 +918,7 @@ describe('MongoToParseQuery', () => {
         total: 5,
         tags: ['tag1'],
       }, {
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
@@ -927,7 +930,7 @@ describe('MongoToParseQuery', () => {
       const results = await mongoToParseQuery.find(TestTable, { where: { tags: { $all: ['tag1', 'tag2'] } }, ascending: 'rank' });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
-        time: {__type: 'Date', iso: '1970-01-01T00:00:00.110Z'},
+        time: { __type: 'Date', iso: '1970-01-01T00:00:00.110Z' },
         rank: 12,
         message: 'this is message 12',
         total: 5,
