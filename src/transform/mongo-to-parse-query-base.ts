@@ -38,7 +38,7 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
 }
 
 export declare type ParseClassExtender<T extends Parse.Attributes> = (Parse.Object<T & Parse.BaseAttributes>
-  & (new () => ParseClassExtender<T>));
+  & (new (attributes?: Partial<T>) => ParseClassExtender<T>));
 
 const CompoundQueryKeys: Array<string> = ['$and', '$or'];
 export class MongoToParseQueryBase {
