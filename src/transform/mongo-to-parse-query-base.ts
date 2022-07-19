@@ -121,7 +121,7 @@ export class MongoToParseQueryBase {
     if (!item) {
       return item;
     }
-    if (!item.get(fieldCheck)) {
+    if (!item.has(fieldCheck)) {
       await item.fetch(option);
     }
     return item;
