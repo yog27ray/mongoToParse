@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "coverage": "npm run coverage:mongodb",
-    "coverage:mongodb": "DEBUG=no nyc mocha src/setup.ts '**/*.spec.ts' && nyc report --reporter=text-lcov > coverage.lcov",
+    "coverage:mongodb": "DEBUG=no nyc mocha src/setup.ts 'src/**/*.spec.ts' && nyc report --reporter=text-lcov > coverage.lcov",
     "test": "mocha src/setup.ts \"src/**/*.spec.ts\" --exit"
   },
   "repository": {
