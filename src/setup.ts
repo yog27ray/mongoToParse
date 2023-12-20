@@ -24,11 +24,15 @@ async function dropDB(): Promise<void> {
 }
 
 async function startMongoDB(): Promise<any> {
+  console.log('>>>starting<<<');
   mongoDBURI = process.env.MONGO_URI || 'mongodb://localhost:27017/mongoToParse';
   DB_NAME = mongoDBURI.split('/').pop();
+  console.log('mongoDBURI:', mongoDBURI);
   await dropDB();
+  console.log('dbDrop complete');
   const serverURL = `http://localhost:${Env.PORT}/api/parse`;
   Env.serverURL = serverURL;
+  console.log('server url', Env.serverURL);
   const api = new ParseServer({
     databaseURI: mongoDBURI, // Connection string for your MongoDB database
     appId: Env.appId,
@@ -52,6 +56,7 @@ async function waitForServerToBoot(): Promise<any> {
     await rp('http://localhost:1234/api/parse/health');
   } catch (error) {
     await wait();
+    console.log('error: ', (error as { message: string; }).message);
     await waitForServerToBoot();
   }
 }
