@@ -281,7 +281,7 @@ describe('MongoToParseQuery', () => {
 
       it('should fetch result of aggregate', async () => {
         const results = await mongoToParseQuery.aggregate(TestTable, {
-          pipeline: [{ match: { total: 4 } }, { project: { total: 1, rank: 1, objectId: 0 } }, { sort: { rank: -1 } }],
+          pipeline: [{ $match: { total: 4 } }, { $project: { total: 1, rank: 1, objectId: 0 } }, { $sort: { rank: -1 } }],
         });
         expect(results).to.deep.equal([
           { rank: 10, total: 4 },
