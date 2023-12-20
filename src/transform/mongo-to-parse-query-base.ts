@@ -4,7 +4,7 @@ import { ParseClassExtender } from './parse-class-extender';
 export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
 
 declare type WhereType<T extends Parse.Attributes> = (
-  { $or?: Array<unknown>, $and?: Array<unknown> } & { [key in keyof (T & Parse.BaseAttributes)]: unknown });
+  Partial<{ $or?: Array<unknown>, $and?: Array<unknown> } & { [key in keyof (T & Parse.BaseAttributes)]: unknown }>);
 
 export declare interface RequestQueryPayload<T extends Parse.Attributes> {
   project?: Partial<Array<keyof T>>;
@@ -60,7 +60,7 @@ export class MongoToParseQueryBase {
   find<T extends Parse.Attributes>(
     table: new () => ParseClassExtender<T>,
     { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<T>)
-    : Promise<Array<ParseClassExtender<T>>> {
+    : Promise<Array<InstanceType<typeof table>>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery<T, ParseClassExtender<T>>(query, { project, descending, ascending, skip, include, limit });
     return query.find(option);
@@ -68,10 +68,11 @@ export class MongoToParseQueryBase {
 
   findOne<T extends Parse.Attributes>(
     table: new () => ParseClassExtender<T>,
-    { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<T>): Promise<ParseClassExtender<T>> {
+    { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<T>)
+    : Promise<InstanceType<typeof table>> {
     const query = this.generateWhereQuery<T, ParseClassExtender<T>>(table, where);
     this.updateQuery<T, ParseClassExtender<T>>(query, { project, descending, ascending, skip, include, limit });
-    return query.first(option) as unknown as Promise<ParseClassExtender<T>>;
+    return query.first(option);
   }
 
   aggregate<T extends Parse.Attributes>(table: new () => Parse.Object<T>, { pipeline }: AggregateDataType): Promise<Array<unknown>> {
@@ -126,9 +127,7 @@ export class MongoToParseQueryBase {
     return item;
   }
 
-  async getObjectsFromPointers<
-    T extends Parse.Attributes = { objectId: string; },
-    Z extends ParseClassExtender<T> = ParseClassExtender<T>>(
+  async getObjectsFromPointers<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
     items: Array<Z>,
     fieldCheck: Extract<keyof T, string>,
     option: Parse.FullOptions): Promise<Array<Z>> {
