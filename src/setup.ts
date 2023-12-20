@@ -65,7 +65,7 @@ async function waitForServerToBoot(): Promise<any> {
 before(async function a() {
   this.timeout(50000);
   await startMongoDB();
-  app.listen(Env.PORT, '0.0.0.0', () => {
+  app.listen(Env.PORT, '::', () => {
     // eslint-disable-next-line no-console
     console.log('Express server listening on %d, in test mode', Env.PORT);
   });
