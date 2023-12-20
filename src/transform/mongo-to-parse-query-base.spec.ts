@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../server';
 import { dropDB } from '../setup';
-import { ParseClassExtender } from './mongo-to-parse-query-base';
+import { ParseClassExtender } from './parse-class-extender';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
@@ -28,7 +28,7 @@ declare type DummyRowClass = ParseClassExtender<{
   item: Parse.Object;
 }>;
 
-async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<any> {
+async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<any> {
   await dropDB();
   await mongoToParseQuery.saveAll([
     { time: new Date(0), rank: 1, message: 'this is message 1', total: 1, field: 1 },
@@ -44,7 +44,7 @@ async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: Mong
     { time: new Date(100), rank: 11, message: 'this is message 11', total: 5, tags: ['tag1'] },
     { time: new Date(110), rank: 12, message: 'this is message 12', total: 5, tags: ['tag1', 'tag2'] },
   ].map((each: { time: Date, rank: number, message: string, total: number, field: number }): DummyRowClass => {
-    const tempObject = new TestTable();
+    const tempObject: DummyRowClass = new TestTable();
     Object.keys(each)
       .forEach((key: keyof { time: Date, rank: number, message: string, total: number, field: number }) => tempObject.set(key, each[key]));
     return tempObject;
@@ -52,7 +52,10 @@ async function createDummyRows(TestTable: DummyRowClass, mongoToParseQuery: Mong
   const TestTable2 = mongoToParseQuery.parseTable('TestTable2');
   const item = new TestTable2();
   item.set('name', 'xyz');
-  const result = await mongoToParseQuery.findOne(TestTable, { where: { rank: 10 }, ascending: 'rank' });
+  const result = await mongoToParseQuery.findOne(TestTable, {
+    where: { rank: 10 },
+    ascending: 'rank',
+  });
   await result.save({ item });
 }
 
@@ -67,14 +70,17 @@ describe('MongoToParseQuery', () => {
 
     context('findOne', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
       });
 
       it('should fetch first result with total 4', async () => {
-        const result = await mongoToParseQuery.findOne(TestTable, { where: { total: 4 }, descending: 'rank' });
+        const result = await mongoToParseQuery.findOne(TestTable, {
+          where: { total: 4 },
+          descending: 'rank',
+        });
         const [resultJSON] = parseObjectJSON([result]);
         expect(resultJSON).to.deep.equal({
           time: { __type: 'Date', iso: '1970-01-01T00:00:00.090Z' },
@@ -88,7 +94,7 @@ describe('MongoToParseQuery', () => {
 
     context('find', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await dropDB();
@@ -103,7 +109,7 @@ describe('MongoToParseQuery', () => {
 
     context('count', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -159,7 +165,7 @@ describe('MongoToParseQuery', () => {
     context('fetchObject', () => {
       let parseObject: DummyRowClass;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -191,7 +197,7 @@ describe('MongoToParseQuery', () => {
     context('getObjectsFromPointers', () => {
       let rows: Array<ParseClassExtender<{ total: number }>>;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -206,7 +212,7 @@ describe('MongoToParseQuery', () => {
       it('should fetch pointers when there are pointer object', async () => {
         const invalidPointer = new TestTable();
         invalidPointer.id = 'invalidPointer';
-        const pointers = [].concat(rows[0], rows[1])
+        const pointers: Array<DummyRowClass> = [].concat(rows[0], rows[1])
           .concat(invalidPointer)
           .concat(...[rows[2], rows[3]].map((each: DummyRowClass) => {
             const pointer = new TestTable();
@@ -223,7 +229,7 @@ describe('MongoToParseQuery', () => {
     context('updatePointersWithObject', () => {
       let rows: Array<DummyRowClass>;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -273,7 +279,7 @@ describe('MongoToParseQuery', () => {
 
     context('aggregate', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
@@ -281,7 +287,7 @@ describe('MongoToParseQuery', () => {
 
       it('should fetch result of aggregate', async () => {
         const results = await mongoToParseQuery.aggregate(TestTable, {
-          pipeline: [{ match: { total: 4 } }, { project: { total: 1, rank: 1, objectId: 0 } }, { sort: { rank: -1 } }],
+          pipeline: [{ $match: { total: 4 } }, { $project: { total: 1, rank: 1, objectId: 0 } }, { $sort: { rank: -1 } }],
         });
         expect(results).to.deep.equal([
           { rank: 10, total: 4 },
@@ -294,7 +300,7 @@ describe('MongoToParseQuery', () => {
 
     context('getPointer', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       it('should get pointer', async () => {
         const item = new TestTable();
@@ -330,7 +336,7 @@ describe('MongoToParseQuery', () => {
 
     context('getPointerFromId', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       it('should generate pointer from object.', async () => {
         const pointer = mongoToParseQuery.getPointerFromId('testId', TestTable);
@@ -341,7 +347,7 @@ describe('MongoToParseQuery', () => {
 
     context('generateWhereQuery', () => {
       const mongoToParseQuery: any = new MongoToParseQuery();
-      const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+      const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
       it('should generate query when not compound query exist.', async () => {
         const query = mongoToParseQuery.generateWhereQuery(TestTable, { a: 1, b: '2', c: [3], d: [4, '5'] });
         expect(JSON.parse(JSON.stringify(query))).to.deep.equal({ where: { a: 1, b: '2', c: 3, d: { $in: [4, '5'] } } });
@@ -368,7 +374,7 @@ describe('MongoToParseQuery', () => {
 
   describe('query conditions', () => {
     const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-    const TestTable: DummyRowClass = mongoToParseQuery.parseTable('TestTable');
+    const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
     before(async () => {
       await createDummyRows(TestTable, mongoToParseQuery);
@@ -376,7 +382,9 @@ describe('MongoToParseQuery', () => {
 
     it('should give error when invalid syntax is provided', async () => {
       try {
-        await mongoToParseQuery.find(TestTable, { where: { total: { $in: [1], of: 2 } } });
+        await mongoToParseQuery.find(TestTable, {
+          where: { total: { $in: [1], of: 2 } },
+        });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
         expect((error as MongoToParseError).toJSON()).to.deep.equal({
@@ -416,7 +424,10 @@ describe('MongoToParseQuery', () => {
     });
 
     it('should return row where message endsWith "endsWith"', async () => {
-      const results = await mongoToParseQuery.find(TestTable, { where: { message: { $endsWith: 'endsWith' } }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, {
+        where: { message: { $endsWith: 'endsWith' } },
+        ascending: 'rank',
+      });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.020Z' },
@@ -951,13 +962,27 @@ describe('MongoToParseQuery', () => {
 
     it('should return row where rank is in [1, 2, 3] by skip 1 and limit 1 and select message', async () => {
       const results = await mongoToParseQuery
-        .find(TestTable, { where: { rank: [1, 2, 3] }, ascending: 'rank', skip: 1, limit: 1, project: ['message'] });
+        .find(TestTable, {
+          where: { rank: [1, 2, 3] },
+          ascending: 'rank',
+          skip: 1,
+          limit: 1,
+          project: ['message'],
+        });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{ message: 'startsWith this regex is message 2' }]);
     });
 
     it('should return row where rank is 3 or total is 2', async () => {
-      const results = await mongoToParseQuery.find(TestTable, { where: { $or: [{ rank: 3 }, { total: 2 }] }, ascending: 'rank' });
+      const results = await mongoToParseQuery.find(TestTable, {
+        where: {
+          $or: [
+            { rank: 3 },
+            { total: 2 },
+          ],
+        },
+        ascending: 'rank',
+      });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{
         time: { __type: 'Date', iso: '1970-01-01T00:00:00.010Z' },
