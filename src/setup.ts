@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
