@@ -1,5 +1,5 @@
 import bodyParser from 'body-parser';
-import express, { Express } from 'express';
+import express, { Express, RequestHandler } from 'express';
 import { MongoClient } from 'mongodb';
 import { ParseServer } from 'parse-server';
 import * as process from 'process';
@@ -36,12 +36,14 @@ async function startMongoDB(): Promise<any> {
   });
   await api.start();
   // Serve the Parse API on the /parse URL prefix
-  app.use('/api/parse', api.app);
+  app.use('/api/parse', api.app as RequestHandler);
   Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
 }
 
 async function wait(time = 100): Promise<void> {
-  return  new Promise((resolve: () => void) => setTimeout(resolve, time));
+  return new Promise((resolve: () => void) => {
+    setTimeout(resolve, time);
+  });
 }
 
 async function waitForServerToBoot(): Promise<any> {
@@ -54,7 +56,7 @@ async function waitForServerToBoot(): Promise<any> {
 }
 
 // tslint:disable-next-line
-before(async function () {
+before(async function a() {
   this.timeout(50000);
   await startMongoDB();
   app.listen(Env.PORT, '0.0.0.0', () => {
