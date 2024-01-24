@@ -2,8 +2,10 @@ import { MongoToParseError } from './src/error/mongo-to-parse-error';
 import { MongoToParseQueryBase, RequestCountPayload, RequestQueryPayload } from './src/transform/mongo-to-parse-query-base';
 
 let ParseLib;
+let isParseServerLoaded = false;
 try {
   ParseLib = Parse;
+  isParseServerLoaded = true;
 } catch (error) {
   if ((error as { message: string; }).message !== 'Parse is not defined') {
     throw error;
@@ -28,10 +30,10 @@ class MongoToParseQuery extends MongoToParseQueryBase {
     serverURL: string,
     config: { masterKey?: string, disableSingleInstance?: boolean } = {}): Promise<void> {
     const isNodeEnvironment = checkIsNodeEnvironment();
-    if (isNodeEnvironment && ParseLib) {
+    if (isNodeEnvironment && isParseServerLoaded) {
       throw Error('Initialize is not required when parse-server is initialized.');
     }
-    ParseLib = await import(isNodeEnvironment ? 'parse/node' : 'parse');
+    ({ default: ParseLib } = await import(isNodeEnvironment ? 'parse/node' : 'parse'));
     ParseLib.initialize(applicationId, undefined, config.masterKey);
     ParseLib.serverURL = serverURL;
     this.setParse(ParseLib);

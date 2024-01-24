@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
-import { dropDB } from '../setup';
+import { dropDB } from '../setup-server';
 import { ParseClassExtender } from './parse-class-extender';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
