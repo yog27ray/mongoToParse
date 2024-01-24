@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup-server';
 import { ParseClassExtender } from './parse-class-extender';
-import {Env} from "../test-env";
+import { Env } from '../test-env';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
@@ -69,7 +69,7 @@ describe('MongoToParseQuery', () => {
           await Promise.reject({ message: 'should not reach here.' });
         } catch (error) {
           expect((error as { message: string; }).message).to
-            .equal('Initialize is not required when parse-server is initialized.')
+            .equal('Initialize is not required when parse-server is initialized.');
         }
       });
     });
