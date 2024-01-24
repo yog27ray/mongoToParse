@@ -31,11 +31,7 @@ class MongoToParseQuery extends MongoToParseQueryBase {
     if (isNodeEnvironment && ParseLib) {
       throw Error('Initialize is not required when parse-server is initialized.');
     }
-    if (isNodeEnvironment) {
-      ParseLib = await import('parse/node');
-    } else {
-      ParseLib = await import('parse');
-    }
+    ParseLib = await import(isNodeEnvironment ? 'parse/node' : 'parse');
     ParseLib.initialize(applicationId, undefined, config.masterKey);
     ParseLib.serverURL = serverURL;
     this.setParse(ParseLib);
