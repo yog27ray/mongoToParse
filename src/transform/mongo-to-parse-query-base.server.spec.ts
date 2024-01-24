@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup-server';
-import { ParseClassExtender } from './parse-class-extender';
 import { Env } from '../test-env';
+import { ParseClassExtender } from './parse-class-extender';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
