@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup-server';
 import { ParseClassExtender } from './parse-class-extender';
+import {Env} from "../test-env";
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
@@ -61,6 +62,18 @@ async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQ
 
 describe('MongoToParseQuery', () => {
   describe('function calls', () => {
+    context('initialize on server', async () => {
+      it('should give error when initialize is called in server mode.', async () => {
+        try {
+          await new MongoToParseQuery().initialize(Env.appId, Env.serverURL);
+          await Promise.reject({ message: 'should not reach here.' });
+        } catch (error) {
+          expect((error as { message: string; }).message).to
+            .equal('Initialize is not required when parse-server is initialized.')
+        }
+      });
+    });
+
     context('parseTable', () => {
       it('should return parse table', async () => {
         const Table = new MongoToParseQuery().parseTable('TableName');

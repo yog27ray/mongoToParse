@@ -18,7 +18,7 @@ describe('MongoToParseQuery', () => {
     context('parseTable', () => {
       it('should return parse table', async () => {
         const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-        await mongoToParseQuery.initialize(Env.appId, Env.serverURL);
+        await mongoToParseQuery.initialize(Env.appId, Env.serverURL, { disableSingleInstance: true });
         const Table = mongoToParseQuery.parseTable('TableName');
         expect(new Table() instanceof ((mongoToParseQuery as unknown as { parse: any }).parse).Object).to.be.true;
       });
