@@ -12,6 +12,9 @@ class MongoToParseQuery extends MongoToParseQueryBase {
     if (!isNodeEnvironment) {
       ParseLib = await import('parse');
     }
+    if (typeof ParseLib === 'undefined') {
+      ParseLib = await import('parse/node');
+    }
     ParseLib.initialize(applicationId, undefined, config.masterKey);
     ParseLib.serverURL = serverURL;
     this.setParse(ParseLib);
