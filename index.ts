@@ -17,8 +17,9 @@ class MongoToParseQuery extends MongoToParseQueryBase {
     ParseLib.initialize(applicationId, undefined, config.masterKey);
     ParseLib.serverURL = serverURL;
     this.setParse(ParseLib);
-    if (config.disableSingleInstance && (ParseLib.Object as unknown as { disableSingleInstance: () => void }).disableSingleInstance) {
-      (ParseLib.Object as unknown as { disableSingleInstance: () => void }).disableSingleInstance();
+    if (config.disableSingleInstance
+      && (ParseLib.Object as unknown as { disableSingleInstance(): void }).disableSingleInstance) {
+      (ParseLib.Object as unknown as { disableSingleInstance(): void }).disableSingleInstance();
     }
   }
 }
