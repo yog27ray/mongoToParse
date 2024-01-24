@@ -1,22 +1,7 @@
 import { expect } from 'chai';
-import { MongoToParseError, MongoToParseQuery } from '../../index';
+import { MongoToParseQuery } from '../../index';
 import { Env } from '../test-env';
 import { ParseClassExtender } from './parse-class-extender';
-
-function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
-  return results.map((each: Parse.Object) => {
-    const resultJSON = each.toJSON();
-    delete resultJSON.updatedAt;
-    delete resultJSON.createdAt;
-    delete resultJSON.objectId;
-    if (resultJSON.item) {
-      delete resultJSON.item.objectId;
-      delete resultJSON.item.createdAt;
-      delete resultJSON.item.updatedAt;
-    }
-    return resultJSON;
-  });
-}
 
 declare type DummyRowClass = ParseClassExtender<{
   time: Date;
