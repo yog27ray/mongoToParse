@@ -6,7 +6,7 @@
   "scripts": {
     "coverage": "npm run coverage:mongodb:server && npm run coverage:mongodb:node",
     "coverage:mongodb:server": "DEBUG=no nyc mocha src/setup-server.ts 'src/**/*.server.spec.ts' && nyc report --reporter=text-lcov > coverage-1.lcov",
-    "coverage:mongodb:node": "DEBUG=no nyc mocha src/setup-node.ts 'src/**/*.server.spec.ts' && nyc report --reporter=text-lcov > coverage-2.lcov",
+    "coverage:mongodb:node": "DEBUG=no nyc mocha src/setup-node.ts 'src/**/*.node.spec.ts' && nyc report --reporter=text-lcov > coverage-2.lcov",
     "test:server": "mocha src/setup-server.ts \"src/**/*.server.spec.ts\" --exit",
     "test:node": "mocha src/setup-node.ts \"src/**/*.node.spec.ts\" --exit",
     "test": "npm run test:server && npm run test:node"
