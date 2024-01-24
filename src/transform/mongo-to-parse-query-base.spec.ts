@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { MongoToParseError, MongoToParseQuery } from '../../server';
+import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup';
 import { ParseClassExtender } from './parse-class-extender';
 
