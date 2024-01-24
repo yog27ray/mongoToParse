@@ -1,0 +1,1 @@
+{"version":3,"file":"setup-node.js","sourceRoot":"","sources":["../../src/setup-node.ts"],"names":[],"mappings":";;AAAA,+BAA+B;AAC/B,yCAAiC;AAEjC,MAAM,CAAC,GAAG,EAAE;IACV,OAAO,CAAC,GAAG,CAAC,gBAAgB,CAAC,CAAC;IAC9B,cAAG,CAAC,SAAS,GAAG,oBAAoB,cAAG,CAAC,IAAI,YAAY,CAAC;IACzD,OAAO,CAAC,GAAG,CAAC,YAAY,EAAE,cAAG,CAAC,SAAS,CAAC,CAAC;AAC3C,CAAC,CAAC,CAAC"}

@@ -62,7 +62,7 @@ class MongoToParseQueryBase {
         if (!item) {
             return item;
         }
-        if (!item.get(fieldCheck)) {
+        if (!item.has(fieldCheck)) {
             await item.fetch(option);
         }
         return item;
@@ -74,6 +74,8 @@ class MongoToParseQueryBase {
         }
         const Table = this.parseTable(items[0].className);
         const objects = await this.find(Table, {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             where: { objectId: pointers.map((pointer) => pointer.id) },
             option,
         });
