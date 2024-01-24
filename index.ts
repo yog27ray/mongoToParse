@@ -1,18 +1,40 @@
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
 import { MongoToParseQueryBase, RequestCountPayload, RequestQueryPayload } from './src/transform/mongo-to-parse-query-base';
 
-let ParseLib = Parse;
+let ParseLib;
+try {
+  ParseLib = Parse;
+} catch (error) {
+  if ((error as { message: string; }).message !== 'Parse is not defined') {
+    throw error;
+  }
+}
+
+function checkIsNodeEnvironment(): boolean {
+  return ((typeof process) === 'object');
+}
 
 class MongoToParseQuery extends MongoToParseQueryBase {
+  constructor() {
+    super();
+    const isNodeEnvironment = checkIsNodeEnvironment();
+    if (isNodeEnvironment) {
+      this.setParse(ParseLib);
+    }
+  }
+
   async initialize(
     applicationId: string,
     serverURL: string,
     config: { masterKey?: string, disableSingleInstance?: boolean } = {}): Promise<void> {
-    const isNodeEnvironment = typeof process !== 'undefined';
-    if (!isNodeEnvironment) {
-      ParseLib = await import('parse');
-    } else if (typeof ParseLib === 'undefined') {
+    const isNodeEnvironment = checkIsNodeEnvironment();
+    if (isNodeEnvironment && ParseLib) {
+      throw Error('Initialize is not required when parse-server is initialized.');
+    }
+    if (isNodeEnvironment) {
       ParseLib = await import('parse/node');
+    } else {
+      ParseLib = await import('parse');
     }
     ParseLib.initialize(applicationId, undefined, config.masterKey);
     ParseLib.serverURL = serverURL;
