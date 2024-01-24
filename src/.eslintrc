@@ -19,8 +19,5 @@
         "prefer-promise-reject-errors": 0
       }
     }
-  ],
-  "parserOptions": {
-    "project": "../tsconfig.json"
-  }
+  ]
 }
