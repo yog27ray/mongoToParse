@@ -210,7 +210,7 @@ export class MongoToParseQueryBase {
     if ((field as string).startsWith('$')) {
       throw new MongoToParseError({
         code: 400,
-        message: `field '${field as string}' is invalid syntax`,
+        message: `field "${field as string}" is invalid syntax`,
         type: 'INVALID_QUERY',
       });
     }
