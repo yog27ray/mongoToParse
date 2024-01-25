@@ -84,7 +84,7 @@ describe('MongoToParseQuery', () => {
           where: {},
           descending: 'rank',
         }) as Array<ParseRoleExtender<{ rank: number }>>;
-        result.map((each) => each.getName());
+        result.map((each: ParseRoleExtender<{ rank: number }>) => each.getName());
       });
     });
 
