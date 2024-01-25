@@ -1,6 +1,6 @@
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
 import { MongoToParseQueryBase, RequestCountPayload, RequestQueryPayload } from './src/transform/mongo-to-parse-query-base';
-import { ParseClassExtender } from './src/transform/parse-class-extender';
+import { ParseClassExtender, ParseClassType } from './src/transform/parse-class-extender';
 import { ParseRoleExtender } from './src/transform/parse-role-extender';
 
 let ParseLib;
@@ -50,6 +50,7 @@ export {
   MongoToParseError,
   MongoToParseQueryBase,
   ParseClassExtender,
+  ParseClassType,
   ParseRoleExtender,
   RequestQueryPayload,
   RequestCountPayload,
