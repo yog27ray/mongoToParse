@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup-server';
 import { Env } from '../test-env';
-import { ParseClassExtender } from './parse-class-extender';
+import { ParseClassExtender, ParseRoleExtender } from './parse-class-extender';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
@@ -71,6 +71,19 @@ describe('MongoToParseQuery', () => {
           expect((error as { message: string; }).message).to
             .equal('Initialize is not required when parse-server is initialized.');
         }
+      });
+    });
+
+    context('parse role type check', async () => {
+      const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
+
+      it('should give error when initialize is called in server mode.', async () => {
+        const Role = Parse.Role as unknown as new () => ParseRoleExtender<{ rank: number }>;
+        const result = await mongoToParseQuery.find(Role, {
+          where: {},
+          descending: 'rank',
+        }) as Array<ParseRoleExtender<{ rank: number }>>;
+        result.map((each) => each.getName());
       });
     });
 

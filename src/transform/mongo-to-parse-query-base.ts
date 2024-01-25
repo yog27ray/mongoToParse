@@ -1,5 +1,5 @@
 import { MongoToParseError } from '../error/mongo-to-parse-error';
-import { ParseClassExtender } from './parse-class-extender';
+import { ParseClassExtender, ParseClassType } from './parse-class-extender';
 
 export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
 
@@ -58,7 +58,7 @@ export class MongoToParseQueryBase {
   }
 
   find<T extends Parse.Attributes>(
-    table: new () => ParseClassExtender<T>,
+    table: ParseClassType<T>,
     { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<T>)
     : Promise<Array<InstanceType<typeof table>>> {
     const query = this.generateWhereQuery(table, where);
@@ -67,7 +67,7 @@ export class MongoToParseQueryBase {
   }
 
   findOne<T extends Parse.Attributes>(
-    table: new () => ParseClassExtender<T>,
+    table: ParseClassType<T>,
     { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<T>)
     : Promise<InstanceType<typeof table>> {
     const query = this.generateWhereQuery<T, ParseClassExtender<T>>(table, where);
@@ -80,8 +80,8 @@ export class MongoToParseQueryBase {
     return query.aggregate(pipeline);
   }
 
-  count<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
-    table: new () => Z,
+  count<T extends Parse.Attributes>(
+    table: ParseClassType<T>,
     { where, option, skip, limit }: RequestCountPayload<T>): Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
@@ -319,7 +319,7 @@ export class MongoToParseQueryBase {
   }
 
   private generateKeyValueQuery<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
-    table: new () => Z,
+    table: ParseClassType<T>,
     key: string,
     value: unknown,
     query: Parse.Query<Parse.Object<T>> = new this.parse.Query(table)): Parse.Query<Z> {
@@ -341,7 +341,7 @@ export class MongoToParseQueryBase {
   }
 
   private generateWhereQuery<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(
-    table: new () => Z,
+    table: ParseClassType<T>,
     where: { [key: string]: unknown }): Parse.Query<Z> {
     let keys: Array<string> = Object.keys(where);
     let query = new this.parse.Query(table) as Parse.Query<Z>;
