@@ -23,13 +23,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ParseRoleExtender = exports.ParseClassExtender = exports.MongoToParseQueryBase = exports.MongoToParseError = exports.MongoToParseQuery = void 0;
+exports.ParseRoleExtender = exports.ParseObjectExtender = exports.MongoToParseQueryBase = exports.MongoToParseError = exports.MongoToParseQuery = void 0;
 const mongo_to_parse_error_1 = require("./src/error/mongo-to-parse-error");
 Object.defineProperty(exports, "MongoToParseError", { enumerable: true, get: function () { return mongo_to_parse_error_1.MongoToParseError; } });
 const mongo_to_parse_query_base_1 = require("./src/transform/mongo-to-parse-query-base");
 Object.defineProperty(exports, "MongoToParseQueryBase", { enumerable: true, get: function () { return mongo_to_parse_query_base_1.MongoToParseQueryBase; } });
-const parse_class_extender_1 = require("./src/transform/parse-class-extender");
-Object.defineProperty(exports, "ParseClassExtender", { enumerable: true, get: function () { return parse_class_extender_1.ParseClassExtender; } });
+const parse_object_extender_1 = require("./src/transform/parse-object-extender");
+Object.defineProperty(exports, "ParseObjectExtender", { enumerable: true, get: function () { return parse_object_extender_1.ParseObjectExtender; } });
 const parse_role_extender_1 = require("./src/transform/parse-role-extender");
 Object.defineProperty(exports, "ParseRoleExtender", { enumerable: true, get: function () { return parse_role_extender_1.ParseRoleExtender; } });
 let ParseLib;
