@@ -59,30 +59,30 @@ export class MongoToParseQueryBase {
 
   find<Z extends ParseClassType>(
     table: Z,
-    { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>["attributes"]>)
+    { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>['attributes']>)
     : Promise<Array<InstanceType<Z>>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { project, descending, ascending, skip, include, limit });
-    return query.find(option) as Promise<Array<InstanceType<Z>>>;
+    return query.find(option);
   }
 
   findOne<Z extends ParseClassType>(
     table: Z,
-    { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>["attributes"]>)
+    { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>['attributes']>)
     : Promise<InstanceType<Z>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { project, descending, ascending, skip, include, limit });
-    return query.first(option) as Promise<InstanceType<Z>>;
+    return query.first(option);
   }
 
   aggregate<Z extends ParseClassType>(table: Z, { pipeline }: AggregateDataType): Promise<Array<unknown>> {
-    const query = new this.parse.Query(table) as Parse.Query<Parse.Object<InstanceType<Z>["attributes"]>>;
+    const query = new this.parse.Query(table) as Parse.Query<Parse.Object<InstanceType<Z>['attributes']>>;
     return query.aggregate(pipeline);
   }
 
   count<Z extends ParseClassType>(
     table: Z,
-    { where, option, skip, limit }: RequestCountPayload<InstanceType<Z>["attributes"]>): Promise<number> {
+    { where, option, skip, limit }: RequestCountPayload<InstanceType<Z>['attributes']>): Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
     return query.count(option);
@@ -116,7 +116,7 @@ export class MongoToParseQueryBase {
 
   async fetchObject<Z extends ParseClassExtender>(
     item: Z,
-    fieldCheck: Extract<keyof Z["attributes"], string>,
+    fieldCheck: Extract<keyof Z['attributes'], string>,
     option: Parse.FullOptions): Promise<Z> {
     if (!item) {
       return item;
@@ -129,18 +129,18 @@ export class MongoToParseQueryBase {
 
   async getObjectsFromPointers<Z extends ParseClassExtender>(
     items: Array<Z>,
-    fieldCheck: Extract<keyof Z["attributes"], string>,
+    fieldCheck: Extract<keyof Z['attributes'], string>,
     option: Parse.FullOptions): Promise<Array<Z>> {
     const pointers = items.filter((item: Z) => !item.has(fieldCheck));
     if (!pointers.length) {
       return items;
     }
-    const Table = this.parseTable<Z["attributes"]>(items[0].className) as new () => Z;
-    const objects = await this.find<new () => Z>(Table, {
-      // @ts-ignore
-      where: { objectId: pointers.map((pointer: Parse.Object<Z["attributes"]>) => pointer.id) },
+    const Table = this.parseTable<Z['attributes']>(items[0].className) as new () => Z;
+    const objects = await this.find(Table, {
+      // @ts-expect-error objectId will be present
+      where: { objectId: pointers.map((pointer: Parse.Object<Z['attributes']>) => pointer.id) },
       option,
-    }) as Array<Z>;
+    });
     return items.map((item: Z): Z => {
       if (item.has(fieldCheck)) {
         return item;
@@ -151,7 +151,7 @@ export class MongoToParseQueryBase {
   }
 
   async updatePointersWithObject<Z extends ParseClassExtender>(items: Array<Z>,
-    fieldCheck: Extract<keyof Z["attributes"], string>, option: Parse.FullOptions): Promise<void> {
+    fieldCheck: Extract<keyof Z['attributes'], string>, option: Parse.FullOptions): Promise<void> {
     const pointers = items.filter((item: Z) => !item.has(fieldCheck));
     if (!pointers.length) {
       return;
@@ -166,7 +166,7 @@ export class MongoToParseQueryBase {
   }
 
   getPointer<Z extends ParseClassExtender>(object: Z): Z {
-    const Table = this.parseTable<Z["attributes"]>(object.className);
+    const Table = this.parseTable<Z['attributes']>(object.className);
     const pointer = new Table() as Z;
     pointer.id = object.id;
     return pointer;
@@ -182,7 +182,7 @@ export class MongoToParseQueryBase {
 
   private updateQuery<Z extends ParseClassExtender>(
     query: Parse.Query<Z>,
-    { project, descending, ascending, skip, include, limit }: UpdateQueryDataType<Parse.Object<Z["attributes"]>>): void {
+    { project, descending, ascending, skip, include, limit }: UpdateQueryDataType<Parse.Object<Z['attributes']>>): void {
     if (descending) {
       query.descending(descending);
     }
@@ -199,7 +199,7 @@ export class MongoToParseQueryBase {
       query.limit(limit);
     }
     if (include) {
-      include.forEach((field: keyof Z["attributes"]) => query.include(field));
+      include.forEach((field: keyof Z['attributes']) => query.include(field));
     }
   }
 
@@ -210,7 +210,7 @@ export class MongoToParseQueryBase {
     if ((field as string).startsWith('$')) {
       throw new MongoToParseError({
         code: 400,
-        message: `field "${field as string}" is invalid syntax`,
+        message: `field '${field as string}' is invalid syntax`,
         type: 'INVALID_QUERY',
       });
     }
@@ -232,27 +232,27 @@ export class MongoToParseQueryBase {
     queryConditionKeys.forEach((queryConditionKey: string) => {
       switch (queryConditionKey) {
         case '$endsWith': {
-          query.endsWith(field, value[queryConditionKey]);
+          query.endsWith(field, value[queryConditionKey] as string);
           return;
         }
         case '$startsWith': {
-          query.startsWith(field, value[queryConditionKey]);
+          query.startsWith(field, value[queryConditionKey] as string);
           return;
         }
         case '$gt': {
-          query.greaterThan(field, value[queryConditionKey]);
+          query.greaterThan(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
           return;
         }
         case '$lt': {
-          query.lessThan(field, value[queryConditionKey]);
+          query.lessThan(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
           return;
         }
         case '$gte': {
-          query.greaterThanOrEqualTo(field, value[queryConditionKey]);
+          query.greaterThanOrEqualTo(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
           return;
         }
         case '$lte': {
-          query.lessThanOrEqualTo(field, value[queryConditionKey]);
+          query.lessThanOrEqualTo(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
           return;
         }
         case '$options': {
@@ -275,31 +275,31 @@ export class MongoToParseQueryBase {
         case '$ne': {
           if (value[queryConditionKey] instanceof Array) {
             if (value[queryConditionKey].length === 1) {
-              query.notEqualTo(field, value[queryConditionKey][0]);
+              query.notEqualTo(field, value[queryConditionKey][0] as Z['attributes'][ParseAttributeKey<Z>]);
               return;
             }
-            query.notContainedIn(field, value[queryConditionKey]);
+            query.notContainedIn(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
             return;
           }
-          query.notEqualTo(field, value[queryConditionKey]);
+          query.notEqualTo(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
           return;
         }
         case '$in':
         case '$eq': {
           if (value[queryConditionKey] instanceof Array) {
             if (value[queryConditionKey].length === 1) {
-              query.equalTo(field, value[queryConditionKey][0]);
+              query.equalTo(field, value[queryConditionKey][0] as Z['attributes'][ParseAttributeKey<Z>]);
               return;
             }
-            query.containedIn(field, value[queryConditionKey]);
+            query.containedIn(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
             return;
           }
-          query.equalTo(field, value[queryConditionKey]);
+          query.equalTo(field, value[queryConditionKey] as Z['attributes'][ParseAttributeKey<Z>]);
           return;
         }
         case '$all': {
           if (value[queryConditionKey] instanceof Array) {
-            query.containsAll(field, value[queryConditionKey]);
+            query.containsAll(field, value[queryConditionKey] as Array<unknown>);
             return;
           }
           query.containsAll(field, [value[queryConditionKey]]);
@@ -334,7 +334,7 @@ export class MongoToParseQueryBase {
         return this.parse.Query.or(...queries) as Parse.Query<InstanceType<Z>>;
       }
       default: {
-        return this.updateQueryWithConditions(query, key, value) as Parse.Query<InstanceType<Z>>;
+        return this.updateQueryWithConditions(query, key, value);
       }
     }
   }

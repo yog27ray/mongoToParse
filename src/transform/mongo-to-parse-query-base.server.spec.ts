@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup-server';
 import { Env } from '../test-env';
-import { ParseClassExtender, ParseRoleExtender } from './parse-class-extender';
+import { ParseClassExtender } from './parse-class-extender';
+import { ParseRoleExtender } from './parse-role-extender';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
