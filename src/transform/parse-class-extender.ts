@@ -1,4 +1,4 @@
-export declare interface ParseClassExtender<T extends Parse.Attributes> extends Parse.Object<T> {
+export declare interface ParseClassExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.Object<T> {
   new<T extends Parse.Attributes>(className: string, attributes: T, options?: any): ParseClassExtender<T>;
   new(className?: string, attributes?: Parse.Attributes, options?: any): Parse.Object;
   save<K extends Extract<keyof T, string>>(
@@ -7,7 +7,7 @@ export declare interface ParseClassExtender<T extends Parse.Attributes> extends 
   ): Promise<this>;
 }
 
-export type ParseClassType<T extends Parse.Attributes> = new () => ParseClassExtender<T>
+export type ParseClassType<T extends Parse.Attributes = Parse.Attributes> = new () => ParseClassExtender<T>
 
 export declare interface ParseRoleExtender<T extends Parse.Attributes> extends Parse.Role<T> {
   new<T extends Parse.Attributes>(name: string, acl: Parse.ACL): ParseRoleExtender<T>;
