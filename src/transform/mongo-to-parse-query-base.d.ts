@@ -1,5 +1,5 @@
 /// <reference types="parse" />
-import { ParseClassExtender } from './parse-class-extender';
+import { ParseClassExtender, ParseClassType } from './parse-class-extender';
 export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
 declare type WhereType<T extends Parse.Attributes> = (Partial<{
     $or?: Array<unknown>;
@@ -41,10 +41,10 @@ export declare class MongoToParseQueryBase {
             [key: string]: unknown;
         }, options?: Parse.FullOptions): Promise<unknown>;
     };
-    find<T extends Parse.Attributes>(table: new () => ParseClassExtender<T>, { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<T>): Promise<Array<InstanceType<typeof table>>>;
-    findOne<T extends Parse.Attributes>(table: new () => ParseClassExtender<T>, { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<T>): Promise<InstanceType<typeof table>>;
-    aggregate<T extends Parse.Attributes>(table: new () => Parse.Object<T>, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
-    count<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(table: new () => Z, { where, option, skip, limit }: RequestCountPayload<T>): Promise<number>;
+    find<Z extends ParseClassType>(table: Z, { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>['attributes']>): Promise<Array<InstanceType<Z>>>;
+    findOne<Z extends ParseClassType>(table: Z, { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>['attributes']>): Promise<InstanceType<Z>>;
+    aggregate<Z extends ParseClassType>(table: Z, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
+    count<Z extends ParseClassType>(table: Z, { where, option, skip, limit }: RequestCountPayload<InstanceType<Z>['attributes']>): Promise<number>;
     addParseObjectInfoToJsonObject(jO: {
         [key: string]: unknown;
     }, className: string): {
@@ -53,12 +53,12 @@ export declare class MongoToParseQueryBase {
     removeParesObjectDetails(object: {
         [key: string]: unknown;
     }): void;
-    saveAll<T extends Parse.Attributes>(items: Array<T>, option: Parse.FullOptions): Promise<void>;
-    fetchObject<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(item: Z, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Z>;
-    getObjectsFromPointers<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(items: Array<Z>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<Array<Z>>;
-    updatePointersWithObject<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(items: Array<Z>, fieldCheck: Extract<keyof T, string>, option: Parse.FullOptions): Promise<void>;
-    getPointer<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(object: Z): Z;
-    getPointerFromId<T extends Parse.Attributes, Z extends ParseClassExtender<T>>(objectId: string, ParseTable: new () => Z): Z;
+    saveAll<T extends Parse.Object>(items: Array<T>, option: Parse.FullOptions): Promise<void>;
+    fetchObject<Z extends ParseClassExtender>(item: Z, fieldCheck: Extract<keyof Z['attributes'], string>, option: Parse.FullOptions): Promise<Z>;
+    getObjectsFromPointers<Z extends ParseClassExtender>(items: Array<Z>, fieldCheck: Extract<keyof Z['attributes'], string>, option: Parse.FullOptions): Promise<Array<Z>>;
+    updatePointersWithObject<Z extends ParseClassExtender>(items: Array<Z>, fieldCheck: Extract<keyof Z['attributes'], string>, option: Parse.FullOptions): Promise<void>;
+    getPointer<Z extends ParseClassExtender>(object: Z): Z;
+    getPointerFromId<Z extends ParseClassType>(objectId: string, ParseTable: Z): InstanceType<Z>;
     private updateQuery;
     private updateQueryWithConditions;
     private generateKeyValueQuery;

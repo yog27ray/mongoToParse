@@ -74,8 +74,7 @@ class MongoToParseQueryBase {
         }
         const Table = this.parseTable(items[0].className);
         const objects = await this.find(Table, {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
+            // @ts-expect-error objectId will be present
             where: { objectId: pointers.map((pointer) => pointer.id) },
             option,
         });

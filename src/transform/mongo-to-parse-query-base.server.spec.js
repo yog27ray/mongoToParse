@@ -62,6 +62,17 @@ describe('MongoToParseQuery', () => {
                 }
             });
         });
+        context('parse role type check', async () => {
+            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            it('should give error when initialize is called in server mode.', async () => {
+                const Role = Parse.Role;
+                const result = await mongoToParseQuery.find(Role, {
+                    where: {},
+                    descending: 'rank',
+                });
+                result.map((each) => each.getName());
+            });
+        });
         context('parseTable', () => {
             it('should return parse table', async () => {
                 const Table = new index_1.MongoToParseQuery().parseTable('TableName');
