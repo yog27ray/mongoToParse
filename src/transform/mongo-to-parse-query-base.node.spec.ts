@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { MongoToParseQuery } from '../../index';
 import { Env } from '../test-env';
-import { ParseClassExtender } from './parse-class-extender';
+import { ParseObjectExtender } from './parse-object-extender';
 
-declare type DummyRowClass = ParseClassExtender<{
+declare type DummyRowClass = ParseObjectExtender<{
   time: Date;
   rank: number;
   tags: Array<string>;

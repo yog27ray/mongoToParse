@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup-server';
 import { Env } from '../test-env';
-import { ParseClassExtender } from './parse-class-extender';
+import { ParseObjectExtender } from './parse-object-extender';
 import { ParseRoleExtender } from './parse-role-extender';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
@@ -20,7 +20,7 @@ function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   });
 }
 
-declare type DummyRowClass = ParseClassExtender<{
+declare type DummyRowClass = ParseObjectExtender<{
   time: Date;
   rank: number;
   tags: Array<string>;
@@ -222,7 +222,7 @@ describe('MongoToParseQuery', () => {
     });
 
     context('getObjectsFromPointers', () => {
-      let rows: Array<ParseClassExtender<{ total: number }>>;
+      let rows: Array<ParseObjectExtender<{ total: number }>>;
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
