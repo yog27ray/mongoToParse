@@ -7,4 +7,5 @@ export declare class ParseClassExtender<T extends Parse.Attributes = Parse.Attri
   ): Promise<this>;
 }
 
-export type ParseClassType<T extends Parse.Attributes = Parse.Attributes> = new () => ParseClassExtender<T>;
+export type ParseClassType<T extends Parse.Attributes = Parse.Attributes> = new (
+  className?: string, attributes?: T, options?: any) => ParseClassExtender<T>;
