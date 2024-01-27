@@ -95,6 +95,13 @@ describe('MongoToParseQuery', () => {
       });
     });
 
+    context('fromJSON', () => {
+      it('should return parse table', async () => {
+        const object = new MongoToParseQuery().fromJSON<new() => DummyRowClass>({ rank: 1, className: 'TableName' });
+        expect(object.get('rank')).to.equal(1);
+      });
+    });
+
     context('findOne', () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');

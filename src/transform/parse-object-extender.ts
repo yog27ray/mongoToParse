@@ -6,6 +6,3 @@ export declare class ParseObjectExtender<T extends Parse.Attributes = Parse.Attr
     options?: Parse.Object.SaveOptions,
   ): Promise<this>;
 }
-
-export type ParseClassExtender<T extends Parse.Attributes = Parse.Attributes> = new (
-  className?: string, attributes?: T, options?: any) => ParseObjectExtender<T>;
