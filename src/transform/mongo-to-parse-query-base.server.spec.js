@@ -79,6 +79,12 @@ describe('MongoToParseQuery', () => {
                 (0, chai_1.expect)(new Table() instanceof Parse.Object).to.be.true;
             });
         });
+        context('fromJSON', () => {
+            it('should return parse table', async () => {
+                const object = new index_1.MongoToParseQuery().fromJSON({ rank: 1, className: 'TableName' });
+                (0, chai_1.expect)(object.get('rank')).to.equal(1);
+            });
+        });
         context('findOne', () => {
             const mongoToParseQuery = new index_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');

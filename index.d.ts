@@ -1,6 +1,6 @@
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
 import { MongoToParseQueryBase, RequestCountPayload, RequestQueryPayload } from './src/transform/mongo-to-parse-query-base';
-import { ParseClassExtender, ParseObjectExtender } from './src/transform/parse-object-extender';
+import { ParseObjectExtender } from './src/transform/parse-object-extender';
 import { ParseRoleExtender } from './src/transform/parse-role-extender';
 declare class MongoToParseQuery extends MongoToParseQueryBase {
     constructor();
@@ -9,4 +9,4 @@ declare class MongoToParseQuery extends MongoToParseQueryBase {
         disableSingleInstance?: boolean;
     }): Promise<void>;
 }
-export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase, ParseObjectExtender, ParseClassExtender, ParseRoleExtender, RequestQueryPayload, RequestCountPayload, };
+export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase, ParseObjectExtender, ParseRoleExtender, RequestQueryPayload, RequestCountPayload, };

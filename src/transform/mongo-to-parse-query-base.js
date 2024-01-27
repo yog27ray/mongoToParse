@@ -7,6 +7,9 @@ class MongoToParseQueryBase {
     setParse(parse) {
         this.parse = parse;
     }
+    fromJSON(objectJSON) {
+        return this.parse.Object.fromJSON(objectJSON);
+    }
     parseTable(tableName) {
         return this.parse.Object.extend(tableName);
     }
