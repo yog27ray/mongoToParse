@@ -19,12 +19,12 @@ class MongoToParseQueryBase {
                 .run(name, parameters, options),
         };
     }
-    find(table, { project, where, option, descending, ascending, skip, include, limit }) {
+    find(table, { project, where, option, descending, ascending, skip, include, limit, }) {
         const query = this.generateWhereQuery(table, where);
         this.updateQuery(query, { project, descending, ascending, skip, include, limit });
         return query.find(option);
     }
-    findOne(table, { project, where, option, descending, ascending, skip, include, limit }) {
+    findOne(table, { project, where, option, descending, ascending, skip, include, limit, }) {
         const query = this.generateWhereQuery(table, where);
         this.updateQuery(query, { project, descending, ascending, skip, include, limit });
         return query.first(option);

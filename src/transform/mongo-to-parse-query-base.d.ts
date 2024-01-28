@@ -7,7 +7,7 @@ declare type WhereType<T extends Parse.Attributes> = (Partial<{
 } & {
     [key in keyof (T & Parse.BaseAttributes)]: unknown;
 }>);
-export declare interface RequestQueryPayload<T extends Parse.Attributes> {
+export declare interface RequestQueryPayload<T extends (Parse.Attributes & Parse.BaseAttributes)> {
     project?: Partial<Array<keyof T>>;
     limit?: number;
     descending?: Partial<keyof T>;
@@ -42,8 +42,8 @@ export declare class MongoToParseQueryBase {
             [key: string]: unknown;
         }, options?: Parse.FullOptions): Promise<unknown>;
     };
-    find<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>['attributes']>): Promise<Array<InstanceType<Z>>>;
-    findOne<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit }: RequestQueryPayload<InstanceType<Z>['attributes']>): Promise<InstanceType<Z>>;
+    find<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>): Promise<Array<InstanceType<Z>>>;
+    findOne<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>): Promise<InstanceType<Z>>;
     aggregate<Z extends new () => ParseObjectExtender>(table: Z, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
     count<Z extends new () => ParseObjectExtender>(table: Z, { where, option, skip, limit }: RequestCountPayload<InstanceType<Z>['attributes']>): Promise<number>;
     addParseObjectInfoToJsonObject(jO: {
