@@ -64,13 +64,37 @@ describe('MongoToParseQuery', () => {
         });
         context('parse role type check', async () => {
             const mongoToParseQuery = new index_1.MongoToParseQuery();
-            it('should give error when initialize is called in server mode.', async () => {
+            it('should pass for valid role type.', async () => {
                 const Role = Parse.Role;
                 const result = await mongoToParseQuery.find(Role, {
                     where: {},
                     descending: 'rank',
                 });
                 result.map((each) => each.getName());
+            });
+            it('should pass for valid installation type.', async () => {
+                const Installation = Parse.Installation;
+                const result = await mongoToParseQuery.find(Installation, {
+                    where: {},
+                    descending: 'rank',
+                });
+                result.map((each) => each.installationId);
+            });
+            it('should pass for valid session type.', async () => {
+                const Session = Parse.Session;
+                const result = await mongoToParseQuery.find(Session, {
+                    where: {},
+                    descending: 'rank',
+                });
+                result.map((each) => each.getSessionToken());
+            });
+            it('should pass for valid user type.', async () => {
+                const User = Parse.User;
+                const result = await mongoToParseQuery.find(User, {
+                    where: {},
+                    descending: 'rank',
+                });
+                result.map((each) => each.getUsername());
             });
         });
         context('parseTable', () => {
