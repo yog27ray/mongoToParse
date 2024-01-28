@@ -2,8 +2,11 @@ import { expect } from 'chai';
 import { MongoToParseError, MongoToParseQuery } from '../../index';
 import { dropDB } from '../setup-server';
 import { Env } from '../test-env';
+import { ParseInstallationExtender } from './parse-installation-extender';
 import { ParseObjectExtender } from './parse-object-extender';
 import { ParseRoleExtender } from './parse-role-extender';
+import { ParseSessionExtender } from './parse-session-extender';
+import { ParseUserExtender } from './parse-user-extender';
 
 function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   return results.map((each: Parse.Object) => {
@@ -78,13 +81,40 @@ describe('MongoToParseQuery', () => {
     context('parse role type check', async () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
 
-      it('should give error when initialize is called in server mode.', async () => {
-        const Role = Parse.Role as unknown as new () => ParseRoleExtender<{ rank: number }>;
+      it('should pass for valid role type.', async () => {
+        const Role = Parse.Role as unknown as new() => ParseRoleExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(Role, {
           where: {},
           descending: 'rank',
         }) as Array<ParseRoleExtender<{ rank: number }>>;
         result.map((each: ParseRoleExtender<{ rank: number }>) => each.getName());
+      });
+
+      it('should pass for valid installation type.', async () => {
+        const Installation = Parse.Installation as unknown as new() => ParseInstallationExtender<{ rank: number }>;
+        const result = await mongoToParseQuery.find(Installation, {
+          where: {},
+          descending: 'rank',
+        }) as Array<ParseInstallationExtender<{ rank: number }>>;
+        result.map((each: ParseInstallationExtender<{ rank: number }>) => each.installationId);
+      });
+
+      it('should pass for valid session type.', async () => {
+        const Session = Parse.Session as unknown as new() => ParseSessionExtender<{ rank: number }>;
+        const result = await mongoToParseQuery.find(Session, {
+          where: {},
+          descending: 'rank',
+        }) as Array<ParseSessionExtender<{ rank: number }>>;
+        result.map((each: ParseSessionExtender<{ rank: number }>) => each.getSessionToken());
+      });
+
+      it('should pass for valid user type.', async () => {
+        const User = Parse.User as unknown as new() => ParseUserExtender<{ rank: number }>;
+        const result = await mongoToParseQuery.find(User, {
+          where: {},
+          descending: 'rank',
+        }) as Array<ParseUserExtender<{ rank: number }>>;
+        result.map((each: ParseUserExtender<{ rank: number }>) => each.getUsername());
       });
     });
 
