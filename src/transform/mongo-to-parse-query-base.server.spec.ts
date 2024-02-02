@@ -108,7 +108,7 @@ describe('MongoToParseQuery', () => {
         const dummyObject = new DummyRowTable();
         dummyObject.set('innerItem', innerObject);
         await dummyObject.save();
-        const dummyJSONObject = dummyObject.toJSON() as DummyRowClass['json'];
+        const dummyJSONObject = dummyObject.toJSON();
         expect(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
         expect(dummyJSONObject.innerItem.objectId).to.exist;
         expect(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
