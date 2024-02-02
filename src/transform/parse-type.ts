@@ -10,6 +10,7 @@ type Encode<T> = T extends ParseObjectExtender ? ReturnType<T['toJSON']>
           : T extends Array<infer R>
             // This recursion is unsupported in <=3.6
             ? Array<Encode<R>>
+            // eslint-disable-next-line no-use-before-define
             : T extends object ? ToJSON<T>
               : T;
 

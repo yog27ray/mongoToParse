@@ -5,7 +5,7 @@ export declare class ParseObjectExtender<T extends Parse.Attributes = Parse.Attr
 
   constructor(className?: string, attributes?: T, options?: any);
 
-  // @ts-ignore
+  // @ts-expect-error this is intentional type override
   toJSON(): toJSON<T>;
 
   save<K extends Extract<keyof T, string>>(
