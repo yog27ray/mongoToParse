@@ -123,6 +123,7 @@ describe('MongoToParseQuery', () => {
         const result = await mongoToParseQuery.find(Installation, {
           where: {},
           descending: 'rank',
+          option: { useMasterKey: true },
         }) as Array<ParseInstallationExtender<{ rank: number }>>;
         result.map((each: ParseInstallationExtender<{ rank: number }>) => each.installationId);
       });
@@ -132,6 +133,7 @@ describe('MongoToParseQuery', () => {
         const result = await mongoToParseQuery.find(Session, {
           where: {},
           descending: 'rank',
+          option: { useMasterKey: true },
         }) as Array<ParseSessionExtender<{ rank: number }>>;
         result.map((each: ParseSessionExtender<{ rank: number }>) => each.getSessionToken());
       });

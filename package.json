@@ -52,6 +52,21 @@
     "tslint": "6.1.3",
     "typescript": "5.3.3"
   },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "src/**/*.spec.ts",
+      "node_modules"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "fullTrace": true
+  },
   "mocha": {
     "color": true,
     "ui": "bdd",
