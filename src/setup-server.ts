@@ -24,7 +24,7 @@ async function dropDB(): Promise<void> {
   await client.db(DB_NAME).dropDatabase();
 }
 
-async function startMongoDB(): Promise<any> {
+async function startMongoDB(): Promise<void> {
   console.log('>>>starting<<<');
   mongoDBURI = process.env.MONGO_URI || 'mongodb://localhost:27017/mongoToParse';
   DB_NAME = mongoDBURI.split('/').pop();
@@ -52,7 +52,7 @@ async function wait(time = 100): Promise<void> {
   });
 }
 
-async function waitForServerToBoot(): Promise<any> {
+async function waitForServerToBoot(): Promise<void> {
   try {
     await rp('http://localhost:1234/api/parse/health');
   } catch (error) {

@@ -40,6 +40,7 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
 
 const CompoundQueryKeys: Array<string> = ['$and', '$or'];
 export class MongoToParseQueryBase {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   protected parse: any;
 
   protected setParse(parse: unknown): void {
@@ -179,7 +180,7 @@ export class MongoToParseQueryBase {
       return;
     }
     await Promise.all(pointers.map((pointer: Z) => pointer.fetch(option)
-      .catch((error: any) => {
+      .catch((error: { code: number; message: string; }) => {
         if (error.code === 101 && error.message === 'Object not found.') {
           return Promise.resolve();
         }
