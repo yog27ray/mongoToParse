@@ -8,24 +8,10 @@ import { ParseRoleExtender } from './parse-role-extender';
 import { ParseSessionExtender } from './parse-session-extender';
 import { ParseUserExtender } from './parse-user-extender';
 
-function parseObjectJSON(results: Array<Parse.Object>): Array<Record<string, unknown>> {
-  return results.map((each: Parse.Object) => {
-    const resultJSON = each.toJSON();
-    delete resultJSON.updatedAt;
-    delete resultJSON.createdAt;
-    delete resultJSON.objectId;
-    if (resultJSON.item) {
-      delete resultJSON.item.objectId;
-      delete resultJSON.item.createdAt;
-      delete resultJSON.item.updatedAt;
-    }
-    return resultJSON;
-  });
-}
-
 declare type InnerClass = ParseObjectExtender<{
   innerField1: string;
   innerField2: string;
+  objectId: string;
   createdAt: Date;
   date: Date;
 }>;
@@ -37,9 +23,24 @@ declare type DummyRowClass = ParseObjectExtender<{
   message: string;
   total: number;
   field: number;
-  item: Parse.Object;
+  item: ParseObjectExtender;
   innerItem: InnerClass;
 }>;
+
+function parseObjectJSON(results: Array<DummyRowClass>): Array<DummyRowClass['json']> {
+  return results.map((each: DummyRowClass) => {
+    const resultJSON: DummyRowClass['json'] = each.toJSON();
+    delete resultJSON.updatedAt;
+    delete resultJSON.createdAt;
+    delete resultJSON.objectId;
+    if (resultJSON.item) {
+      delete resultJSON.item.objectId;
+      delete resultJSON.item.createdAt;
+      delete resultJSON.item.updatedAt;
+    }
+    return resultJSON;
+  });
+}
 
 async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<void> {
   await dropDB();
