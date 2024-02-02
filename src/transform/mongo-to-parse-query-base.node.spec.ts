@@ -20,6 +20,7 @@ describe('MongoToParseQuery', () => {
         const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
         await mongoToParseQuery.initialize(Env.appId, Env.serverURL, { disableSingleInstance: true });
         const Table = mongoToParseQuery.parseTable('TableName');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(new Table() instanceof ((mongoToParseQuery as unknown as { parse: any }).parse).Object).to.be.true;
       });
     });
@@ -95,6 +96,7 @@ describe('MongoToParseQuery', () => {
     });
 
     context('generateWhereQuery', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mongoToParseQuery: any = new MongoToParseQuery();
       await mongoToParseQuery.initialize(Env.appId, Env.serverURL);
       const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');

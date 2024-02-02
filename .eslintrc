@@ -45,7 +45,6 @@
     "@typescript-eslint/no-unsafe-assignment": [0],
     "@typescript-eslint/no-unsafe-member-access": [0],
     "@typescript-eslint/explicit-function-return-type": ["error"],
-    "@typescript-eslint/no-explicit-any": [0],
     "no-async-promise-executor": [0],
     "promise/no-callback-in-promise": [0],
     "promise/no-return-wrap": [0],

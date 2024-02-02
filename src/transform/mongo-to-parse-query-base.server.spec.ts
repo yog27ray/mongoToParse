@@ -8,7 +8,7 @@ import { ParseRoleExtender } from './parse-role-extender';
 import { ParseSessionExtender } from './parse-session-extender';
 import { ParseUserExtender } from './parse-user-extender';
 
-function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
+function parseObjectJSON(results: Array<Parse.Object>): Array<Record<string, unknown>> {
   return results.map((each: Parse.Object) => {
     const resultJSON = each.toJSON();
     delete resultJSON.updatedAt;
@@ -41,7 +41,7 @@ declare type DummyRowClass = ParseObjectExtender<{
   innerItem: InnerClass;
 }>;
 
-async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<any> {
+async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<void> {
   await dropDB();
   await mongoToParseQuery.saveAll([
     { time: new Date(0), rank: 1, message: 'this is message 1', total: 1, field: 1 },
@@ -108,7 +108,31 @@ describe('MongoToParseQuery', () => {
         const dummyObject = new DummyRowTable();
         dummyObject.set('innerItem', innerObject);
         await dummyObject.save();
-        const dummyJSONObject = dummyObject.toJSON();
+        const dummyJSONObject: DummyRowClass['json'] = dummyObject.toJSON();
+        expect(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
+        expect(dummyJSONObject.innerItem.objectId).to.exist;
+        expect(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
+        expect(dummyJSONObject.innerItem.innerField1).to.equal('innerField1');
+        expect(typeof dummyJSONObject.innerItem.date.iso === 'string').to.be.true;
+        expect(dummyJSONObject.innerItem.date.iso).to.exist;
+        expect(typeof dummyJSONObject.innerItem.createdAt === 'string').to.be.true;
+      });
+
+      it('should pass toJSON type with namespace.', async () => {
+        class Table {
+          static Table1 = mongoToParseQuery.parseTable('Table1') as new() => DummyRowClass;
+
+          static Table2 = mongoToParseQuery.parseTable('Table2') as new() => InnerClass;
+        }
+        const innerObject = new Table.Table2();
+        innerObject.set('innerField1', 'innerField1');
+        innerObject.set('innerField2', 'innerField2');
+        innerObject.set('date', new Date());
+        const dummyObject = new Table.Table1();
+        dummyObject.set('innerItem', innerObject);
+        await dummyObject.save();
+        const dummyJSONObject: DummyRowClass['json'] = dummyObject.toJSON();
+        dummyJSONObject.innerItem.innerField1 = dummyJSONObject.innerItem.innerField2;
         expect(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
         expect(dummyJSONObject.innerItem.objectId).to.exist;
         expect(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
@@ -300,7 +324,8 @@ describe('MongoToParseQuery', () => {
 
       it('should do nothing when there is not pointer object', async () => {
         const results = await mongoToParseQuery.getObjectsFromPointers(rows, 'total', {});
-        expect(results.map((each: DummyRowClass) => each.toJSON())).to.deep.equal(rows.map((each: DummyRowClass) => each.toJSON()));
+        expect(results.map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON()))
+          .to.deep.equal(rows.map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON()));
       });
 
       it('should fetch pointers when there are pointer object', async () => {
@@ -315,8 +340,8 @@ describe('MongoToParseQuery', () => {
           }));
         const results = await mongoToParseQuery.getObjectsFromPointers(pointers, 'total', {});
         expect(results.length).to.equal(4);
-        expect(results.map((each: DummyRowClass) => each.toJSON())).to.deep
-          .equal([rows[0], rows[1], rows[2], rows[3]].map((each: DummyRowClass) => each.toJSON()));
+        expect(results.map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON())).to.deep
+          .equal([rows[0], rows[1], rows[2], rows[3]].map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON()));
       });
     });
 
@@ -333,7 +358,8 @@ describe('MongoToParseQuery', () => {
       it('should do nothing when there is not pointer object', async () => {
         const pointers = rows.map((each: DummyRowClass) => each);
         await mongoToParseQuery.updatePointersWithObject(rows, 'total', {});
-        expect(pointers.map((each: DummyRowClass) => each.toJSON())).to.deep.equal(rows.map((each: DummyRowClass) => each.toJSON()));
+        expect(pointers.map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON()))
+          .to.deep.equal(rows.map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON()));
       });
 
       it('should fetch pointers when there are pointer object', async () => {
@@ -348,8 +374,9 @@ describe('MongoToParseQuery', () => {
           }));
         await mongoToParseQuery.updatePointersWithObject(pointers, 'total', {});
         expect(pointers.length).to.equal(5);
-        expect(pointers.map((each: DummyRowClass) => each.toJSON())).to.deep
-          .equal([rows[0], rows[1], invalidPointer, rows[2], rows[3]].map((each: DummyRowClass) => each.toJSON()));
+        expect(pointers.map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON())).to.deep
+          .equal([rows[0], rows[1], invalidPointer, rows[2], rows[3]]
+            .map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON()));
       });
       it('should 1 fetch pointers when there are pointer object', async () => {
         try {
@@ -440,6 +467,7 @@ describe('MongoToParseQuery', () => {
     });
 
     context('generateWhereQuery', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mongoToParseQuery: any = new MongoToParseQuery();
       const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
       it('should generate query when not compound query exist.', async () => {
