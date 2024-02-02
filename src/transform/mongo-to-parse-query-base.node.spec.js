@@ -10,6 +10,7 @@ describe('MongoToParseQuery', () => {
                 const mongoToParseQuery = new index_1.MongoToParseQuery();
                 await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL, { disableSingleInstance: true });
                 const Table = mongoToParseQuery.parseTable('TableName');
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (0, chai_1.expect)(new Table() instanceof (mongoToParseQuery.parse).Object).to.be.true;
             });
         });
@@ -72,6 +73,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('generateWhereQuery', async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const mongoToParseQuery = new index_1.MongoToParseQuery();
             await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             const TestTable = mongoToParseQuery.parseTable('TestTable');

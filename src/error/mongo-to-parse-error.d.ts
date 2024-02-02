@@ -5,7 +5,7 @@ declare interface MongoToParseErrorType {
     logMessage?: string;
     skipSentry?: boolean;
     params?: {
-        [key: string]: any;
+        [key: string]: unknown;
     };
 }
 declare class MongoToParseError extends Error {

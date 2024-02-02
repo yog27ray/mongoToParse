@@ -91,6 +91,28 @@ describe('MongoToParseQuery', () => {
                 (0, chai_1.expect)(dummyJSONObject.innerItem.date.iso).to.exist;
                 (0, chai_1.expect)(typeof dummyJSONObject.innerItem.createdAt === 'string').to.be.true;
             });
+            it('should pass toJSON type with namespace.', async () => {
+                class Table {
+                }
+                Table.Table1 = mongoToParseQuery.parseTable('Table1');
+                Table.Table2 = mongoToParseQuery.parseTable('Table2');
+                const innerObject = new Table.Table2();
+                innerObject.set('innerField1', 'innerField1');
+                innerObject.set('innerField2', 'innerField2');
+                innerObject.set('date', new Date());
+                const dummyObject = new Table.Table1();
+                dummyObject.set('innerItem', innerObject);
+                await dummyObject.save();
+                const dummyJSONObject = dummyObject.toJSON();
+                dummyJSONObject.innerItem.innerField1 = dummyJSONObject.innerItem.innerField2;
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
+                (0, chai_1.expect)(dummyJSONObject.innerItem.objectId).to.exist;
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
+                (0, chai_1.expect)(dummyJSONObject.innerItem.innerField1).to.equal('innerField1');
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.date.iso === 'string').to.be.true;
+                (0, chai_1.expect)(dummyJSONObject.innerItem.date.iso).to.exist;
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.createdAt === 'string').to.be.true;
+            });
             it('should pass for valid installation type.', async () => {
                 const Installation = Parse.Installation;
                 const result = await mongoToParseQuery.find(Installation, {
@@ -244,7 +266,8 @@ describe('MongoToParseQuery', () => {
             });
             it('should do nothing when there is not pointer object', async () => {
                 const results = await mongoToParseQuery.getObjectsFromPointers(rows, 'total', {});
-                (0, chai_1.expect)(results.map((each) => each.toJSON())).to.deep.equal(rows.map((each) => each.toJSON()));
+                (0, chai_1.expect)(results.map((each) => each.toJSON()))
+                    .to.deep.equal(rows.map((each) => each.toJSON()));
             });
             it('should fetch pointers when there are pointer object', async () => {
                 const invalidPointer = new TestTable();
@@ -273,7 +296,8 @@ describe('MongoToParseQuery', () => {
             it('should do nothing when there is not pointer object', async () => {
                 const pointers = rows.map((each) => each);
                 await mongoToParseQuery.updatePointersWithObject(rows, 'total', {});
-                (0, chai_1.expect)(pointers.map((each) => each.toJSON())).to.deep.equal(rows.map((each) => each.toJSON()));
+                (0, chai_1.expect)(pointers.map((each) => each.toJSON()))
+                    .to.deep.equal(rows.map((each) => each.toJSON()));
             });
             it('should fetch pointers when there are pointer object', async () => {
                 const invalidPointer = new TestTable();
@@ -288,7 +312,8 @@ describe('MongoToParseQuery', () => {
                 await mongoToParseQuery.updatePointersWithObject(pointers, 'total', {});
                 (0, chai_1.expect)(pointers.length).to.equal(5);
                 (0, chai_1.expect)(pointers.map((each) => each.toJSON())).to.deep
-                    .equal([rows[0], rows[1], invalidPointer, rows[2], rows[3]].map((each) => each.toJSON()));
+                    .equal([rows[0], rows[1], invalidPointer, rows[2], rows[3]]
+                    .map((each) => each.toJSON()));
             });
             it('should 1 fetch pointers when there are pointer object', async () => {
                 try {
@@ -370,6 +395,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('generateWhereQuery', () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const mongoToParseQuery = new index_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should generate query when not compound query exist.', async () => {
