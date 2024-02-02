@@ -23,6 +23,13 @@ function parseObjectJSON(results: Array<Parse.Object>): Array<any> {
   });
 }
 
+declare type InnerClass = ParseObjectExtender<{
+  innerField1: string;
+  innerField2: string;
+  createdAt: Date;
+  date: Date;
+}>;
+
 declare type DummyRowClass = ParseObjectExtender<{
   time: Date;
   rank: number;
@@ -31,6 +38,7 @@ declare type DummyRowClass = ParseObjectExtender<{
   total: number;
   field: number;
   item: Parse.Object;
+  innerItem: InnerClass;
 }>;
 
 async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<any> {
@@ -80,6 +88,8 @@ describe('MongoToParseQuery', () => {
 
     context('parse role type check', async () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
+      const DummyRowTable: new () => DummyRowClass = mongoToParseQuery.parseTable('DummyRowTable');
+      const InnerClassTable: new () => InnerClass = mongoToParseQuery.parseTable('InnerClassTable');
 
       it('should pass for valid role type.', async () => {
         const Role = Parse.Role as unknown as new() => ParseRoleExtender<{ rank: number }>;
@@ -90,11 +100,30 @@ describe('MongoToParseQuery', () => {
         result.map((each: ParseRoleExtender<{ rank: number }>) => each.getName());
       });
 
+      it('should pass toJSON type.', async () => {
+        const innerObject = new InnerClassTable();
+        innerObject.set('innerField1', 'innerField1');
+        innerObject.set('innerField2', 'innerField2');
+        innerObject.set('date', new Date());
+        const dummyObject = new DummyRowTable();
+        dummyObject.set('innerItem', innerObject);
+        await dummyObject.save();
+        const dummyJSONObject = dummyObject.toJSON();
+        expect(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
+        expect(dummyJSONObject.innerItem.objectId).to.exist;
+        expect(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
+        expect(dummyJSONObject.innerItem.innerField1).to.equal('innerField1');
+        expect(typeof dummyJSONObject.innerItem.date.iso === 'string').to.be.true;
+        expect(dummyJSONObject.innerItem.date.iso).to.exist;
+        expect(typeof dummyJSONObject.innerItem.createdAt === 'string').to.be.true;
+      });
+
       it('should pass for valid installation type.', async () => {
         const Installation = Parse.Installation as unknown as new() => ParseInstallationExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(Installation, {
           where: {},
           descending: 'rank',
+          option: { useMasterKey: true },
         }) as Array<ParseInstallationExtender<{ rank: number }>>;
         result.map((each: ParseInstallationExtender<{ rank: number }>) => each.installationId);
       });
@@ -104,6 +133,7 @@ describe('MongoToParseQuery', () => {
         const result = await mongoToParseQuery.find(Session, {
           where: {},
           descending: 'rank',
+          option: { useMasterKey: true },
         }) as Array<ParseSessionExtender<{ rank: number }>>;
         result.map((each: ParseSessionExtender<{ rank: number }>) => each.getSessionToken());
       });
