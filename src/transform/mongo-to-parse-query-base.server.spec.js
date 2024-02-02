@@ -64,6 +64,8 @@ describe('MongoToParseQuery', () => {
         });
         context('parse role type check', async () => {
             const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const DummyRowTable = mongoToParseQuery.parseTable('DummyRowTable');
+            const InnerClassTable = mongoToParseQuery.parseTable('InnerClassTable');
             it('should pass for valid role type.', async () => {
                 const Role = Parse.Role;
                 const result = await mongoToParseQuery.find(Role, {
@@ -72,11 +74,29 @@ describe('MongoToParseQuery', () => {
                 });
                 result.map((each) => each.getName());
             });
+            it('should pass toJSON type.', async () => {
+                const innerObject = new InnerClassTable();
+                innerObject.set('innerField1', 'innerField1');
+                innerObject.set('innerField2', 'innerField2');
+                innerObject.set('date', new Date());
+                const dummyObject = new DummyRowTable();
+                dummyObject.set('innerItem', innerObject);
+                await dummyObject.save();
+                const dummyJSONObject = dummyObject.toJSON();
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
+                (0, chai_1.expect)(dummyJSONObject.innerItem.objectId).to.exist;
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
+                (0, chai_1.expect)(dummyJSONObject.innerItem.innerField1).to.equal('innerField1');
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.date.iso === 'string').to.be.true;
+                (0, chai_1.expect)(dummyJSONObject.innerItem.date.iso).to.exist;
+                (0, chai_1.expect)(typeof dummyJSONObject.innerItem.createdAt === 'string').to.be.true;
+            });
             it('should pass for valid installation type.', async () => {
                 const Installation = Parse.Installation;
                 const result = await mongoToParseQuery.find(Installation, {
                     where: {},
                     descending: 'rank',
+                    option: { useMasterKey: true },
                 });
                 result.map((each) => each.installationId);
             });
@@ -85,6 +105,7 @@ describe('MongoToParseQuery', () => {
                 const result = await mongoToParseQuery.find(Session, {
                     where: {},
                     descending: 'rank',
+                    option: { useMasterKey: true },
                 });
                 result.map((each) => each.getSessionToken());
             });
