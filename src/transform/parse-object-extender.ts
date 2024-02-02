@@ -1,12 +1,12 @@
-import { toJSON } from './parse-type';
+import { ParseJSON } from './parse-type';
 
 export declare class ParseObjectExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.Object<T> {
-  json?: toJSON<T>;
+  json?: ParseJSON<T>;
 
   constructor(className?: string, attributes?: T, options?: any);
 
   // @ts-expect-error this is intentional type override
-  toJSON(): toJSON<T>;
+  toJSON(): ParseJSON<T>;
 
   save<K extends Extract<keyof T, string>>(
     attrs?: Pick<T, K> | T | null,

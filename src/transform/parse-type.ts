@@ -18,4 +18,4 @@ type ToJSON<T> = {
   [K in keyof T]: K extends keyof JSONBaseAttributes ? T[K] : Encode<T[K]>;
 };
 
-export type toJSON<T> = ToJSON<T> & JSONBaseAttributes;
+export type ParseJSON<T> = ToJSON<T> & JSONBaseAttributes;
