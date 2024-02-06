@@ -137,6 +137,10 @@ export class MongoToParseQueryBase {
     await this.parse.Object.saveAll(items, option);
   }
 
+  async destroyAll<T extends Parse.Object>(items: Array<T>, option: Parse.FullOptions): Promise<void> {
+    await this.parse.Object.destroyAll(items, option);
+  }
+
   async fetchObject<Z extends ParseObjectExtender>(
     item: Z,
     fieldCheck: Extract<keyof Z['attributes'], string>,
