@@ -104,7 +104,6 @@ describe('MongoToParseQuery', () => {
                 dummyObject.set('innerItem', innerObject);
                 await dummyObject.save();
                 const dummyJSONObject = dummyObject.toJSON();
-                dummyJSONObject.innerItem.innerField1 = dummyJSONObject.innerItem.innerField2;
                 (0, chai_1.expect)(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
                 (0, chai_1.expect)(dummyJSONObject.innerItem.objectId).to.exist;
                 (0, chai_1.expect)(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
@@ -112,6 +111,7 @@ describe('MongoToParseQuery', () => {
                 (0, chai_1.expect)(typeof dummyJSONObject.innerItem.date.iso === 'string').to.be.true;
                 (0, chai_1.expect)(dummyJSONObject.innerItem.date.iso).to.exist;
                 (0, chai_1.expect)(typeof dummyJSONObject.innerItem.createdAt === 'string').to.be.true;
+                dummyJSONObject.innerItem.innerField1 = dummyJSONObject.innerItem.innerField2;
             });
             it('should pass for valid installation type.', async () => {
                 const Installation = Parse.Installation;
@@ -1041,6 +1041,7 @@ describe('MongoToParseQuery', () => {
                 total: 4,
                 item: { name: 'xyz', __type: 'Object', className: 'TestTable2' },
             });
+            await mongoToParseQuery.destroyAll([result], { useMasterKey: true });
         });
     });
 });

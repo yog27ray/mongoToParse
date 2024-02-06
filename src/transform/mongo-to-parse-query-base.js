@@ -61,6 +61,9 @@ class MongoToParseQueryBase {
     async saveAll(items, option) {
         await this.parse.Object.saveAll(items, option);
     }
+    async destroyAll(items, option) {
+        await this.parse.Object.destroyAll(items, option);
+    }
     async fetchObject(item, fieldCheck, option) {
         if (!item) {
             return item;
