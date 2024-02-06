@@ -1141,6 +1141,7 @@ describe('MongoToParseQuery', () => {
         total: 4,
         item: { name: 'xyz', __type: 'Object', className: 'TestTable2' },
       });
+      await mongoToParseQuery.destroyAll([result], { useMasterKey: true });
     });
   });
 });
