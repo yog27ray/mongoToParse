@@ -56,11 +56,8 @@ export class MongoToParseQueryBase {
     return this.parse.Object.extend(tableName) as new() => ParseObjectExtender<T>;
   }
 
-  get Cloud(): { run(name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<unknown> } {
-    return {
-      run: (name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<unknown> => this.parse.Cloud
-        .run(name, parameters, options) as Promise<unknown>,
-    };
+  get Cloud(): typeof Parse.Cloud {
+    return this.parse.Cloud as typeof Parse.Cloud;
   }
 
   get Error(): typeof Parse.Error {
