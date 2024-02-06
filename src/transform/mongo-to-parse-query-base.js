@@ -20,7 +20,7 @@ class MongoToParseQueryBase {
         };
     }
     getNewACL() {
-        return this.parse.ACL();
+        return new this.parse.ACL();
     }
     get User() {
         return this.parse.User;
