@@ -62,6 +62,14 @@ export class MongoToParseQueryBase {
     };
   }
 
+  getNewACL(): Parse.ACL {
+    return this.parse.ACL();
+  }
+
+  get User(): { run(name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<Parse.User> } {
+    return this.parse.User;
+  }
+
   find<Z extends new() => ParseObjectExtender>(
     table: Z,
     {
