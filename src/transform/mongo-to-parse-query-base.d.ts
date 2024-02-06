@@ -43,11 +43,7 @@ export declare class MongoToParseQueryBase {
         }, options?: Parse.FullOptions): Promise<unknown>;
     };
     getNewACL(): Parse.ACL;
-    get User(): {
-        run(name: string, parameters?: {
-            [key: string]: unknown;
-        }, options?: Parse.FullOptions): Promise<Parse.User>;
-    };
+    get User(): Parse.User;
     find<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>): Promise<Array<InstanceType<Z>>>;
     findOne<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>): Promise<InstanceType<Z>>;
     aggregate<Z extends new () => ParseObjectExtender>(table: Z, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
