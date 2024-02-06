@@ -1,3 +1,4 @@
+import { UserConstructor } from 'parse';
 import { MongoToParseError } from '../error/mongo-to-parse-error';
 import { ParseObjectExtender } from './parse-object-extender';
 
@@ -66,7 +67,7 @@ export class MongoToParseQueryBase {
     return this.parse.ACL();
   }
 
-  get User(): Parse.User {
+  get User(): UserConstructor {
     return this.parse.User;
   }
 
