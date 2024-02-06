@@ -63,6 +63,10 @@ export class MongoToParseQueryBase {
     };
   }
 
+  get Error(): typeof Parse.Error {
+    return this.parse.Error as typeof Parse.Error;
+  }
+
   getNewACL(): Parse.ACL {
     return new this.parse.ACL() as Parse.ACL;
   }
