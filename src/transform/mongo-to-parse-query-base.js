@@ -19,6 +19,9 @@ class MongoToParseQueryBase {
                 .run(name, parameters, options),
         };
     }
+    get Error() {
+        return this.parse.Error;
+    }
     getNewACL() {
         return new this.parse.ACL();
     }

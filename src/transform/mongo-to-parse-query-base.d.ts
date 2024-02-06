@@ -42,6 +42,7 @@ export declare class MongoToParseQueryBase {
             [key: string]: unknown;
         }, options?: Parse.FullOptions): Promise<unknown>;
     };
+    get Error(): typeof Parse.Error;
     getNewACL(): Parse.ACL;
     get User(): UserConstructor;
     find<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>): Promise<Array<InstanceType<Z>>>;
