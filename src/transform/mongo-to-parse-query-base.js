@@ -14,10 +14,7 @@ class MongoToParseQueryBase {
         return this.parse.Object.extend(tableName);
     }
     get Cloud() {
-        return {
-            run: (name, parameters, options) => this.parse.Cloud
-                .run(name, parameters, options),
-        };
+        return this.parse.Cloud;
     }
     get Error() {
         return this.parse.Error;

@@ -37,11 +37,7 @@ export declare class MongoToParseQueryBase {
     protected setParse(parse: unknown): void;
     fromJSON<Z extends new () => ParseObjectExtender>(objectJSON: Record<string, unknown>): InstanceType<Z>;
     parseTable<T extends Parse.Attributes>(tableName: string): new () => ParseObjectExtender<T>;
-    get Cloud(): {
-        run(name: string, parameters?: {
-            [key: string]: unknown;
-        }, options?: Parse.FullOptions): Promise<unknown>;
-    };
+    get Cloud(): typeof Parse.Cloud;
     get Error(): typeof Parse.Error;
     getNewACL(): Parse.ACL;
     get User(): UserConstructor;
