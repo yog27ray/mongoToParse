@@ -64,11 +64,11 @@ export class MongoToParseQueryBase {
   }
 
   getNewACL(): Parse.ACL {
-    return this.parse.ACL();
+    return new this.parse.ACL() as Parse.ACL;
   }
 
   get User(): UserConstructor {
-    return this.parse.User;
+    return this.parse.User as UserConstructor;
   }
 
   find<Z extends new() => ParseObjectExtender>(
