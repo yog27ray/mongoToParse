@@ -19,6 +19,12 @@ class MongoToParseQueryBase {
                 .run(name, parameters, options),
         };
     }
+    getNewACL() {
+        return this.parse.ACL();
+    }
+    get User() {
+        return this.parse.User;
+    }
     find(table, { project, where, option, descending, ascending, skip, include, limit, }) {
         const query = this.generateWhereQuery(table, where);
         this.updateQuery(query, { project, descending, ascending, skip, include, limit });
