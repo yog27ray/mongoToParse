@@ -66,7 +66,7 @@ export class MongoToParseQueryBase {
     return this.parse.ACL();
   }
 
-  get User(): { run(name: string, parameters?: { [key: string]: unknown }, options?: Parse.FullOptions): Promise<Parse.User> } {
+  get User(): Parse.User {
     return this.parse.User;
   }
 
