@@ -133,7 +133,6 @@ describe('MongoToParseQuery', () => {
         dummyObject.set('innerItem', innerObject);
         await dummyObject.save();
         const dummyJSONObject: DummyRowClass['json'] = dummyObject.toJSON();
-        dummyJSONObject.innerItem.innerField1 = dummyJSONObject.innerItem.innerField2;
         expect(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
         expect(dummyJSONObject.innerItem.objectId).to.exist;
         expect(typeof dummyJSONObject.innerItem.innerField1 === 'string').to.be.true;
@@ -141,6 +140,7 @@ describe('MongoToParseQuery', () => {
         expect(typeof dummyJSONObject.innerItem.date.iso === 'string').to.be.true;
         expect(dummyJSONObject.innerItem.date.iso).to.exist;
         expect(typeof dummyJSONObject.innerItem.createdAt === 'string').to.be.true;
+        dummyJSONObject.innerItem.innerField1 = dummyJSONObject.innerItem.innerField2;
       });
 
       it('should pass for valid installation type.', async () => {
