@@ -7,19 +7,19 @@ export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attribu
 declare type WhereType<T extends Parse.Attributes> = (
   Partial<{ $or?: Array<unknown>, $and?: Array<unknown> } & { [key in keyof (T & Parse.BaseAttributes)]: unknown }>);
 
-export declare interface RequestQueryPayload<T extends (Parse.Attributes & Parse.BaseAttributes)> {
-  project?: Partial<Array<keyof T>>;
+export declare interface RequestQueryPayload<Z extends new() => ParseObjectExtender> {
+  project?: Partial<Array<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>>;
   limit?: number;
-  descending?: Partial<keyof T>;
-  ascending?: Partial<keyof T>;
+  descending?: Partial<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>;
+  ascending?: Partial<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>;
   skip?: number;
-  include?: Partial<Array<keyof T>>;
-  where: WhereType<T>;
+  include?: Partial<Array<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>>;
+  where: WhereType<InstanceType<Z>['attributes'] & Parse.BaseAttributes>;
   option?: Parse.FullOptions;
 }
 
-export declare interface RequestCountPayload<T extends Parse.Attributes> {
-  where: WhereType<T>;
+export declare interface RequestCountPayload<Z extends new() => ParseObjectExtender> {
+  where: WhereType<InstanceType<Z>['attributes'] & Parse.BaseAttributes>;
   limit?: number;
   option?: Parse.FullOptions;
   skip?: number;
@@ -83,7 +83,7 @@ export class MongoToParseQueryBase {
       skip,
       include,
       limit,
-    }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>)
+    }: RequestQueryPayload<Z>)
     : Promise<Array<InstanceType<Z>>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { project, descending, ascending, skip, include, limit });
@@ -101,7 +101,7 @@ export class MongoToParseQueryBase {
       skip,
       include,
       limit,
-    }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>)
+    }: RequestQueryPayload<Z>)
     : Promise<InstanceType<Z>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { project, descending, ascending, skip, include, limit });
@@ -115,7 +115,7 @@ export class MongoToParseQueryBase {
 
   count<Z extends new() => ParseObjectExtender>(
     table: Z,
-    { where, option, skip, limit }: RequestCountPayload<InstanceType<Z>['attributes']>): Promise<number> {
+    { where, option, skip, limit }: RequestCountPayload<Z>): Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
     return query.count(option);
