@@ -74,6 +74,15 @@ describe('MongoToParseQuery', () => {
                 });
                 result.map((each) => each.getName());
             });
+            it('should pass RequestQueryPayload type.', async () => {
+                const requestParameter = {
+                    where: { rank: 1 },
+                };
+                const requestCountParameter = {
+                    where: { rank: 1 },
+                };
+                (0, chai_1.expect)(requestParameter).to.deep.equal(requestCountParameter);
+            });
             it('should pass toJSON type.', async () => {
                 const innerObject = new InnerClassTable();
                 innerObject.set('innerField1', 'innerField1');

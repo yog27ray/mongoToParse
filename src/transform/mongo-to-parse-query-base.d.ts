@@ -7,18 +7,18 @@ declare type WhereType<T extends Parse.Attributes> = (Partial<{
 } & {
     [key in keyof (T & Parse.BaseAttributes)]: unknown;
 }>);
-export declare interface RequestQueryPayload<T extends (Parse.Attributes & Parse.BaseAttributes)> {
-    project?: Partial<Array<keyof T>>;
+export declare interface RequestQueryPayload<Z extends new () => ParseObjectExtender> {
+    project?: Partial<Array<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>>;
     limit?: number;
-    descending?: Partial<keyof T>;
-    ascending?: Partial<keyof T>;
+    descending?: Partial<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>;
+    ascending?: Partial<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>;
     skip?: number;
-    include?: Partial<Array<keyof T>>;
-    where: WhereType<T>;
+    include?: Partial<Array<keyof (InstanceType<Z>['attributes'] & Parse.BaseAttributes)>>;
+    where: WhereType<InstanceType<Z>['attributes'] & Parse.BaseAttributes>;
     option?: Parse.FullOptions;
 }
-export declare interface RequestCountPayload<T extends Parse.Attributes> {
-    where: WhereType<T>;
+export declare interface RequestCountPayload<Z extends new () => ParseObjectExtender> {
+    where: WhereType<InstanceType<Z>['attributes'] & Parse.BaseAttributes>;
     limit?: number;
     option?: Parse.FullOptions;
     skip?: number;
@@ -41,10 +41,10 @@ export declare class MongoToParseQueryBase {
     get Error(): typeof Parse.Error;
     getNewACL(): Parse.ACL;
     get User(): UserConstructor;
-    find<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>): Promise<Array<InstanceType<Z>>>;
-    findOne<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<InstanceType<Z>['attributes'] & Parse.BaseAttributes>): Promise<InstanceType<Z>>;
+    find<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<Z>): Promise<Array<InstanceType<Z>>>;
+    findOne<Z extends new () => ParseObjectExtender>(table: Z, { project, where, option, descending, ascending, skip, include, limit, }: RequestQueryPayload<Z>): Promise<InstanceType<Z>>;
     aggregate<Z extends new () => ParseObjectExtender>(table: Z, { pipeline }: AggregateDataType): Promise<Array<unknown>>;
-    count<Z extends new () => ParseObjectExtender>(table: Z, { where, option, skip, limit }: RequestCountPayload<InstanceType<Z>['attributes']>): Promise<number>;
+    count<Z extends new () => ParseObjectExtender>(table: Z, { where, option, skip, limit }: RequestCountPayload<Z>): Promise<number>;
     addParseObjectInfoToJsonObject(jO: {
         [key: string]: unknown;
     }, className: string): {
