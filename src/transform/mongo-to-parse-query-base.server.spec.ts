@@ -102,10 +102,10 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should pass RequestQueryPayload type.', async () => {
-        const requestParameter: RequestQueryPayload<new () => DummyRowClass> = {
+        const requestParameter: RequestQueryPayload<DummyRowClass> = {
           where: { rank: 1 },
         };
-        const requestCountParameter: RequestCountPayload<new () => DummyRowClass> = {
+        const requestCountParameter: RequestCountPayload<DummyRowClass> = {
           where: { rank: 1 },
         };
         expect(requestParameter).to.deep.equal(requestCountParameter);
