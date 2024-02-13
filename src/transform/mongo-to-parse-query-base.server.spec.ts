@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { MongoToParseError, MongoToParseQuery } from '../../index';
+import { MongoToParseError, MongoToParseQuery, RequestCountPayload, RequestQueryPayload } from '../../index';
 import { dropDB } from '../setup-server';
 import { Env } from '../test-env';
 import { ParseInstallationExtender } from './parse-installation-extender';
@@ -99,6 +99,16 @@ describe('MongoToParseQuery', () => {
           descending: 'rank',
         }) as Array<ParseRoleExtender<{ rank: number }>>;
         result.map((each: ParseRoleExtender<{ rank: number }>) => each.getName());
+      });
+
+      it('should pass RequestQueryPayload type.', async () => {
+        const requestParameter: RequestQueryPayload<new () => DummyRowClass> = {
+          where: { rank: 1 },
+        };
+        const requestCountParameter: RequestCountPayload<new () => DummyRowClass> = {
+          where: { rank: 1 },
+        };
+        expect(requestParameter).to.deep.equal(requestCountParameter);
       });
 
       it('should pass toJSON type.', async () => {
