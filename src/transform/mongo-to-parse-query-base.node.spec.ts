@@ -18,7 +18,7 @@ describe('MongoToParseQuery', () => {
     context('parseTable', () => {
       it('should return parse table', async () => {
         const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-        await mongoToParseQuery.initialize(Env.appId, Env.serverURL, { disableSingleInstance: true });
+        mongoToParseQuery.initialize(Env.appId, Env.serverURL, { disableSingleInstance: true });
         const Table = mongoToParseQuery.parseTable('TableName');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect(new Table() instanceof ((mongoToParseQuery as unknown as { parse: any }).parse).Object).to.be.true;
@@ -27,7 +27,7 @@ describe('MongoToParseQuery', () => {
 
     context('addParseObjectInfoToJsonObject', async () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      await mongoToParseQuery.initialize(Env.appId, Env.serverURL);
+      mongoToParseQuery.initialize(Env.appId, Env.serverURL);
 
       it('should return undefined', async () => {
         const results = mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
@@ -53,7 +53,7 @@ describe('MongoToParseQuery', () => {
     context('removeParesObjectDetails', async () => {
       let jsonParseObject: { [key: string]: unknown; };
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      await mongoToParseQuery.initialize(Env.appId, Env.serverURL);
+      mongoToParseQuery.initialize(Env.appId, Env.serverURL);
 
       it('should do nothing when object is not present', async () => {
         jsonParseObject = undefined;
@@ -70,7 +70,7 @@ describe('MongoToParseQuery', () => {
 
     context('getPointer', async () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      await mongoToParseQuery.initialize(Env.appId, Env.serverURL);
+      mongoToParseQuery.initialize(Env.appId, Env.serverURL);
       const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       it('should get pointer', async () => {
@@ -85,7 +85,7 @@ describe('MongoToParseQuery', () => {
 
     context('getPointerFromId', async () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
-      await mongoToParseQuery.initialize(Env.appId, Env.serverURL);
+      mongoToParseQuery.initialize(Env.appId, Env.serverURL);
       const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       it('should generate pointer from object.', async () => {
@@ -98,7 +98,7 @@ describe('MongoToParseQuery', () => {
     context('generateWhereQuery', async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mongoToParseQuery: any = new MongoToParseQuery();
-      await mongoToParseQuery.initialize(Env.appId, Env.serverURL);
+      mongoToParseQuery.initialize(Env.appId, Env.serverURL);
       const TestTable: new () => DummyRowClass = mongoToParseQuery.parseTable('TestTable');
 
       it('should generate query when not compound query exist.', async () => {
