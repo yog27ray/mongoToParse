@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { MongoToParseQuery } from '../../node';
+import { MongoToParseQuery } from '../../index';
 import { Env } from '../test-env';
 import { ParseObjectExtender } from './parse-object-extender';
 

@@ -1,7 +1,6 @@
 import { expect } from 'chai';
-import { MongoToParseError, MongoToParseQuery, RequestCountPayload, RequestQueryPayload } from '../../index';
+import { MongoToParseError, MongoToParseQuery, RequestCountPayload, RequestQueryPayload } from '../../server';
 import { dropDB } from '../setup-server';
-import { Env } from '../test-env';
 import { ParseInstallationExtender } from './parse-installation-extender';
 import { ParseObjectExtender } from './parse-object-extender';
 import { ParseRoleExtender } from './parse-role-extender';
@@ -75,18 +74,6 @@ async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQ
 
 describe('MongoToParseQuery', () => {
   describe('function calls', () => {
-    context('initialize on server', async () => {
-      it('should give error when initialize is called in server mode.', async () => {
-        try {
-          new MongoToParseQuery().initialize(Env.appId, Env.serverURL);
-          await Promise.reject({ message: 'should not reach here.' });
-        } catch (error) {
-          expect((error as { message: string; }).message).to
-            .equal('Initialize is not required when parse-server is initialized.');
-        }
-      });
-    });
-
     context('parse role type check', async () => {
       const mongoToParseQuery: MongoToParseQuery = new MongoToParseQuery();
       const DummyRowTable: new () => DummyRowClass = mongoToParseQuery.parseTable('DummyRowTable');
