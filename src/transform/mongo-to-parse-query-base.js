@@ -25,6 +25,15 @@ class MongoToParseQueryBase {
     get User() {
         return this.parse.User;
     }
+    get Installation() {
+        return this.parse.Installation;
+    }
+    get Role() {
+        return this.parse.Role;
+    }
+    get Session() {
+        return this.parse.Session;
+    }
     find(table, { project, where, option, descending, ascending, skip, include, limit, }) {
         const query = this.generateWhereQuery(table, where);
         this.updateQuery(query, { project, descending, ascending, skip, include, limit });
