@@ -30,15 +30,19 @@ class MongoToParseQuery extends MongoToParseQueryBase {
     }
   }
 
-  async initialize(
+  initialize(
     applicationId: string,
     serverURL: string,
-    config: { masterKey?: string, disableSingleInstance?: boolean } = {}): Promise<void> {
+    config: { masterKey?: string, disableSingleInstance?: boolean } = {}): void {
     const isNodeEnvironment = checkIsNodeEnvironment();
     if (isNodeEnvironment && isParseServerLoaded) {
       throw Error('Initialize is not required when parse-server is initialized.');
     }
-    ({ default: ParseLib } = await import(isNodeEnvironment ? 'parse/node' : 'parse'));
+    ParseLib = isNodeEnvironment
+      // eslint-disable-next-line global-require
+      ? require('parse/node')
+      // eslint-disable-next-line global-require
+      : require('parse');
     ParseLib.initialize(applicationId, undefined, config.masterKey);
     ParseLib.serverURL = serverURL;
     this.setParse(ParseLib);
