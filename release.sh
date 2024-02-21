@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 cd dist
 git reset --hard
 git checkout dist
