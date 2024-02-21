@@ -8,7 +8,7 @@ describe('MongoToParseQuery', () => {
         context('parseTable', () => {
             it('should return parse table', async () => {
                 const mongoToParseQuery = new index_1.MongoToParseQuery();
-                await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL, { disableSingleInstance: true });
+                mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL, { disableSingleInstance: true });
                 const Table = mongoToParseQuery.parseTable('TableName');
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (0, chai_1.expect)(new Table() instanceof (mongoToParseQuery.parse).Object).to.be.true;
@@ -16,7 +16,7 @@ describe('MongoToParseQuery', () => {
         });
         context('addParseObjectInfoToJsonObject', async () => {
             const mongoToParseQuery = new index_1.MongoToParseQuery();
-            await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
+            mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             it('should return undefined', async () => {
                 const results = mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
                 (0, chai_1.expect)(results).to.not.exist;
@@ -37,7 +37,7 @@ describe('MongoToParseQuery', () => {
         context('removeParesObjectDetails', async () => {
             let jsonParseObject;
             const mongoToParseQuery = new index_1.MongoToParseQuery();
-            await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
+            mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             it('should do nothing when object is not present', async () => {
                 jsonParseObject = undefined;
                 mongoToParseQuery.removeParesObjectDetails(jsonParseObject);
@@ -51,7 +51,7 @@ describe('MongoToParseQuery', () => {
         });
         context('getPointer', async () => {
             const mongoToParseQuery = new index_1.MongoToParseQuery();
-            await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
+            mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should get pointer', async () => {
                 const item = new TestTable();
@@ -64,7 +64,7 @@ describe('MongoToParseQuery', () => {
         });
         context('getPointerFromId', async () => {
             const mongoToParseQuery = new index_1.MongoToParseQuery();
-            await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
+            mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should generate pointer from object.', async () => {
                 const pointer = mongoToParseQuery.getPointerFromId('testId', TestTable);
@@ -75,7 +75,7 @@ describe('MongoToParseQuery', () => {
         context('generateWhereQuery', async () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const mongoToParseQuery = new index_1.MongoToParseQuery();
-            await mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
+            mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should generate query when not compound query exist.', async () => {
                 const query = mongoToParseQuery.generateWhereQuery(TestTable, { a: 1, b: '2', c: [3], d: [4, '5'] });

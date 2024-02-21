@@ -53,7 +53,7 @@ describe('MongoToParseQuery', () => {
         context('initialize on server', async () => {
             it('should give error when initialize is called in server mode.', async () => {
                 try {
-                    await new index_1.MongoToParseQuery().initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
+                    new index_1.MongoToParseQuery().initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
                     await Promise.reject({ message: 'should not reach here.' });
                 }
                 catch (error) {

@@ -10,6 +10,6 @@ declare class MongoToParseQuery extends MongoToParseQueryBase {
     initialize(applicationId: string, serverURL: string, config?: {
         masterKey?: string;
         disableSingleInstance?: boolean;
-    }): Promise<void>;
+    }): void;
 }
 export { MongoToParseQuery, MongoToParseError, MongoToParseQueryBase, ParseObjectExtender, ParseRoleExtender, ParseSessionExtender, ParseInstallationExtender, ParseUserExtender, RequestQueryPayload, RequestCountPayload, };
