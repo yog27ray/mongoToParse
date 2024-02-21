@@ -78,7 +78,7 @@ describe('MongoToParseQuery', () => {
     context('initialize on server', async () => {
       it('should give error when initialize is called in server mode.', async () => {
         try {
-          await new MongoToParseQuery().initialize(Env.appId, Env.serverURL);
+          new MongoToParseQuery().initialize(Env.appId, Env.serverURL);
           await Promise.reject({ message: 'should not reach here.' });
         } catch (error) {
           expect((error as { message: string; }).message).to
