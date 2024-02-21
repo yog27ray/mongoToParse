@@ -1,4 +1,4 @@
-import { UserConstructor } from 'parse';
+import { InstallationConstructor, RoleConstructor, SessionConstructor, UserConstructor } from 'parse';
 import { MongoToParseError } from '../error/mongo-to-parse-error';
 import { ParseObjectExtender } from './parse-object-extender';
 
@@ -70,6 +70,18 @@ export class MongoToParseQueryBase {
 
   get User(): UserConstructor {
     return this.parse.User as UserConstructor;
+  }
+
+  get Installation(): InstallationConstructor {
+    return this.parse.Installation as InstallationConstructor;
+  }
+
+  get Role(): RoleConstructor {
+    return this.parse.Role as RoleConstructor;
+  }
+
+  get Session(): SessionConstructor {
+    return this.parse.Session as SessionConstructor;
   }
 
   find<Z extends new() => ParseObjectExtender>(
