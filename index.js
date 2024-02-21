@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ParseUserExtender = exports.ParseInstallationExtender = exports.ParseSessionExtender = exports.ParseRoleExtender = exports.ParseObjectExtender = exports.MongoToParseQueryBase = exports.MongoToParseError = exports.MongoToParseQuery = void 0;
+const parse_1 = __importDefault(require("parse"));
 const mongo_to_parse_error_1 = require("./src/error/mongo-to-parse-error");
 Object.defineProperty(exports, "MongoToParseError", { enumerable: true, get: function () { return mongo_to_parse_error_1.MongoToParseError; } });
 const mongo_to_parse_query_base_1 = require("./src/transform/mongo-to-parse-query-base");
@@ -15,44 +19,14 @@ const parse_session_extender_1 = require("./src/transform/parse-session-extender
 Object.defineProperty(exports, "ParseSessionExtender", { enumerable: true, get: function () { return parse_session_extender_1.ParseSessionExtender; } });
 const parse_user_extender_1 = require("./src/transform/parse-user-extender");
 Object.defineProperty(exports, "ParseUserExtender", { enumerable: true, get: function () { return parse_user_extender_1.ParseUserExtender; } });
-let ParseLib;
-let isParseServerLoaded = false;
-try {
-    ParseLib = Parse;
-    isParseServerLoaded = true;
-}
-catch (error) {
-    if (error.message !== 'Parse is not defined') {
-        throw error;
-    }
-}
-function checkIsNodeEnvironment() {
-    return ((typeof process) === 'object');
-}
 class MongoToParseQuery extends mongo_to_parse_query_base_1.MongoToParseQueryBase {
-    constructor() {
-        super();
-        const isNodeEnvironment = checkIsNodeEnvironment();
-        if (isNodeEnvironment) {
-            this.setParse(ParseLib);
-        }
-    }
     initialize(applicationId, serverURL, config = {}) {
-        const isNodeEnvironment = checkIsNodeEnvironment();
-        if (isNodeEnvironment && isParseServerLoaded) {
-            throw Error('Initialize is not required when parse-server is initialized.');
-        }
-        ParseLib = isNodeEnvironment
-            // eslint-disable-next-line global-require
-            ? require('parse/node')
-            // eslint-disable-next-line global-require
-            : require('parse');
-        ParseLib.initialize(applicationId, undefined, config.masterKey);
-        ParseLib.serverURL = serverURL;
-        this.setParse(ParseLib);
+        parse_1.default.initialize(applicationId, undefined, config.masterKey);
+        parse_1.default.serverURL = serverURL;
+        this.setParse(parse_1.default);
         if (config.disableSingleInstance
-            && ParseLib.Object.disableSingleInstance) {
-            ParseLib.Object.disableSingleInstance();
+            && parse_1.default.Object.disableSingleInstance) {
+            parse_1.default.Object.disableSingleInstance();
         }
     }
 }

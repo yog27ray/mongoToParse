@@ -6,7 +6,6 @@ import { ParseRoleExtender } from './src/transform/parse-role-extender';
 import { ParseSessionExtender } from './src/transform/parse-session-extender';
 import { ParseUserExtender } from './src/transform/parse-user-extender';
 declare class MongoToParseQuery extends MongoToParseQueryBase {
-    constructor();
     initialize(applicationId: string, serverURL: string, config?: {
         masterKey?: string;
         disableSingleInstance?: boolean;

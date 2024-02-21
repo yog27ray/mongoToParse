@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
-const node_1 = require("../../node");
+const index_1 = require("../../index");
 const test_env_1 = require("../test-env");
 describe('MongoToParseQuery', () => {
     describe('function calls', () => {
         context('parseTable', () => {
             it('should return parse table', async () => {
-                const mongoToParseQuery = new node_1.MongoToParseQuery();
+                const mongoToParseQuery = new index_1.MongoToParseQuery();
                 mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL, { disableSingleInstance: true });
                 const Table = mongoToParseQuery.parseTable('TableName');
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,7 +15,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('addParseObjectInfoToJsonObject', async () => {
-            const mongoToParseQuery = new node_1.MongoToParseQuery();
+            const mongoToParseQuery = new index_1.MongoToParseQuery();
             mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             it('should return undefined', async () => {
                 const results = mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
@@ -36,7 +36,7 @@ describe('MongoToParseQuery', () => {
         });
         context('removeParesObjectDetails', async () => {
             let jsonParseObject;
-            const mongoToParseQuery = new node_1.MongoToParseQuery();
+            const mongoToParseQuery = new index_1.MongoToParseQuery();
             mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             it('should do nothing when object is not present', async () => {
                 jsonParseObject = undefined;
@@ -50,7 +50,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('getPointer', async () => {
-            const mongoToParseQuery = new node_1.MongoToParseQuery();
+            const mongoToParseQuery = new index_1.MongoToParseQuery();
             mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should get pointer', async () => {
@@ -63,7 +63,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('getPointerFromId', async () => {
-            const mongoToParseQuery = new node_1.MongoToParseQuery();
+            const mongoToParseQuery = new index_1.MongoToParseQuery();
             mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should generate pointer from object.', async () => {
@@ -74,7 +74,7 @@ describe('MongoToParseQuery', () => {
         });
         context('generateWhereQuery', async () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const mongoToParseQuery = new node_1.MongoToParseQuery();
+            const mongoToParseQuery = new index_1.MongoToParseQuery();
             mongoToParseQuery.initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should generate query when not compound query exist.', async () => {
@@ -98,4 +98,4 @@ describe('MongoToParseQuery', () => {
         });
     });
 });
-//# sourceMappingURL=mongo-to-parse-query-base.node.spec.js.map
+//# sourceMappingURL=mongo-to-parse-query-base.web.spec.js.map

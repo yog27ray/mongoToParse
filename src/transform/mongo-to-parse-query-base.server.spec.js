@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const chai_1 = require("chai");
-const index_1 = require("../../index");
+const server_1 = require("../../server");
 const setup_server_1 = require("../setup-server");
-const test_env_1 = require("../test-env");
 function parseObjectJSON(results) {
     return results.map((each) => {
         const resultJSON = each.toJSON();
@@ -50,20 +49,8 @@ async function createDummyRows(TestTable, mongoToParseQuery) {
 }
 describe('MongoToParseQuery', () => {
     describe('function calls', () => {
-        context('initialize on server', async () => {
-            it('should give error when initialize is called in server mode.', async () => {
-                try {
-                    new index_1.MongoToParseQuery().initialize(test_env_1.Env.appId, test_env_1.Env.serverURL);
-                    await Promise.reject({ message: 'should not reach here.' });
-                }
-                catch (error) {
-                    (0, chai_1.expect)(error.message).to
-                        .equal('Initialize is not required when parse-server is initialized.');
-                }
-            });
-        });
         context('parse role type check', async () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const DummyRowTable = mongoToParseQuery.parseTable('DummyRowTable');
             const InnerClassTable = mongoToParseQuery.parseTable('InnerClassTable');
             it('should pass for valid role type.', async () => {
@@ -151,18 +138,18 @@ describe('MongoToParseQuery', () => {
         });
         context('parseTable', () => {
             it('should return parse table', async () => {
-                const Table = new index_1.MongoToParseQuery().parseTable('TableName');
+                const Table = new server_1.MongoToParseQuery().parseTable('TableName');
                 (0, chai_1.expect)(new Table() instanceof Parse.Object).to.be.true;
             });
         });
         context('fromJSON', () => {
             it('should return parse table', async () => {
-                const object = new index_1.MongoToParseQuery().fromJSON({ rank: 1, className: 'TableName' });
+                const object = new server_1.MongoToParseQuery().fromJSON({ rank: 1, className: 'TableName' });
                 (0, chai_1.expect)(object.get('rank')).to.equal(1);
             });
         });
         context('findOne', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -183,7 +170,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('find', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await (0, setup_server_1.dropDB)();
@@ -195,7 +182,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('count', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -206,7 +193,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('addParseObjectInfoToJsonObject', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             it('should return undefined', async () => {
                 const results = mongoToParseQuery.addParseObjectInfoToJsonObject(undefined, 'TestTable');
                 (0, chai_1.expect)(results).to.not.exist;
@@ -226,7 +213,7 @@ describe('MongoToParseQuery', () => {
         });
         context('removeParesObjectDetails', () => {
             let jsonParseObject;
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             it('should do nothing when object is not present', async () => {
                 jsonParseObject = undefined;
                 mongoToParseQuery.removeParesObjectDetails(jsonParseObject);
@@ -240,7 +227,7 @@ describe('MongoToParseQuery', () => {
         });
         context('fetchObject', () => {
             let parseObject;
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -267,7 +254,7 @@ describe('MongoToParseQuery', () => {
         });
         context('getObjectsFromPointers', () => {
             let rows;
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -296,7 +283,7 @@ describe('MongoToParseQuery', () => {
         });
         context('updatePointersWithObject', () => {
             let rows;
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -345,7 +332,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('aggregate', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             before(async () => {
                 await createDummyRows(TestTable, mongoToParseQuery);
@@ -363,7 +350,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('getPointer', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should get pointer', async () => {
                 const item = new TestTable();
@@ -375,7 +362,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('Cloud.run', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             it('should get error when function name is not present.', async () => {
                 try {
                     await mongoToParseQuery.Cloud.run('testCloudRun');
@@ -395,7 +382,7 @@ describe('MongoToParseQuery', () => {
             });
         });
         context('getPointerFromId', () => {
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should generate pointer from object.', async () => {
                 const pointer = mongoToParseQuery.getPointerFromId('testId', TestTable);
@@ -405,7 +392,7 @@ describe('MongoToParseQuery', () => {
         });
         context('generateWhereQuery', () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const mongoToParseQuery = new index_1.MongoToParseQuery();
+            const mongoToParseQuery = new server_1.MongoToParseQuery();
             const TestTable = mongoToParseQuery.parseTable('TestTable');
             it('should generate query when not compound query exist.', async () => {
                 const query = mongoToParseQuery.generateWhereQuery(TestTable, { a: 1, b: '2', c: [3], d: [4, '5'] });
@@ -428,7 +415,7 @@ describe('MongoToParseQuery', () => {
         });
     });
     describe('query conditions', () => {
-        const mongoToParseQuery = new index_1.MongoToParseQuery();
+        const mongoToParseQuery = new server_1.MongoToParseQuery();
         const TestTable = mongoToParseQuery.parseTable('TestTable');
         before(async () => {
             await createDummyRows(TestTable, mongoToParseQuery);

@@ -1,15 +1,17 @@
 {
   "name": "mongo-to-parse",
-  "version": "2.0.25",
+  "version": "2.0.27",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "coverage": "npm run coverage:mongodb:server && npm run coverage:mongodb:node",
+    "coverage": "npm run coverage:mongodb:server && npm run coverage:mongodb:node && npm run coverage:mongodb:web",
     "coverage:mongodb:server": "DEBUG=no nyc mocha src/setup-server.ts 'src/**/*.server.spec.ts' && nyc report --reporter=text-lcov > coverage-1.lcov",
     "coverage:mongodb:node": "DEBUG=no nyc mocha src/setup-node.ts 'src/**/*.node.spec.ts' && nyc report --reporter=text-lcov > coverage-2.lcov",
+    "coverage:mongodb:web": "DEBUG=no nyc mocha src/setup-node.ts 'src/**/*.web.spec.ts' && nyc report --reporter=text-lcov > coverage-3.lcov",
     "test:server": "mocha src/setup-server.ts \"src/**/*.server.spec.ts\" --exit",
     "test:node": "mocha src/setup-node.ts \"src/**/*.node.spec.ts\" --exit",
-    "test": "npm run test:server && npm run test:node"
+    "test:web": "mocha src/setup-node.ts \"src/**/*.web.spec.ts\" --exit",
+    "test": "npm run test:server && npm run test:node && npm run test:web"
   },
   "repository": {
     "type": "git",
