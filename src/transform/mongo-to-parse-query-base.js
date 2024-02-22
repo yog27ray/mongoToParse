@@ -25,6 +25,9 @@ class MongoToParseQueryBase {
     get User() {
         return this.parse.User;
     }
+    get Object() {
+        return this.parse.Object;
+    }
     get Installation() {
         return this.parse.Installation;
     }

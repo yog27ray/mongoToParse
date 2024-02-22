@@ -1,4 +1,4 @@
-import { InstallationConstructor, RoleConstructor, SessionConstructor, UserConstructor } from 'parse';
+import { InstallationConstructor, ObjectConstructor, RoleConstructor, SessionConstructor, UserConstructor } from 'parse';
 import { ParseObjectExtender } from './parse-object-extender';
 export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
 declare type WhereType<T extends Parse.Attributes> = (Partial<{
@@ -41,6 +41,7 @@ export declare class MongoToParseQueryBase {
     get Error(): typeof Parse.Error;
     getNewACL(): Parse.ACL;
     get User(): UserConstructor;
+    get Object(): ObjectConstructor;
     get Installation(): InstallationConstructor;
     get Role(): RoleConstructor;
     get Session(): SessionConstructor;
