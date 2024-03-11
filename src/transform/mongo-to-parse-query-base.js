@@ -7,7 +7,6 @@ class MongoToParseQueryBase {
     setParse(parse) {
         this.parse = parse;
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getParse() {
         return this.parse;
     }
@@ -293,7 +292,9 @@ class MongoToParseQueryBase {
         if (compoundKeysInQuery.length) {
             const queries = compoundKeysInQuery.map((key) => this.generateKeyValueQuery(table, key, where[key]));
             keys = keys.filter((key) => !compoundKeysInQuery.includes(key));
-            query = queries.length === 1 ? queries[0] : this.parse.Query.and(...queries);
+            query = (queries.length === 1
+                ? queries[0]
+                : this.getParse().Query.and(...queries));
         }
         keys.forEach((key) => this.generateKeyValueQuery(table, key, where[key], query));
         return query;
