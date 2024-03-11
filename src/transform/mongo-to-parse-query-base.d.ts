@@ -35,6 +35,7 @@ declare interface AggregateDataType {
 export declare class MongoToParseQueryBase {
     protected parse: any;
     protected setParse(parse: unknown): void;
+    getParse(): any;
     fromJSON<Z extends new () => ParseObjectExtender>(objectJSON: Record<string, unknown>): InstanceType<Z>;
     parseTable<T extends Parse.Attributes>(tableName: string): new () => ParseObjectExtender<T>;
     get Cloud(): typeof Parse.Cloud;

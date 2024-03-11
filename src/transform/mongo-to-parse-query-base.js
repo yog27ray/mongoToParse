@@ -7,6 +7,10 @@ class MongoToParseQueryBase {
     setParse(parse) {
         this.parse = parse;
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getParse() {
+        return this.parse;
+    }
     fromJSON(objectJSON) {
         return this.parse.Object.fromJSON(objectJSON);
     }
