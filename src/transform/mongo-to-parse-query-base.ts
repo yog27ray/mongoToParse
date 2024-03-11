@@ -41,15 +41,13 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
 
 const CompoundQueryKeys: Array<string> = ['$and', '$or'];
 export class MongoToParseQueryBase {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected parse: any;
+  protected parse: typeof Parse;
 
-  protected setParse(parse: unknown): void {
+  protected setParse(parse: typeof Parse): void {
     this.parse = parse;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  getParse(): any {
+  getParse(): typeof Parse {
     return this.parse;
   }
 
@@ -379,7 +377,7 @@ export class MongoToParseQueryBase {
     table: Z,
     key: string,
     value: unknown,
-    query: Parse.Query<InstanceType<Z>> = new this.parse.Query(table)): Parse.Query<InstanceType<Z>> {
+    query: Parse.Query<InstanceType<Z>> = new this.parse.Query(table) as Parse.Query<InstanceType<Z>>): Parse.Query<InstanceType<Z>> {
     switch (key) {
       case '$and': {
         const valueArray = value as Array<{ [key: string]: unknown }>;
@@ -406,7 +404,9 @@ export class MongoToParseQueryBase {
     if (compoundKeysInQuery.length) {
       const queries = compoundKeysInQuery.map((key: string) => this.generateKeyValueQuery(table, key, where[key]));
       keys = keys.filter((key: string) => !compoundKeysInQuery.includes(key));
-      query = queries.length === 1 ? queries[0] : this.parse.Query.and(...queries);
+      query = (queries.length === 1
+        ? queries[0]
+        : this.getParse().Query.and(...queries)) as Parse.Query<InstanceType<Z>>;
     }
     keys.forEach((key: string) => this.generateKeyValueQuery(table, key, where[key], query));
     return query;
