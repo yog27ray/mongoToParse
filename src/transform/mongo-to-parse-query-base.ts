@@ -48,6 +48,10 @@ export class MongoToParseQueryBase {
     this.parse = parse;
   }
 
+  getParse(): any {
+    return this.parse;
+  }
+
   fromJSON<Z extends new() => ParseObjectExtender>(objectJSON: Record<string, unknown>): InstanceType<Z> {
     return this.parse.Object.fromJSON(objectJSON) as InstanceType<Z>;
   }
