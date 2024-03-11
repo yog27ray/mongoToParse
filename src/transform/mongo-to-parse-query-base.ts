@@ -48,6 +48,7 @@ export class MongoToParseQueryBase {
     this.parse = parse;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getParse(): any {
     return this.parse;
   }
