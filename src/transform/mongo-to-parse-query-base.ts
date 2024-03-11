@@ -60,35 +60,35 @@ export class MongoToParseQueryBase {
   }
 
   get Cloud(): typeof Parse.Cloud {
-    return this.parse.Cloud as typeof Parse.Cloud;
+    return this.parse.Cloud;
   }
 
   get Error(): typeof Parse.Error {
-    return this.parse.Error as typeof Parse.Error;
+    return this.parse.Error;
   }
 
   getNewACL(): Parse.ACL {
-    return new this.parse.ACL() as Parse.ACL;
+    return new this.parse.ACL();
   }
 
   get User(): UserConstructor {
-    return this.parse.User as UserConstructor;
+    return this.parse.User;
   }
 
   get Object(): ObjectConstructor {
-    return this.parse.Object as ObjectConstructor;
+    return this.parse.Object;
   }
 
   get Installation(): InstallationConstructor {
-    return this.parse.Installation as InstallationConstructor;
+    return this.parse.Installation;
   }
 
   get Role(): RoleConstructor {
-    return this.parse.Role as RoleConstructor;
+    return this.parse.Role;
   }
 
   get Session(): SessionConstructor {
-    return this.parse.Session as SessionConstructor;
+    return this.parse.Session;
   }
 
   find<Z extends new() => ParseObjectExtender>(
