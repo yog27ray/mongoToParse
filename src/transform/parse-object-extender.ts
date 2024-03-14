@@ -1,6 +1,7 @@
 import { ParseObjectJSON } from './parse-type';
 
 export declare class ParseObjectExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.Object<T> {
+  static className: string;
   json?: ParseObjectJSON<T>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
