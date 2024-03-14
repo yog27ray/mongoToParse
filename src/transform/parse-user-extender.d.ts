@@ -1,6 +1,7 @@
 /// <reference types="parse" />
 import { ParseObjectJSON } from './parse-type';
 export declare class ParseUserExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.User<T> {
+    static className: string;
     json?: ParseObjectJSON<T>;
     constructor(attributes?: T);
     _toJSON(): ParseObjectJSON<T>;
