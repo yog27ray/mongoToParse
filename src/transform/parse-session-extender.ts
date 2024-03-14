@@ -2,6 +2,7 @@ import { ParseObjectJSON } from './parse-type';
 
 export declare class ParseSessionExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.Session<T> {
   static className: string;
+
   json?: ParseObjectJSON<T>;
 
   constructor(attributes?: T);

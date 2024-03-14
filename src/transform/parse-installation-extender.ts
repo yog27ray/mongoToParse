@@ -2,6 +2,7 @@ import { ParseObjectJSON } from './parse-type';
 
 export declare class ParseInstallationExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.Installation<T> {
   static className: string;
+
   json?: ParseObjectJSON<T>;
 
   constructor(attributes?: T);
