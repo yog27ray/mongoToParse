@@ -5,7 +5,7 @@ export declare class ParseUserExtender<T extends Parse.Attributes = Parse.Attrib
 
   json?: ParseObjectJSON<T>;
 
-  constructor(attributes?: T);
+  constructor(attributes?: Partial<T>);
 
   _toJSON(): ParseObjectJSON<T>;
 

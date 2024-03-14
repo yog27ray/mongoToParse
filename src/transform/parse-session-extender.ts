@@ -5,7 +5,7 @@ export declare class ParseSessionExtender<T extends Parse.Attributes = Parse.Att
 
   json?: ParseObjectJSON<T>;
 
-  constructor(attributes?: T);
+  constructor(attributes?: Partial<T>);
 
   _toJSON(): ParseObjectJSON<T>;
 

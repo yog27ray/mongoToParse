@@ -5,8 +5,7 @@ export declare class ParseObjectExtender<T extends Parse.Attributes = Parse.Attr
 
   json?: ParseObjectJSON<T>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(className?: string, attributes?: T, options?: any);
+  constructor(attributes?: Partial<T>);
 
   _toJSON(): ParseObjectJSON<T>;
 
