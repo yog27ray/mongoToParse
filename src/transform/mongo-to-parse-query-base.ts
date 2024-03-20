@@ -1,6 +1,7 @@
 import { InstallationConstructor, ObjectConstructor, RoleConstructor, SessionConstructor, UserConstructor } from 'parse';
 import { MongoToParseError } from '../error/mongo-to-parse-error';
 import { ParseObjectExtender } from './parse-object-extender';
+import { ParseSchemaExtender } from './parse-schema-extender';
 
 export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
 
@@ -73,6 +74,10 @@ export class MongoToParseQueryBase {
 
   get User(): UserConstructor {
     return this.parse.User;
+  }
+
+  get Schema(): typeof ParseSchemaExtender {
+    return this.parse.Schema;
   }
 
   get Object(): ObjectConstructor {
