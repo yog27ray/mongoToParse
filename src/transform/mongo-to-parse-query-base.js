@@ -28,6 +28,9 @@ class MongoToParseQueryBase {
     get User() {
         return this.parse.User;
     }
+    get Schema() {
+        return this.parse.Schema;
+    }
     get Object() {
         return this.parse.Object;
     }
