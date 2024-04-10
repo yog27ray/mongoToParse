@@ -8,7 +8,7 @@ import {
   ParseObjectBeforeDeleteRequest,
   ParseObjectBeforeFindRequest,
   ParseObjectBeforeLoginRequest,
-  ParseObjectBeforeSaveRequest,
+  ParseObjectBeforeSaveRequest, ParseObjectTriggerRequest,
   RequestCountPayload,
   RequestQueryPayload,
 } from './src/transform/mongo-to-parse-query-base';
@@ -39,6 +39,7 @@ export {
   ParseObjectBeforeLoginRequest,
   ParseObjectBeforeSaveRequest,
   ParseObjectExtender,
+  ParseObjectTriggerRequest,
   ParseRoleExtender,
   ParseSchemaExtender,
   ParseSessionExtender,
