@@ -19,27 +19,27 @@ export declare interface RequestQueryPayload<Z extends ParseObjectExtender> {
     where: WhereType<Z['attributes'] & Parse.BaseAttributes>;
     option?: Parse.FullOptions;
 }
-export declare type ParseObjectTriggerRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Parse.Cloud.TriggerRequest<T> & {
+export declare type ParseObjectTriggerRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Omit<Parse.Cloud.TriggerRequest<T>, 'user'> & {
     user?: Z;
 };
 export declare type ParseObjectBeforeLoginRequest<T extends ParseUserExtender> = ParseObjectTriggerRequest<T>;
 export declare type ParseObjectAfterLoginRequest<T extends ParseUserExtender> = ParseObjectTriggerRequest<T>;
-export declare type ParseObjectBeforeFindRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Parse.Cloud.BeforeFindRequest<T> & {
+export declare type ParseObjectBeforeFindRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Omit<Parse.Cloud.BeforeFindRequest<T>, 'user'> & {
     user?: Z;
 };
-export declare type ParseObjectAfterFindRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Parse.Cloud.AfterFindRequest<T> & {
+export declare type ParseObjectAfterFindRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Omit<Parse.Cloud.AfterFindRequest<T>, 'user'> & {
     user?: Z;
 };
-export declare type ParseObjectBeforeSaveRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Parse.Cloud.BeforeSaveRequest<T> & {
+export declare type ParseObjectBeforeSaveRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Omit<Parse.Cloud.BeforeSaveRequest<T>, 'user'> & {
     user?: Z;
 };
-export declare type ParseObjectAfterSaveRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Parse.Cloud.AfterSaveRequest<T> & {
+export declare type ParseObjectAfterSaveRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Omit<Parse.Cloud.AfterSaveRequest<T>, 'user'> & {
     user?: Z;
 };
-export declare type ParseObjectBeforeDeleteRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Parse.Cloud.BeforeDeleteRequest<T> & {
+export declare type ParseObjectBeforeDeleteRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Omit<Parse.Cloud.BeforeDeleteRequest<T>, 'user'> & {
     user?: Z;
 };
-export declare type ParseObjectAfterDeleteRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Parse.Cloud.AfterDeleteRequest<T> & {
+export declare type ParseObjectAfterDeleteRequest<T extends ParseObjectExtender, Z extends ParseUserExtender = ParseUserExtender> = Omit<Parse.Cloud.AfterDeleteRequest<T>, 'user'> & {
     user?: Z;
 };
 export declare interface RequestCountPayload<Z extends ParseObjectExtender> {
