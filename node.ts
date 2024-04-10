@@ -2,14 +2,6 @@ import Parse from 'parse/node';
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
 import {
   MongoToParseQueryBase,
-  ParseObjectAfterDeleteRequest,
-  ParseObjectAfterFindRequest,
-  ParseObjectAfterLoginRequest,
-  ParseObjectAfterSaveRequest,
-  ParseObjectBeforeDeleteRequest,
-  ParseObjectBeforeFindRequest,
-  ParseObjectBeforeLoginRequest,
-  ParseObjectBeforeSaveRequest,
   RequestCountPayload,
   RequestQueryPayload
 } from './src/transform/mongo-to-parse-query-base';
@@ -39,14 +31,6 @@ export {
   MongoToParseQuery,
   MongoToParseError,
   MongoToParseQueryBase,
-  ParseObjectAfterDeleteRequest,
-  ParseObjectAfterFindRequest,
-  ParseObjectAfterLoginRequest,
-  ParseObjectAfterSaveRequest,
-  ParseObjectBeforeDeleteRequest,
-  ParseObjectBeforeFindRequest,
-  ParseObjectBeforeLoginRequest,
-  ParseObjectBeforeSaveRequest,
   ParseObjectExtender,
   ParseRoleExtender,
   ParseSchemaExtender,
