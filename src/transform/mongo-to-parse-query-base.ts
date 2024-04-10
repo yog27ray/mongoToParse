@@ -27,17 +27,11 @@ export declare interface RequestQueryPayload<Z extends ParseObjectExtender> {
 }
 
 export declare type ParseObjectTriggerRequest<
-  T extends ParseUserExtender,
+  T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
 > = Parse.Cloud.TriggerRequest<T> & { user?: Z };
-export declare type ParseObjectBeforeLoginRequest<
-  T extends ParseUserExtender,
-  Z extends ParseUserExtender = ParseUserExtender
-> = ParseObjectTriggerRequest<T> & { user?: Z };
-export declare type ParseObjectAfterLoginRequest<
-  T extends ParseUserExtender,
-  Z extends ParseUserExtender = ParseUserExtender
-> = ParseObjectTriggerRequest<T> & { user?: Z };
+export declare type ParseObjectBeforeLoginRequest<T extends ParseUserExtender> = ParseObjectTriggerRequest<T>;
+export declare type ParseObjectAfterLoginRequest<T extends ParseUserExtender> = ParseObjectTriggerRequest<T>;
 export declare type ParseObjectBeforeFindRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
