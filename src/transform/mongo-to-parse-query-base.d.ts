@@ -1,6 +1,7 @@
 import { InstallationConstructor, ObjectConstructor, RoleConstructor, SessionConstructor, UserConstructor } from 'parse';
 import { ParseObjectExtender } from './parse-object-extender';
 import { ParseSchemaExtender } from './parse-schema-extender';
+import { ParseUserExtender } from './parse-user-extender';
 export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
 declare type WhereType<T extends Parse.Attributes> = (Partial<{
     $or?: Array<unknown>;
@@ -18,6 +19,14 @@ export declare interface RequestQueryPayload<Z extends ParseObjectExtender> {
     where: WhereType<Z['attributes'] & Parse.BaseAttributes>;
     option?: Parse.FullOptions;
 }
+export declare type ParseObjectBeforeLoginRequest<T extends ParseUserExtender> = Parse.Cloud.TriggerRequest<T>;
+export declare type ParseObjectAfterLoginRequest<T extends ParseUserExtender> = Parse.Cloud.TriggerRequest<T>;
+export declare type ParseObjectBeforeFindRequest<T extends ParseObjectExtender> = Parse.Cloud.BeforeFindRequest<T>;
+export declare type ParseObjectAfterFindRequest<T extends ParseObjectExtender> = Parse.Cloud.AfterFindRequest<T>;
+export declare type ParseObjectBeforeSaveRequest<T extends ParseObjectExtender> = Parse.Cloud.BeforeSaveRequest<T>;
+export declare type ParseObjectAfterSaveRequest<T extends ParseObjectExtender> = Parse.Cloud.AfterSaveRequest<T>;
+export declare type ParseObjectBeforeDeleteRequest<T extends ParseObjectExtender> = Parse.Cloud.BeforeDeleteRequest<T>;
+export declare type ParseObjectAfterDeleteRequest<T extends ParseObjectExtender> = Parse.Cloud.AfterDeleteRequest<T>;
 export declare interface RequestCountPayload<Z extends ParseObjectExtender> {
     where: WhereType<Z['attributes'] & Parse.BaseAttributes>;
     limit?: number;
