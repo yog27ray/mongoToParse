@@ -1,10 +1,12 @@
 const importPlugin = require("eslint-plugin-import");
+const { configs } = require("@eslint/js");
 const typescriptPlugin = require("eslint-plugin-typescript");
 const promisePlugin = require("eslint-plugin-promise");
 const typescriptEslintParser = require("@typescript-eslint/parser"); // Import parser object
 const typescriptEslintPlugin = require("@typescript-eslint/eslint-plugin"); // Import plugin
 
 module.exports = [
+  configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
