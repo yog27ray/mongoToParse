@@ -61,7 +61,7 @@ async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQ
     Object.keys(each)
       .forEach((key: keyof { time: Date, rank: number, message: string, total: number, field: number }) => tempObject.set(key, each[key]));
     return tempObject;
-  }), {});
+  }), { useMasterKey: true });
   const TestTable2 = mongoToParseQuery.parseTable('TestTable2');
   const item = new TestTable2();
   item.set('name', 'xyz');
@@ -69,7 +69,7 @@ async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQ
     where: { rank: 10 },
     ascending: 'rank',
   });
-  await result.save({ item });
+  await result.save({ item }, { useMasterKey: true });
 }
 
 describe('MongoToParseQuery', () => {
@@ -105,7 +105,7 @@ describe('MongoToParseQuery', () => {
         innerObject.set('date', new Date());
         const dummyObject = new DummyRowTable();
         dummyObject.set('innerItem', innerObject);
-        await dummyObject.save();
+        await dummyObject.save({}, { useMasterKey: true });
         const dummyJSONObject: DummyRowClass['json'] = dummyObject.toJSON();
         expect(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
         expect(dummyJSONObject.innerItem.objectId).to.exist;
@@ -128,7 +128,7 @@ describe('MongoToParseQuery', () => {
         innerObject.set('date', new Date());
         const dummyObject = new Table.Table1();
         dummyObject.set('innerItem', innerObject);
-        await dummyObject.save();
+        await dummyObject.save({}, { useMasterKey: true });
         const dummyJSONObject: DummyRowClass['json'] = dummyObject.toJSON();
         expect(typeof dummyJSONObject.innerItem.objectId === 'string').to.be.true;
         expect(dummyJSONObject.innerItem.objectId).to.exist;
@@ -196,6 +196,7 @@ describe('MongoToParseQuery', () => {
         const result = await mongoToParseQuery.findOne(TestTable, {
           where: { total: 4 },
           descending: 'rank',
+          option: { useMasterKey: true },
         });
         const [resultJSON] = parseObjectJSON([result]);
         expect(resultJSON).to.deep.equal({
@@ -218,7 +219,10 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should fetch all results', async () => {
-        const results = await mongoToParseQuery.find(TestTable, { where: {} });
+        const results = await mongoToParseQuery.find(TestTable, {
+          where: {},
+          option: { useMasterKey: true },
+        });
         expect(results.length).to.equal(12);
       });
     });
@@ -232,7 +236,10 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should return count to row having total 3', async () => {
-        const results = await mongoToParseQuery.count(TestTable, { where: { total: 3 } });
+        const results = await mongoToParseQuery.count(TestTable, {
+          where: { total: 3 },
+          option: { useMasterKey: true },
+        });
         expect(results).to.equal(3);
       });
     });
@@ -317,7 +324,10 @@ describe('MongoToParseQuery', () => {
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
-        rows = await mongoToParseQuery.find(TestTable, { where: {} });
+        rows = await mongoToParseQuery.find(TestTable, {
+          where: {},
+          option: { useMasterKey: true },
+        });
       });
 
       it('should do nothing when there is not pointer object', async () => {
@@ -350,7 +360,10 @@ describe('MongoToParseQuery', () => {
 
       before(async () => {
         await createDummyRows(TestTable, mongoToParseQuery);
-        rows = await mongoToParseQuery.find(TestTable, { where: {} });
+        rows = await mongoToParseQuery.find(TestTable, {
+          where: {},
+          option: { useMasterKey: true },
+        });
       });
 
       it('should do nothing when there is not pointer object', async () => {
@@ -504,6 +517,7 @@ describe('MongoToParseQuery', () => {
       try {
         await mongoToParseQuery.find(TestTable, {
           where: { total: { $in: [1], of: 2 } },
+          option: { useMasterKey: true },
         });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
@@ -517,9 +531,12 @@ describe('MongoToParseQuery', () => {
 
     it('should give error when invalid field is provided', async () => {
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        await mongoToParseQuery.find(TestTable, { where: { $total: { $in: [1] } } });
+        await mongoToParseQuery.find(TestTable, {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          where: { $total: { $in: [1] } },
+          option: { useMasterKey: true },
+        });
         await Promise.reject({ code: 99, message: 'Should not reach here.' });
       } catch (error) {
         expect((error as MongoToParseError).toJSON()).to.deep.equal({
