@@ -47,7 +47,7 @@
     "mocha": "11.0.1",
     "mongodb": "6.8.0",
     "node-tslint-rules": "1.20.3",
-    "nyc": "15.1.0",
+    "nyc": "17.1.0",
     "parse-server": "7.4.0",
     "request-promise": "4.2.6",
     "ts-node": "10.9.2",
