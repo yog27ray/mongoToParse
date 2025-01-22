@@ -256,7 +256,7 @@ export class MongoToParseQueryBase {
       return;
     }
     await Promise.all(pointers.map((pointer: Z) => pointer.fetch(option)
-      .catch((error: { code: number; message: string; }) => {
+      .catch((error: Error & { code: number }) => {
         if (error.code === 101 && error.message === 'Object not found.') {
           return Promise.resolve();
         }

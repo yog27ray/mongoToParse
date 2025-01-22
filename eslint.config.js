@@ -110,6 +110,8 @@ module.exports = [
       "@typescript-eslint/camelcase": [0],
       "@typescript-eslint/no-misused-promises": [0],
       "max-classes-per-file": [0],
+      "@typescript-eslint/no-unused-expressions": [0],
+      "@typescript-eslint/prefer-promise-reject-errors": [0]
     },
   },
 ];

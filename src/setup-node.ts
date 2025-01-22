@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Env } from './test-env';
 
 before(() => {

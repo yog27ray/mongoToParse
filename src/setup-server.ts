@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
@@ -67,7 +66,6 @@ before(async function a() {
   this.timeout(50000);
   await startMongoDB();
   app.listen(Env.PORT, '::', () => {
-    // eslint-disable-next-line no-console
     console.log('Express server listening on %d, in test mode', Env.PORT);
   });
   await waitForServerToBoot();
