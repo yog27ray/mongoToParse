@@ -21,6 +21,7 @@ export declare interface RequestQueryPayload<Z extends ParseObjectExtender> {
   descending?: Partial<keyof (Z['attributes'] & Parse.BaseAttributes)>;
   ascending?: Partial<keyof (Z['attributes'] & Parse.BaseAttributes)>;
   skip?: number;
+  hint?: string;
   include?: Partial<Array<keyof (Z['attributes'] & Parse.BaseAttributes)>>;
   where: WhereType<Z['attributes'] & Parse.BaseAttributes>;
   option?: Parse.FullOptions;
@@ -61,10 +62,12 @@ export declare interface RequestCountPayload<Z extends ParseObjectExtender> {
   where: WhereType<Z['attributes'] & Parse.BaseAttributes>;
   limit?: number;
   option?: Parse.FullOptions;
+  hint?: string;
   skip?: number;
 }
 
 declare interface AggregateDataType {
+  hint?: string;
   option?: { useMasterKey?: boolean; sessionToken?: string };
   pipeline: Array<{ [key: string]: unknown }>;
 }
@@ -145,10 +148,14 @@ export class MongoToParseQueryBase {
       skip,
       include,
       limit,
+      hint,
     }: RequestQueryPayload<InstanceType<Z>>)
     : Promise<Array<InstanceType<Z>>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { project, descending, ascending, skip, include, limit });
+    if (hint) {
+      query.hint(hint);
+    }
     return query.find(option);
   }
 
@@ -163,23 +170,33 @@ export class MongoToParseQueryBase {
       skip,
       include,
       limit,
+      hint,
     }: RequestQueryPayload<InstanceType<Z>>)
     : Promise<InstanceType<Z>> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { project, descending, ascending, skip, include, limit });
+    if (hint) {
+      query.hint(hint);
+    }
     return query.first(option);
   }
 
-  aggregate<Z extends new() => ParseObjectExtender>(table: Z, { pipeline }: AggregateDataType): Promise<Array<unknown>> {
+  aggregate<Z extends new() => ParseObjectExtender>(table: Z, { pipeline, hint }: AggregateDataType): Promise<Array<unknown>> {
     const query = new this.parse.Query(table) as Parse.Query<Parse.Object<InstanceType<Z>['attributes']>>;
+    if (hint) {
+      query.hint(hint);
+    }
     return query.aggregate(pipeline);
   }
 
   count<Z extends new() => ParseObjectExtender>(
     table: Z,
-    { where, option, skip, limit }: RequestCountPayload<InstanceType<Z>>): Promise<number> {
+    { where, option, skip, limit, hint }: RequestCountPayload<InstanceType<Z>>): Promise<number> {
     const query = this.generateWhereQuery(table, where);
     this.updateQuery(query, { skip, limit });
+    if (hint) {
+      query.hint(hint);
+    }
     return query.count(option);
   }
 
