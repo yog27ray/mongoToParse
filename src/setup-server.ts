@@ -4,7 +4,6 @@ import { RequestHandlerParams } from 'express-serve-static-core';
 import { MongoClient } from 'mongodb';
 import { ParseServer } from 'parse-server';
 import * as process from 'process';
-import rp from 'request-promise';
 import { Env } from './test-env';
 
 const app: Express = express();
@@ -53,7 +52,7 @@ async function wait(time = 100): Promise<void> {
 
 async function waitForServerToBoot(): Promise<void> {
   try {
-    await rp('http://localhost:1234/api/parse/health');
+    await fetch('http://localhost:1234/api/parse/health');
   } catch (error) {
     await wait();
     console.log('error: ', (error as { message: string; }).message);
