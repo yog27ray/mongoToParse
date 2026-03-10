@@ -27,7 +27,9 @@
   },
   "exclude": [
     "node_modules",
+    "dist",
     "typings",
+    "eslint.config.mjs",
     "server/setup.ts",
     "**/*.js"
   ],

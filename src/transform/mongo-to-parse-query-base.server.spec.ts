@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import parse from 'parse/node';
 import { MongoToParseError, MongoToParseQuery, RequestCountPayload, RequestQueryPayload } from '../../server';
 import { dropDB } from '../setup-server';
 import { ParseInstallationExtender } from './parse-installation-extender';
@@ -80,7 +81,7 @@ describe('MongoToParseQuery', () => {
       const InnerClassTable: new () => InnerClass = mongoToParseQuery.parseTable('InnerClassTable');
 
       it('should pass for valid role type.', async () => {
-        const Role = Parse.Role as unknown as new() => ParseRoleExtender<{ rank: number }>;
+        const Role = parse.Role as unknown as new() => ParseRoleExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(Role, {
           where: {},
           descending: 'rank',
@@ -141,7 +142,7 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should pass for valid installation type.', async () => {
-        const Installation = Parse.Installation as unknown as new() => ParseInstallationExtender<{ rank: number }>;
+        const Installation = parse.Installation as unknown as new() => ParseInstallationExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(Installation, {
           where: {},
           descending: 'rank',
@@ -151,7 +152,7 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should pass for valid session type.', async () => {
-        const Session = Parse.Session as unknown as new() => ParseSessionExtender<{ rank: number }>;
+        const Session = parse.Session as unknown as new() => ParseSessionExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(Session, {
           where: {},
           descending: 'rank',
@@ -161,7 +162,7 @@ describe('MongoToParseQuery', () => {
       });
 
       it('should pass for valid user type.', async () => {
-        const User = Parse.User as unknown as new() => ParseUserExtender<{ rank: number }>;
+        const User = parse.User as unknown as new() => ParseUserExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(User, {
           where: {},
           descending: 'rank',
@@ -173,7 +174,7 @@ describe('MongoToParseQuery', () => {
     context('parseTable', () => {
       it('should return parse table', async () => {
         const Table = new MongoToParseQuery().parseTable('TableName');
-        expect(new Table() instanceof Parse.Object).to.be.true;
+        expect(new Table() instanceof parse.Object).to.be.true;
       });
     });
 

@@ -1,6 +1,8 @@
+import { Attributes } from 'parse';
+import ParseObject from 'parse/types/ParseObject';
 import { ParseObjectJSON } from './parse-type';
 
-export declare class ParseObjectExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.Object<T> {
+export declare class ParseObjectExtender<T extends Attributes = Attributes> extends ParseObject<T> {
   static className: string;
 
   json?: ParseObjectJSON<T>;

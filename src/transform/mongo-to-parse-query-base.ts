@@ -1,67 +1,74 @@
-import {
-  InstallationConstructor,
-  ObjectConstructor,
-  RoleConstructor,
-  SessionConstructor,
-  UserConstructor,
-} from 'parse';
+import { ObjectConstructor } from 'parse';
+import type {
+  AfterDeleteRequest,
+  AfterFindRequest,
+  AfterSaveRequest,
+  BeforeDeleteRequest,
+  BeforeFindRequest,
+  BeforeSaveRequest,
+  TriggerRequest,
+} from 'parse/types/CloudCode';
+import type { Parse as ParseInterface } from 'parse/types/Parse';
+import type { Attributes, BaseAttributes, default as ParseObject } from 'parse/types/ParseObject';
+import type ParseQuery from 'parse/types/ParseQuery';
+import type { FullOptions } from 'parse/types/RESTController';
 import { MongoToParseError } from '../error/mongo-to-parse-error';
 import { ParseObjectExtender } from './parse-object-extender';
 import { ParseSchemaExtender } from './parse-schema-extender';
 import { ParseUserExtender } from './parse-user-extender';
 
-export declare type ParseAttributeKey<T extends Parse.Object> = keyof T['attributes'] | keyof Parse.BaseAttributes;
+export declare type ParseAttributeKey<T extends ParseObject> = keyof T['attributes'] | keyof BaseAttributes;
 
-declare type WhereType<T extends Parse.Attributes> = (
-  Partial<{ $or?: Array<unknown>, $and?: Array<unknown> } & { [key in keyof (T & Parse.BaseAttributes)]: unknown }>);
+declare type WhereType<T extends Attributes> = (
+  Partial<{ $or?: Array<unknown>, $and?: Array<unknown> } & { [key in keyof (T & BaseAttributes)]: unknown }>);
 
 export declare interface RequestQueryPayload<Z extends ParseObjectExtender> {
-  project?: Partial<Array<keyof (Z['attributes'] & Parse.BaseAttributes)>>;
+  project?: Partial<Array<keyof (Z['attributes'] & BaseAttributes)>>;
   limit?: number;
-  descending?: Partial<keyof (Z['attributes'] & Parse.BaseAttributes)>;
-  ascending?: Partial<keyof (Z['attributes'] & Parse.BaseAttributes)>;
+  descending?: Partial<keyof (Z['attributes'] & BaseAttributes)>;
+  ascending?: Partial<keyof (Z['attributes'] & BaseAttributes)>;
   skip?: number;
   hint?: string;
-  include?: Partial<Array<keyof (Z['attributes'] & Parse.BaseAttributes)>>;
-  where: WhereType<Z['attributes'] & Parse.BaseAttributes>;
-  option?: Parse.FullOptions;
+  include?: Partial<Array<keyof (Z['attributes'] & BaseAttributes)>>;
+  where: WhereType<Z['attributes'] & BaseAttributes>;
+  option?: FullOptions;
 }
 
 export declare type ParseObjectTriggerRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<Parse.Cloud.TriggerRequest<T>, 'user'> & { user?: Z };
-export declare type ParseObjectBeforeLoginRequest<T extends ParseUserExtender> = ParseObjectTriggerRequest<T>;
-export declare type ParseObjectAfterLoginRequest<T extends ParseUserExtender> = ParseObjectTriggerRequest<T>;
+> = Omit<TriggerRequest<T>, 'user'> & { user?: Z };
+export declare type ParseObjectBeforeLoginRequest<T extends ParseUserExtender> = Omit<TriggerRequest<T>, 'user'> & { user?: T };
+export declare type ParseObjectAfterLoginRequest<T extends ParseUserExtender> = Omit<TriggerRequest<T>, 'user'> & { user?: T };
 export declare type ParseObjectBeforeFindRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<Parse.Cloud.BeforeFindRequest<T>, 'user'> & { user?: Z };
+> = Omit<BeforeFindRequest<T>, 'user'> & { user?: Z };
 export declare type ParseObjectAfterFindRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<Parse.Cloud.AfterFindRequest<T>, 'user'> & { user?: Z };
+> = Omit<AfterFindRequest<T>, 'user'> & { user?: Z };
 export declare type ParseObjectBeforeSaveRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<Parse.Cloud.BeforeSaveRequest<T>, 'user'> & { user?: Z };
+> = Omit<BeforeSaveRequest<T>, 'user'> & { user?: Z };
 export declare type ParseObjectAfterSaveRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<Parse.Cloud.AfterSaveRequest<T>, 'user'> & { user?: Z };
+> = Omit<AfterSaveRequest<T>, 'user'> & { user?: Z };
 export declare type ParseObjectBeforeDeleteRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<Parse.Cloud.BeforeDeleteRequest<T>, 'user'> & { user?: Z };
+> = Omit<BeforeDeleteRequest<T>, 'user'> & { user?: Z };
 export declare type ParseObjectAfterDeleteRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<Parse.Cloud.AfterDeleteRequest<T>, 'user'> & { user?: Z };
+> = Omit<AfterDeleteRequest<T>, 'user'> & { user?: Z };
 
 export declare interface RequestCountPayload<Z extends ParseObjectExtender> {
-  where: WhereType<Z['attributes'] & Parse.BaseAttributes>;
+  where: WhereType<Z['attributes'] & BaseAttributes>;
   limit?: number;
-  option?: Parse.FullOptions;
+  option?: FullOptions;
   hint?: string;
   skip?: number;
 }
@@ -72,7 +79,7 @@ declare interface AggregateDataType {
   pipeline: Array<{ [key: string]: unknown }>;
 }
 
-declare interface UpdateQueryDataType<T extends Parse.Object> {
+declare interface UpdateQueryDataType<T extends ParseObject> {
   project?: Array<ParseAttributeKey<T>>;
   limit?: number;
   descending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
@@ -83,13 +90,13 @@ declare interface UpdateQueryDataType<T extends Parse.Object> {
 
 const CompoundQueryKeys: Array<string> = ['$and', '$or'];
 export class MongoToParseQueryBase {
-  protected parse: typeof Parse;
+  protected parse: ParseInterface;
 
-  protected setParse(parse: typeof Parse): void {
+  protected setParse(parse: ParseInterface): void {
     this.parse = parse;
   }
 
-  getParse(): typeof Parse {
+  getParse(): ParseInterface {
     return this.parse;
   }
 
@@ -97,23 +104,23 @@ export class MongoToParseQueryBase {
     return this.parse.Object.fromJSON(objectJSON) as InstanceType<Z>;
   }
 
-  parseTable<T extends Parse.Attributes>(tableName: string): new() => ParseObjectExtender<T> {
+  parseTable<T extends Attributes>(tableName: string): new() => ParseObjectExtender<T> {
     return this.parse.Object.extend(tableName) as new() => ParseObjectExtender<T>;
   }
 
-  get Cloud(): typeof Parse.Cloud {
+  get Cloud(): ParseInterface['Cloud'] {
     return this.parse.Cloud;
   }
 
-  get Error(): typeof Parse.Error {
+  get Error(): ParseInterface['Error'] {
     return this.parse.Error;
   }
 
-  getNewACL(): Parse.ACL {
+  getNewACL(): InstanceType<ParseInterface['ACL']> {
     return new this.parse.ACL();
   }
 
-  get User(): UserConstructor {
+  get User(): ParseInterface['User'] {
     return this.parse.User;
   }
 
@@ -125,15 +132,15 @@ export class MongoToParseQueryBase {
     return this.parse.Object;
   }
 
-  get Installation(): InstallationConstructor {
+  get Installation(): ParseInterface['Installation'] {
     return this.parse.Installation;
   }
 
-  get Role(): RoleConstructor {
+  get Role(): ParseInterface['Role'] {
     return this.parse.Role;
   }
 
-  get Session(): SessionConstructor {
+  get Session(): ParseInterface['Session'] {
     return this.parse.Session;
   }
 
@@ -182,7 +189,7 @@ export class MongoToParseQueryBase {
   }
 
   aggregate<Z extends new() => ParseObjectExtender>(table: Z, { pipeline, hint }: AggregateDataType): Promise<Array<unknown>> {
-    const query = new this.parse.Query(table) as Parse.Query<Parse.Object<InstanceType<Z>['attributes']>>;
+    const query = new this.parse.Query(table) as unknown as ParseQuery<ParseObject<InstanceType<Z>['attributes']>>;
     if (hint) {
       query.hint(hint);
     }
@@ -222,18 +229,18 @@ export class MongoToParseQueryBase {
     delete parseObject.__type;
   }
 
-  async saveAll<T extends Parse.Object>(items: Array<T>, option: Parse.FullOptions): Promise<void> {
+  async saveAll<T extends ParseObject>(items: Array<T>, option: FullOptions): Promise<void> {
     await this.parse.Object.saveAll(items, option);
   }
 
-  async destroyAll<T extends Parse.Object>(items: Array<T>, option: Parse.FullOptions): Promise<void> {
+  async destroyAll<T extends ParseObject>(items: Array<T>, option: FullOptions): Promise<void> {
     await this.parse.Object.destroyAll(items, option);
   }
 
   async fetchObject<Z extends ParseObjectExtender>(
     item: Z,
     fieldCheck: Extract<keyof Z['attributes'], string>,
-    option: Parse.FullOptions): Promise<Z> {
+    option: FullOptions): Promise<Z> {
     if (!item) {
       return item;
     }
@@ -246,7 +253,7 @@ export class MongoToParseQueryBase {
   async getObjectsFromPointers<Z extends ParseObjectExtender>(
     items: Array<Z>,
     fieldCheck: Extract<keyof Z['attributes'], string>,
-    option: Parse.FullOptions): Promise<Array<Z>> {
+    option: FullOptions): Promise<Array<Z>> {
     const pointers = items.filter((item: Z) => !item.has(fieldCheck));
     if (!pointers.length) {
       return items;
@@ -254,7 +261,7 @@ export class MongoToParseQueryBase {
     const Table = this.parseTable<Z['attributes']>(items[0].className) as new() => Z;
     const objects = await this.find(Table, {
       // @ts-expect-error objectId will be present
-      where: { objectId: pointers.map((pointer: Parse.Object<Z['attributes']>) => pointer.id) },
+      where: { objectId: pointers.map((pointer: ParseObject<Z['attributes']>) => pointer.id) },
       option,
     });
     return items.map((item: Z): Z => {
@@ -267,7 +274,7 @@ export class MongoToParseQueryBase {
   }
 
   async updatePointersWithObject<Z extends ParseObjectExtender>(items: Array<Z>,
-    fieldCheck: Extract<keyof Z['attributes'], string>, option: Parse.FullOptions): Promise<void> {
+    fieldCheck: Extract<keyof Z['attributes'], string>, option: FullOptions): Promise<void> {
     const pointers = items.filter((item: Z) => !item.has(fieldCheck));
     if (!pointers.length) {
       return;
@@ -297,16 +304,16 @@ export class MongoToParseQueryBase {
   }
 
   private updateQuery<Z extends ParseObjectExtender>(
-    query: Parse.Query<Z>,
-    { project, descending, ascending, skip, include, limit }: UpdateQueryDataType<Parse.Object<Z['attributes']>>): void {
+    query: ParseQuery<Z>,
+    { project, descending, ascending, skip, include, limit }: UpdateQueryDataType<ParseObject<Z['attributes']>>): void {
     if (descending) {
-      query.descending(descending);
+      query.descending(descending as string);
     }
     if (project && project.length) {
       query.select(...project);
     }
     if (ascending) {
-      query.ascending(ascending);
+      query.ascending(ascending as string);
     }
     if (skip) {
       query.skip(skip);
@@ -320,9 +327,9 @@ export class MongoToParseQueryBase {
   }
 
   private updateQueryWithConditions<Z extends ParseObjectExtender>(
-    query: Parse.Query<Z>,
+    query: ParseQuery<Z>,
     field: ParseAttributeKey<Z>,
-    value: unknown): Parse.Query<Z> {
+    value: unknown): ParseQuery<Z> {
     if ((field as string).startsWith('$')) {
       throw new MongoToParseError({
         code: 400,
@@ -437,17 +444,18 @@ export class MongoToParseQueryBase {
     table: Z,
     key: string,
     value: unknown,
-    query: Parse.Query<InstanceType<Z>> = new this.parse.Query(table) as Parse.Query<InstanceType<Z>>): Parse.Query<InstanceType<Z>> {
+    query: ParseQuery<InstanceType<Z>> = new this.parse.Query(table) as
+      unknown as ParseQuery<InstanceType<Z>>): ParseQuery<InstanceType<Z>> {
     switch (key) {
       case '$and': {
         const valueArray = value as Array<{ [key: string]: unknown }>;
         const queries = valueArray.map((condition: { [key: string]: unknown }) => this.generateWhereQuery(table, condition));
-        return this.parse.Query.and(...queries) as Parse.Query<InstanceType<Z>>;
+        return this.parse.Query.and(...queries) as unknown as ParseQuery<InstanceType<Z>>;
       }
       case '$or': {
         const valueArray = value as Array<{ [key: string]: unknown }>;
         const queries = valueArray.map((condition: { [key: string]: unknown }) => this.generateWhereQuery(table, condition));
-        return this.parse.Query.or(...queries) as Parse.Query<InstanceType<Z>>;
+        return this.parse.Query.or(...queries) as unknown as ParseQuery<InstanceType<Z>>;
       }
       default: {
         return this.updateQueryWithConditions(query, key, value);
@@ -457,16 +465,16 @@ export class MongoToParseQueryBase {
 
   private generateWhereQuery<Z extends new() => ParseObjectExtender>(
     table: Z,
-    where: { [key: string]: unknown }): Parse.Query<InstanceType<Z>> {
+    where: { [key: string]: unknown }): ParseQuery<InstanceType<Z>> {
     let keys: Array<string> = Object.keys(where);
-    let query = new this.parse.Query(table) as Parse.Query<InstanceType<Z>>;
+    let query = new this.parse.Query(table) as unknown as ParseQuery<InstanceType<Z>>;
     const compoundKeysInQuery = keys.filter((key: string) => CompoundQueryKeys.includes(key));
     if (compoundKeysInQuery.length) {
       const queries = compoundKeysInQuery.map((key: string) => this.generateKeyValueQuery(table, key, where[key]));
       keys = keys.filter((key: string) => !compoundKeysInQuery.includes(key));
       query = (queries.length === 1
         ? queries[0]
-        : this.getParse().Query.and(...queries)) as Parse.Query<InstanceType<Z>>;
+        : this.parse.Query.and(...queries)) as unknown as ParseQuery<InstanceType<Z>>;
     }
     keys.forEach((key: string) => this.generateKeyValueQuery(table, key, where[key], query));
     return query;

@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
 import { MongoClient } from 'mongodb';
-import { ParseServer } from 'parse-server';
+import ParseServer from 'parse-server';
 import * as process from 'process';
 import { Env } from './test-env';
 
@@ -36,12 +36,14 @@ async function startMongoDB(): Promise<void> {
     databaseURI: mongoDBURI, // Connection string for your MongoDB database
     appId: Env.appId,
     masterKey: Env.masterKey, // Keep this key secret!
+    maintenanceKey: `${Env.masterKey}m`,
     serverURL, // Don't forget to change to https if needed
   });
   await api.start();
   // Serve the Parse API on the /parse URL prefix
   app.use('/api/parse', api.app as RequestHandlerParams);
-  Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (global as any).Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
 }
 
 async function wait(time = 100): Promise<void> {
