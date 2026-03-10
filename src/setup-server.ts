@@ -3,7 +3,6 @@ import express, { Express } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
 import { MongoClient } from 'mongodb';
 import ParseServer from 'parse-server';
-import parse from 'parse/node';
 import * as process from 'process';
 import { Env } from './test-env';
 
@@ -43,7 +42,8 @@ async function startMongoDB(): Promise<void> {
   await api.start();
   // Serve the Parse API on the /parse URL prefix
   app.use('/api/parse', api.app as RequestHandlerParams);
-  parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (global as any).Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
 }
 
 async function wait(time = 100): Promise<void> {
