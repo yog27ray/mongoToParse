@@ -47,7 +47,7 @@ export declare type ParseObjectBeforeFindRequest<
 export declare type ParseObjectAfterFindRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender
-> = Omit<AfterFindRequest<T>, 'user'> & { user?: Z };
+> = Omit<AfterFindRequest<T>, 'user'> & { user?: Z, objects: Array<T> };
 export declare type ParseObjectBeforeSaveRequest<
   T extends ParseObjectExtender,
   Z extends ParseUserExtender = ParseUserExtender

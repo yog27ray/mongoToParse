@@ -4,7 +4,9 @@ import { RequestHandlerParams } from 'express-serve-static-core';
 import { MongoClient } from 'mongodb';
 import ParseServer from 'parse-server';
 import * as process from 'process';
+import { ParseObjectExtender } from '../server';
 import { Env } from './test-env';
+import { ParseObjectAfterFindRequest } from './transform/mongo-to-parse-query-base';
 
 const app: Express = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -44,6 +46,11 @@ async function startMongoDB(): Promise<void> {
   app.use('/api/parse', api.app as RequestHandlerParams);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).Parse.Cloud.define('validFunctionName', async () => Promise.resolve({}));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (global as any).Parse.Cloud.afterFind('TestTable', (request: ParseObjectAfterFindRequest<ParseObjectExtender<{ name: string; }>>) => {
+    request.objects.forEach(() => 1);
+    return request.objects;
+  });
 }
 
 async function wait(time = 100): Promise<void> {
