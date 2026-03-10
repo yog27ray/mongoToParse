@@ -1,5 +1,5 @@
-import ParseSession from 'parse/types/ParseSession';
 import { Attributes, SaveOptions } from 'parse/types/ParseObject';
+import ParseSession from 'parse/types/ParseSession';
 import { ParseObjectJSON } from './parse-type';
 
 export declare class ParseSessionExtender<T extends Attributes = Attributes> extends ParseSession<T> {

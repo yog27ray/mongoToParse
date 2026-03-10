@@ -1,5 +1,5 @@
-import ParseUser from 'parse/types/ParseUser';
 import { Attributes, SaveOptions } from 'parse/types/ParseObject';
+import ParseUser from 'parse/types/ParseUser';
 import { ParseObjectJSON } from './parse-type';
 
 export declare class ParseUserExtender<T extends Attributes = Attributes> extends ParseUser<T> {

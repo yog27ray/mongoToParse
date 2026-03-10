@@ -1,9 +1,9 @@
-import parse from 'parse/node';
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import { RequestHandlerParams } from 'express-serve-static-core';
 import { MongoClient } from 'mongodb';
 import ParseServer from 'parse-server';
+import parse from 'parse/node';
 import * as process from 'process';
 import { Env } from './test-env';
 
