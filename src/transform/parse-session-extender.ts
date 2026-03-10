@@ -1,6 +1,8 @@
+import ParseSession from 'parse/types/ParseSession';
+import { Attributes, SaveOptions } from 'parse/types/ParseObject';
 import { ParseObjectJSON } from './parse-type';
 
-export declare class ParseSessionExtender<T extends Parse.Attributes = Parse.Attributes> extends Parse.Session<T> {
+export declare class ParseSessionExtender<T extends Attributes = Attributes> extends ParseSession<T> {
   static className: string;
 
   json?: ParseObjectJSON<T>;
@@ -14,6 +16,6 @@ export declare class ParseSessionExtender<T extends Parse.Attributes = Parse.Att
 
   save<K extends Extract<keyof T, string>>(
     attrs?: Pick<T, K> | T | null,
-    options?: Parse.Object.SaveOptions,
+    options?: SaveOptions,
   ): Promise<this>;
 }

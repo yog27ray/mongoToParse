@@ -1,3 +1,4 @@
+import parse from 'parse/node';
 import { MongoToParseError } from './src/error/mongo-to-parse-error';
 import {
   MongoToParseQueryBase,
@@ -22,7 +23,7 @@ import { ParseUserExtender } from './src/transform/parse-user-extender';
 class MongoToParseQuery extends MongoToParseQueryBase {
   constructor() {
     super();
-    this.setParse(Parse);
+    this.setParse(parse);
   }
 }
 
