@@ -1,13 +1,13 @@
-/* eslint-disable no-undef */
-const importPlugin = require("eslint-plugin-import");
-const { configs } = require("@eslint/js");
-const typescriptPlugin = require("eslint-plugin-typescript");
-const promisePlugin = require("eslint-plugin-promise");
-const typescriptEslintParser = require("@typescript-eslint/parser"); // Import parser object
-const typescriptEslintPlugin = require("@typescript-eslint/eslint-plugin"); // Import plugin
+import importPlugin from "eslint-plugin-import";
+import _eslintJs from '@eslint/js';
+const { configs: jsConfigs } = _eslintJs;
+import typescriptPlugin from "eslint-plugin-typescript";
+import promisePlugin from "eslint-plugin-promise";
+import typescriptEslintParser from "@typescript-eslint/parser";
+import typescriptEslintPlugin from "@typescript-eslint/eslint-plugin";
 
-module.exports = [
-  configs.recommended,
+export default [
+  jsConfigs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
