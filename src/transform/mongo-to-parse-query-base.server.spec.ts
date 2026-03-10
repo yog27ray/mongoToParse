@@ -42,6 +42,12 @@ function parseObjectJSON(results: Array<DummyRowClass>): Array<DummyRowClass['js
   });
 }
 
+function getPointerWithoutClassName(object: DummyRowClass): ReturnType<DummyRowClass['toJSON']> {
+  const json = object.toJSON();
+  delete (json as unknown as { className: string; }).className;
+  return json;
+}
+
 async function createDummyRows(TestTable: new () => DummyRowClass, mongoToParseQuery: MongoToParseQuery): Promise<void> {
   await dropDB();
   await mongoToParseQuery.saveAll([
@@ -314,7 +320,7 @@ describe('MongoToParseQuery', () => {
         let pointer = new TestTable();
         pointer.id = parseObject.id;
         pointer = await mongoToParseQuery.fetchObject(pointer, 'total', {});
-        expect(pointer.toJSON()).to.deep.equal(parseObject.toJSON());
+        expect(getPointerWithoutClassName(pointer)).to.deep.equal(parseObject.toJSON());
       });
     });
 
@@ -386,7 +392,7 @@ describe('MongoToParseQuery', () => {
           }));
         await mongoToParseQuery.updatePointersWithObject(pointers, 'total', {});
         expect(pointers.length).to.equal(5);
-        expect(pointers.map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON())).to.deep
+        expect(pointers.map((each: DummyRowClass): DummyRowClass['json'] => getPointerWithoutClassName(each))).to.deep
           .equal([rows[0], rows[1], invalidPointer, rows[2], rows[3]]
             .map((each: DummyRowClass): DummyRowClass['json'] => each.toJSON()));
       });
