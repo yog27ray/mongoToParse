@@ -19,6 +19,9 @@ updates:
       - dependency-name: "express"
         update-types:
           - "version-update:semver-major"
+      - dependency-name: "@types/express"
+        update-types:
+          - "version-update:semver-major"
     groups:
       eslint-deps:
         patterns:
