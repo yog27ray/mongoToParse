@@ -37,7 +37,7 @@ async function startMongoDB(): Promise<void> {
     databaseURI: mongoDBURI, // Connection string for your MongoDB database
     appId: Env.appId,
     masterKey: Env.masterKey, // Keep this key secret!
-    maintenanceKey: Env.masterKey,
+    maintenanceKey: `${Env.masterKey}1`,
     serverURL, // Don't forget to change to https if needed
   });
   await api.start();
