@@ -396,7 +396,7 @@ export class MongoToParseQueryBase {
         }
         case '$nin':
         case '$ne': {
-          if (value[queryConditionKey] instanceof Array) {
+          if (Array.isArray(value[queryConditionKey])) {
             if (value[queryConditionKey].length === 1) {
               query.notEqualTo(field, value[queryConditionKey][0] as Z['attributes'][ParseAttributeKey<Z>]);
               return;
@@ -409,7 +409,7 @@ export class MongoToParseQueryBase {
         }
         case '$in':
         case '$eq': {
-          if (value[queryConditionKey] instanceof Array) {
+          if (Array.isArray(value[queryConditionKey])) {
             if (value[queryConditionKey].length === 1) {
               query.equalTo(field, value[queryConditionKey][0] as Z['attributes'][ParseAttributeKey<Z>]);
               return;
@@ -421,7 +421,7 @@ export class MongoToParseQueryBase {
           return;
         }
         case '$all': {
-          if (value[queryConditionKey] instanceof Array) {
+          if (Array.isArray(value[queryConditionKey])) {
             query.containsAll(field, value[queryConditionKey] as Array<unknown>);
             return;
           }
