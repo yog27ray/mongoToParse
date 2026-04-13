@@ -327,10 +327,11 @@ export class MongoToParseQueryBase {
   }
 
   private updateQueryWithConditions<Z extends ParseObjectExtender>(
-    query: ParseQuery<Z>,
+    _query: ParseQuery<Z>,
     field: ParseAttributeKey<Z>,
     value: unknown): ParseQuery<Z> {
-    if ((field as string).startsWith('$')) {
+    let query = _query;
+    if ((field as string).startsWith('$') && field !== '$relatedTo') {
       throw new MongoToParseError({
         code: 400,
         message: `field "${field as string}" is invalid syntax`,
@@ -384,6 +385,15 @@ export class MongoToParseQueryBase {
         case '$regex': {
           const regexValue = value as { $options: string };
           query.matches(field, regexValue[queryConditionKey] as RegExp, regexValue.$options);
+          return;
+        }
+        case '$relatedTo': {
+          const { object, key } = value as { key: string; object: { className: string; objectId: string }};
+          const pointer = new (this.parseTable(object.className))();
+          pointer.id = object.objectId;
+          const roleRelation = new this.parse.Relation(pointer, key);
+          const relationQuery = roleRelation.query();
+          query = this.parse.Query.and(query, relationQuery) as ParseQuery<Z>;
           return;
         }
         case '$exists': {

@@ -1164,5 +1164,25 @@ describe('MongoToParseQuery', () => {
       });
       await mongoToParseQuery.destroyAll([result], { useMasterKey: true });
     });
+
+    it('should generate query properly $relatedTo', async () => {
+      const result = await (mongoToParseQuery as unknown as { generateWhereQuery(x: unknown, y: unknown): Promise<unknown>; })
+        .generateWhereQuery(TestTable, {
+          $relatedTo: {
+            key: 'users',
+            object: { className: '_Role', objectId: 'roleObjectId' },
+          },
+          objectId: 'testTableObjectId',
+        });
+      expect(JSON.parse(JSON.stringify(result))).to.deep.equal({
+        where: {
+          $relatedTo: {
+            key: 'users',
+            object: { className: '_Role', objectId: 'roleObjectId' },
+          },
+          objectId: 'testTableObjectId',
+        },
+      });
+    });
   });
 });
