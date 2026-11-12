@@ -348,7 +348,7 @@ export class MongoToParseQueryBase {
     const valueKeys = Object.keys(value);
     const queryConditionKeys = valueKeys.filter((each: string) => each.startsWith('$'));
     if (!queryConditionKeys.length) {
-      return this.updateQueryWithConditions(query, field, { $eq: value });
+      return this.updateQueryWithConditions(query, field, field === '$relatedTo' ? { $relatedTo: value } : { $eq: value });
     }
     if (queryConditionKeys.length !== valueKeys.length) {
       throw new MongoToParseError({
@@ -389,6 +389,13 @@ export class MongoToParseQueryBase {
         case '$regex': {
           const regexValue = value as { $options: string };
           query.matches(field, regexValue[queryConditionKey] as RegExp, regexValue.$options);
+          return;
+        }
+        case '$relatedTo': {
+          const { object, key } = value[queryConditionKey] as { key: string; object: { className: string; objectId: string } };
+          const pointer = this.getPointerFromId(object.objectId, this.parseTable(object.className));
+          const relatedTo = { object: pointer.toPointer(), key } as Z['attributes'][ParseAttributeKey<Z>];
+          query.equalTo('$relatedTo' as ParseAttributeKey<Z>, relatedTo);
           return;
         }
         case '$exists': {

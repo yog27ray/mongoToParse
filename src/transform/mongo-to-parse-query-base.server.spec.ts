@@ -1235,10 +1235,45 @@ describe('MongoToParseQuery', () => {
         where: {
           $relatedTo: {
             key: 'users',
-            object: { className: '_Role', objectId: 'roleObjectId' },
+            object: { __type: 'Pointer', className: '_Role', objectId: 'roleObjectId' },
           },
           objectId: 'testTableObjectId',
         },
+      });
+    });
+
+    context('$relatedTo against parse-server', () => {
+      const RelatedItem: new () => ParseObjectExtender<{ name: string }> = mongoToParseQuery.parseTable('RelatedItem');
+      let relatedTo: { key: string; object: { className: string; objectId: string } };
+
+      before(async () => {
+        const items = ['a', 'b', 'c'].map((name: string) => {
+          const item = new RelatedItem();
+          item.set('name', name);
+          return item;
+        });
+        await mongoToParseQuery.saveAll(items, { useMasterKey: true });
+        const owner = new (mongoToParseQuery.parseTable('RelatedOwner'))();
+        owner.relation('items').add([items[0], items[1]]);
+        await mongoToParseQuery.saveAll([owner], { useMasterKey: true });
+        relatedTo = { key: 'items', object: { className: 'RelatedOwner', objectId: owner.id } };
+      });
+
+      const names = async (where: Record<string, unknown>): Promise<Array<string>> => {
+        const results = await mongoToParseQuery.find(RelatedItem, { where, ascending: 'name', option: { useMasterKey: true } });
+        return results.map((each: ParseObjectExtender<{ name: string }>) => each.get('name'));
+      };
+
+      it('should return only related objects', async () => {
+        expect(await names({ $relatedTo: relatedTo })).to.deep.equal(['a', 'b']);
+      });
+
+      it('should combine $relatedTo with other conditions', async () => {
+        expect(await names({ $relatedTo: relatedTo, name: 'a' })).to.deep.equal(['a']);
+      });
+
+      it('should support $relatedTo inside $or', async () => {
+        expect(await names({ $or: [{ $relatedTo: relatedTo }, { name: 'c' }] })).to.deep.equal(['a', 'b', 'c']);
       });
     });
   });
