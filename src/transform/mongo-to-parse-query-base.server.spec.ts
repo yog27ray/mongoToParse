@@ -86,6 +86,20 @@ describe('MongoToParseQuery', () => {
       const DummyRowTable: new () => DummyRowClass = mongoToParseQuery.parseTable('DummyRowTable');
       const InnerClassTable: new () => InnerClass = mongoToParseQuery.parseTable('InnerClassTable');
 
+      it('should expose underlying parse instance and classes.', () => {
+        const parseInstance = mongoToParseQuery.getParse();
+        expect(parseInstance).to.exist;
+        expect(mongoToParseQuery.Cloud).to.equal(parseInstance.Cloud);
+        expect(mongoToParseQuery.Error).to.equal(parseInstance.Error);
+        expect(mongoToParseQuery.User).to.equal(parseInstance.User);
+        expect(mongoToParseQuery.Schema).to.equal(parseInstance.Schema);
+        expect(mongoToParseQuery.Object).to.equal(parseInstance.Object);
+        expect(mongoToParseQuery.Installation).to.equal(parseInstance.Installation);
+        expect(mongoToParseQuery.Role).to.equal(parseInstance.Role);
+        expect(mongoToParseQuery.Session).to.equal(parseInstance.Session);
+        expect(mongoToParseQuery.getNewACL()).to.be.instanceOf(parseInstance.ACL);
+      });
+
       it('should pass for valid role type.', async () => {
         const Role = parse.Role as unknown as new() => ParseRoleExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(Role, {
@@ -435,6 +449,15 @@ describe('MongoToParseQuery', () => {
           { rank: 7, total: 4 },
         ]);
       });
+
+      it('should fetch result of aggregate with hint and comment', async () => {
+        const results = await mongoToParseQuery.aggregate(TestTable, {
+          pipeline: [{ $match: { total: 4 } }, { $project: { rank: 1, objectId: 0 } }, { $sort: { rank: -1 } }, { $limit: 1 }],
+          hint: '_id_',
+          comment: 'aggregate-comment',
+        });
+        expect(results).to.deep.equal([{ rank: 10 }]);
+      });
     });
 
     context('getPointer', () => {
@@ -518,6 +541,25 @@ describe('MongoToParseQuery', () => {
 
     before(async () => {
       await createDummyRows(TestTable, mongoToParseQuery);
+    });
+
+    it('should include optional error fields in toJSON when set', () => {
+      const error = new MongoToParseError({
+        code: 400,
+        type: 'INVALID_QUERY',
+        message: 'msg',
+        logMessage: 'log',
+        skipSentry: true,
+        params: { a: 1 },
+      });
+      expect(error.toJSON()).to.deep.equal({
+        code: 400,
+        type: 'INVALID_QUERY',
+        message: 'msg',
+        logMessage: 'log',
+        skipSentry: true,
+        params: { a: 1 },
+      });
     });
 
     it('should give error when invalid syntax is provided', async () => {
@@ -613,6 +655,11 @@ describe('MongoToParseQuery', () => {
         message: 'startsWith this is message 9',
         total: 4,
       }]);
+    });
+
+    it('should return rows where rank $in [1, 2, 3]', async () => {
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $in: [1, 2, 3] } }, ascending: 'rank' });
+      expect(results.map((each: DummyRowClass) => each.get('rank'))).to.deep.equal([1, 2, 3]);
     });
 
     it('should return row where message regex "regex"', async () => {
@@ -1117,6 +1164,16 @@ describe('MongoToParseQuery', () => {
       expect(resultsJSON).to.deep.equal([{ message: 'startsWith this regex is message 2' }]);
     });
 
+    it('should forward hint and comment to parse-server for find, findOne and count', async () => {
+      const where = { rank: [1, 2, 3] };
+      const results = await mongoToParseQuery.find(TestTable, { where, ascending: 'rank', hint: '_id_', comment: 'find-comment' });
+      expect(results.length).to.equal(3);
+      const result = await mongoToParseQuery.findOne(TestTable, { where, ascending: 'rank', hint: '_id_', comment: 'findOne-comment' });
+      expect(result.get('rank')).to.equal(1);
+      const count = await mongoToParseQuery.count(TestTable, { where, hint: '_id_', comment: 'count-comment' });
+      expect(count).to.equal(3);
+    });
+
     it('should return row where rank is 3 or total is 2', async () => {
       const results = await mongoToParseQuery.find(TestTable, {
         where: {
@@ -1178,10 +1235,45 @@ describe('MongoToParseQuery', () => {
         where: {
           $relatedTo: {
             key: 'users',
-            object: { className: '_Role', objectId: 'roleObjectId' },
+            object: { __type: 'Pointer', className: '_Role', objectId: 'roleObjectId' },
           },
           objectId: 'testTableObjectId',
         },
+      });
+    });
+
+    context('$relatedTo against parse-server', () => {
+      const RelatedItem: new () => ParseObjectExtender<{ name: string }> = mongoToParseQuery.parseTable('RelatedItem');
+      let relatedTo: { key: string; object: { className: string; objectId: string } };
+
+      before(async () => {
+        const items = ['a', 'b', 'c'].map((name: string) => {
+          const item = new RelatedItem();
+          item.set('name', name);
+          return item;
+        });
+        await mongoToParseQuery.saveAll(items, { useMasterKey: true });
+        const owner = new (mongoToParseQuery.parseTable('RelatedOwner'))();
+        owner.relation('items').add([items[0], items[1]]);
+        await mongoToParseQuery.saveAll([owner], { useMasterKey: true });
+        relatedTo = { key: 'items', object: { className: 'RelatedOwner', objectId: owner.id } };
+      });
+
+      const names = async (where: Record<string, unknown>): Promise<Array<string>> => {
+        const results = await mongoToParseQuery.find(RelatedItem, { where, ascending: 'name', option: { useMasterKey: true } });
+        return results.map((each: ParseObjectExtender<{ name: string }>) => each.get('name'));
+      };
+
+      it('should return only related objects', async () => {
+        expect(await names({ $relatedTo: relatedTo })).to.deep.equal(['a', 'b']);
+      });
+
+      it('should combine $relatedTo with other conditions', async () => {
+        expect(await names({ $relatedTo: relatedTo, name: 'a' })).to.deep.equal(['a']);
+      });
+
+      it('should support $relatedTo inside $or', async () => {
+        expect(await names({ $or: [{ $relatedTo: relatedTo }, { name: 'c' }] })).to.deep.equal(['a', 'b', 'c']);
       });
     });
   });
