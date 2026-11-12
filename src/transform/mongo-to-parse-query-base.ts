@@ -29,6 +29,7 @@ export declare interface RequestQueryPayload<Z extends ParseObjectExtender> {
   ascending?: Partial<keyof (Z['attributes'] & BaseAttributes)>;
   skip?: number;
   hint?: string;
+  comment?: string;
   include?: Partial<Array<keyof (Z['attributes'] & BaseAttributes)>>;
   where: WhereType<Z['attributes'] & BaseAttributes>;
   option?: FullOptions;
@@ -70,11 +71,13 @@ export declare interface RequestCountPayload<Z extends ParseObjectExtender> {
   limit?: number;
   option?: FullOptions;
   hint?: string;
+  comment?: string;
   skip?: number;
 }
 
 declare interface AggregateDataType {
   hint?: string;
+  comment?: string;
   option?: { useMasterKey?: boolean; sessionToken?: string };
   pipeline: Array<{ [key: string]: unknown }>;
 }
@@ -86,6 +89,8 @@ declare interface UpdateQueryDataType<T extends ParseObject> {
   ascending?: Array<ParseAttributeKey<T>> | ParseAttributeKey<T>;
   skip?: number;
   include?: Array<ParseAttributeKey<T>>;
+  hint?: string;
+  comment?: string;
 }
 
 const CompoundQueryKeys: Array<string> = ['$and', '$or'];
@@ -156,13 +161,11 @@ export class MongoToParseQueryBase {
       include,
       limit,
       hint,
+      comment,
     }: RequestQueryPayload<InstanceType<Z>>)
     : Promise<Array<InstanceType<Z>>> {
     const query = this.generateWhereQuery(table, where);
-    this.updateQuery(query, { project, descending, ascending, skip, include, limit });
-    if (hint) {
-      query.hint(hint);
-    }
+    this.updateQuery(query, { project, descending, ascending, skip, include, limit, hint, comment });
     return query.find(option);
   }
 
@@ -178,32 +181,28 @@ export class MongoToParseQueryBase {
       include,
       limit,
       hint,
+      comment,
     }: RequestQueryPayload<InstanceType<Z>>)
     : Promise<InstanceType<Z>> {
     const query = this.generateWhereQuery(table, where);
-    this.updateQuery(query, { project, descending, ascending, skip, include, limit });
-    if (hint) {
-      query.hint(hint);
-    }
+    this.updateQuery(query, { project, descending, ascending, skip, include, limit, hint, comment });
     return query.first(option);
   }
 
-  aggregate<Z extends new() => ParseObjectExtender>(table: Z, { pipeline, hint }: AggregateDataType): Promise<Array<unknown>> {
-    const query = new this.parse.Query(table) as unknown as ParseQuery<ParseObject<InstanceType<Z>['attributes']>>;
-    if (hint) {
-      query.hint(hint);
-    }
-    return query.aggregate(pipeline);
+  async aggregate<Z extends new() => ParseObjectExtender>(
+    table: Z,
+    { pipeline, hint, comment }: AggregateDataType): Promise<Array<unknown>> {
+    // Parse SDK's query.aggregate() drops comment, so make the same request it makes, with comment added.
+    const { results } = await this.parse.CoreManager.getQueryController()
+      .aggregate(new this.parse.Query(table).className, { pipeline, hint, comment }, { useMasterKey: true });
+    return results as Array<unknown>;
   }
 
   count<Z extends new() => ParseObjectExtender>(
     table: Z,
-    { where, option, skip, limit, hint }: RequestCountPayload<InstanceType<Z>>): Promise<number> {
+    { where, option, skip, limit, hint, comment }: RequestCountPayload<InstanceType<Z>>): Promise<number> {
     const query = this.generateWhereQuery(table, where);
-    this.updateQuery(query, { skip, limit });
-    if (hint) {
-      query.hint(hint);
-    }
+    this.updateQuery(query, { skip, limit, hint, comment });
     return query.count(option);
   }
 
@@ -305,7 +304,13 @@ export class MongoToParseQueryBase {
 
   private updateQuery<Z extends ParseObjectExtender>(
     query: ParseQuery<Z>,
-    { project, descending, ascending, skip, include, limit }: UpdateQueryDataType<ParseObject<Z['attributes']>>): void {
+    { project, descending, ascending, skip, include, limit, hint, comment }: UpdateQueryDataType<ParseObject<Z['attributes']>>): void {
+    if (hint) {
+      query.hint(hint);
+    }
+    if (comment) {
+      query.comment(comment);
+    }
     if (descending) {
       query.descending(descending as string);
     }

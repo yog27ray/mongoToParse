@@ -435,6 +435,15 @@ describe('MongoToParseQuery', () => {
           { rank: 7, total: 4 },
         ]);
       });
+
+      it('should fetch result of aggregate with hint and comment', async () => {
+        const results = await mongoToParseQuery.aggregate(TestTable, {
+          pipeline: [{ $match: { total: 4 } }, { $project: { rank: 1, objectId: 0 } }, { $sort: { rank: -1 } }, { $limit: 1 }],
+          hint: '_id_',
+          comment: 'aggregate-comment',
+        });
+        expect(results).to.deep.equal([{ rank: 10 }]);
+      });
     });
 
     context('getPointer', () => {
@@ -1115,6 +1124,16 @@ describe('MongoToParseQuery', () => {
         });
       const resultsJSON = parseObjectJSON(results);
       expect(resultsJSON).to.deep.equal([{ message: 'startsWith this regex is message 2' }]);
+    });
+
+    it('should forward comment to parse-server for find, findOne and count', async () => {
+      const where = { rank: [1, 2, 3] };
+      const results = await mongoToParseQuery.find(TestTable, { where, ascending: 'rank', comment: 'find-comment' });
+      expect(results.length).to.equal(3);
+      const result = await mongoToParseQuery.findOne(TestTable, { where, ascending: 'rank', comment: 'findOne-comment' });
+      expect(result.get('rank')).to.equal(1);
+      const count = await mongoToParseQuery.count(TestTable, { where, comment: 'count-comment' });
+      expect(count).to.equal(3);
     });
 
     it('should return row where rank is 3 or total is 2', async () => {
