@@ -179,8 +179,9 @@ describe('MongoToParseQuery', () => {
 
     context('parseTable', () => {
       it('should return parse table', async () => {
-        const Table = new MongoToParseQuery().parseTable('TableName');
-        expect(new Table() instanceof parse.Object).to.be.true;
+        const mongoToParseQuery = new MongoToParseQuery();
+        const Table = mongoToParseQuery.parseTable('TableName');
+        expect(new Table() instanceof mongoToParseQuery.Object).to.be.true;
       });
     });
 
