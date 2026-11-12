@@ -395,7 +395,7 @@ export class MongoToParseQueryBase {
           const { object, key } = value[queryConditionKey] as { key: string; object: { className: string; objectId: string } };
           const pointer = this.getPointerFromId(object.objectId, this.parseTable(object.className));
           const relatedTo = { object: pointer.toPointer(), key } as Z['attributes'][ParseAttributeKey<Z>];
-          query.equalTo('$relatedTo' as ParseAttributeKey<Z>, relatedTo);
+          query.equalTo('$relatedTo', relatedTo);
           return;
         }
         case '$exists': {
