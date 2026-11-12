@@ -4,7 +4,6 @@ const { configs: jsConfigs } = _eslintJs;
 import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptEslintParser from '@typescript-eslint/parser';
 import promisePlugin from 'eslint-plugin-promise';
-import typescriptPlugin from 'eslint-plugin-typescript';
 
 export default [
   jsConfigs.recommended,
@@ -24,7 +23,6 @@ export default [
     plugins: {
       import: importPlugin,
       promise: promisePlugin,
-      typescript: typescriptPlugin,
       '@typescript-eslint': typescriptEslintPlugin,
     },
     rules: {

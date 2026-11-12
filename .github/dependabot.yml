@@ -28,7 +28,6 @@ updates:
           - "@typescript-eslint/*"
           - "eslint-plugin-import"
           - "eslint-plugin-promise"
-          - "eslint-plugin-typescript"
           - "eslint"
           - "typescript"
           - "tslint"
