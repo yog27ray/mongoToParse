@@ -543,6 +543,25 @@ describe('MongoToParseQuery', () => {
       await createDummyRows(TestTable, mongoToParseQuery);
     });
 
+    it('should include optional error fields in toJSON when set', () => {
+      const error = new MongoToParseError({
+        code: 400,
+        type: 'INVALID_QUERY',
+        message: 'msg',
+        logMessage: 'log',
+        skipSentry: true,
+        params: { a: 1 },
+      });
+      expect(error.toJSON()).to.deep.equal({
+        code: 400,
+        type: 'INVALID_QUERY',
+        message: 'msg',
+        logMessage: 'log',
+        skipSentry: true,
+        params: { a: 1 },
+      });
+    });
+
     it('should give error when invalid syntax is provided', async () => {
       try {
         await mongoToParseQuery.find(TestTable, {
