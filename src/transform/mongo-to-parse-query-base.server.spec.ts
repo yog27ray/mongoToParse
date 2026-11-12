@@ -86,6 +86,20 @@ describe('MongoToParseQuery', () => {
       const DummyRowTable: new () => DummyRowClass = mongoToParseQuery.parseTable('DummyRowTable');
       const InnerClassTable: new () => InnerClass = mongoToParseQuery.parseTable('InnerClassTable');
 
+      it('should expose underlying parse instance and classes.', () => {
+        const parseInstance = mongoToParseQuery.getParse();
+        expect(parseInstance).to.exist;
+        expect(mongoToParseQuery.Cloud).to.equal(parseInstance.Cloud);
+        expect(mongoToParseQuery.Error).to.equal(parseInstance.Error);
+        expect(mongoToParseQuery.User).to.equal(parseInstance.User);
+        expect(mongoToParseQuery.Schema).to.equal(parseInstance.Schema);
+        expect(mongoToParseQuery.Object).to.equal(parseInstance.Object);
+        expect(mongoToParseQuery.Installation).to.equal(parseInstance.Installation);
+        expect(mongoToParseQuery.Role).to.equal(parseInstance.Role);
+        expect(mongoToParseQuery.Session).to.equal(parseInstance.Session);
+        expect(mongoToParseQuery.getNewACL()).to.be.instanceOf(parseInstance.ACL);
+      });
+
       it('should pass for valid role type.', async () => {
         const Role = parse.Role as unknown as new() => ParseRoleExtender<{ rank: number }>;
         const result = await mongoToParseQuery.find(Role, {
@@ -624,6 +638,11 @@ describe('MongoToParseQuery', () => {
       }]);
     });
 
+    it('should return rows where rank $in [1, 2, 3]', async () => {
+      const results = await mongoToParseQuery.find(TestTable, { where: { rank: { $in: [1, 2, 3] } }, ascending: 'rank' });
+      expect(results.map((each: DummyRowClass) => each.get('rank'))).to.deep.equal([1, 2, 3]);
+    });
+
     it('should return row where message regex "regex"', async () => {
       const results = await mongoToParseQuery
         .find(TestTable, { where: { message: { $regex: 'regex', $options: 'i' } }, ascending: 'rank' });
@@ -1126,13 +1145,13 @@ describe('MongoToParseQuery', () => {
       expect(resultsJSON).to.deep.equal([{ message: 'startsWith this regex is message 2' }]);
     });
 
-    it('should forward comment to parse-server for find, findOne and count', async () => {
+    it('should forward hint and comment to parse-server for find, findOne and count', async () => {
       const where = { rank: [1, 2, 3] };
-      const results = await mongoToParseQuery.find(TestTable, { where, ascending: 'rank', comment: 'find-comment' });
+      const results = await mongoToParseQuery.find(TestTable, { where, ascending: 'rank', hint: '_id_', comment: 'find-comment' });
       expect(results.length).to.equal(3);
-      const result = await mongoToParseQuery.findOne(TestTable, { where, ascending: 'rank', comment: 'findOne-comment' });
+      const result = await mongoToParseQuery.findOne(TestTable, { where, ascending: 'rank', hint: '_id_', comment: 'findOne-comment' });
       expect(result.get('rank')).to.equal(1);
-      const count = await mongoToParseQuery.count(TestTable, { where, comment: 'count-comment' });
+      const count = await mongoToParseQuery.count(TestTable, { where, hint: '_id_', comment: 'count-comment' });
       expect(count).to.equal(3);
     });
 
