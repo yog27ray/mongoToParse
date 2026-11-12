@@ -139,9 +139,9 @@ describe('MongoToParseQuery', () => {
 
       it('should pass toJSON type with namespace.', async () => {
         class Table {
-          static Table1 = mongoToParseQuery.parseTable('Table1') as new() => DummyRowClass;
+          static Table1 = mongoToParseQuery.parseTable<DummyRowClass['attributes']>('Table1');
 
-          static Table2 = mongoToParseQuery.parseTable('Table2') as new() => InnerClass;
+          static Table2 = mongoToParseQuery.parseTable<InnerClass['attributes']>('Table2');
         }
         const innerObject = new Table.Table2();
         innerObject.set('innerField1', 'innerField1');
